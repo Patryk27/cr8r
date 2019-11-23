@@ -1,0 +1,24 @@
+controller:
+  bind: '127.0.0.1:1234'
+  client-secret: 'client-testo'
+  runner-secret: 'runner-testo'
+
+ecosystem:
+  flora:
+    ubuntu:
+      provides: 'os'
+      os: 'ubuntu:18.04'
+
+    cm_db:
+      provides: 'app'
+      setup: ['git@git.anixe.pl:aclr8/deploy.git', 'cd roles/cm_db', './restart.sh']
+      teardown: ['echo "Goodbye!"']
+
+  fauna:
+    aclr8:
+      requires: ['ubuntu']
+      provides: 'git@git.anixe.pl:aclr8/aclr8.git'
+
+    mercures_snapshots:
+      requires: ['ubuntu', 'cm_db']
+      provides: 'git@git.anixe.pl:aclr8/mercures_snapshots.git'

@@ -1,0 +1,13 @@
+[package]
+name = "cr8r"
+version = "0.1.0"
+authors = ["Patryk Wychowaniec <wychowaniec.patryk@gmail.com>"]
+edition = "2018"
+
+[workspace]
+members = [
+    "src/client",
+    "src/controller",
+    "src/protocol",
+    "src/runner",
+]

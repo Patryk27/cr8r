@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="CPP_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/controller/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/controller/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/controller/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/controller/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/client/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/client/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/client/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/client/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/runner/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/runner/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/runner/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/runner/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/client_protocol/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/client_protocol/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/client_protocol/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/client_protocol/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/runner_protocol/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/runner_protocol/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/runner_protocol/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/runner_protocol/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/protocol/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/protocol/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/protocol/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/protocol/benches" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/src/client/target" />
+      <excludeFolder url="file://$MODULE_DIR$/src/client_protocol/target" />
+      <excludeFolder url="file://$MODULE_DIR$/src/controller/target" />
+      <excludeFolder url="file://$MODULE_DIR$/src/protocol/target" />
+      <excludeFolder url="file://$MODULE_DIR$/src/runner/target" />
+      <excludeFolder url="file://$MODULE_DIR$/src/runner_protocol/target" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
