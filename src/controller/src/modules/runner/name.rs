@@ -1,1 +1,0 @@
-pub type RunnerName = lib_protocol::RunnerName;
