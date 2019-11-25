@@ -1,7 +1,7 @@
 controller:
   bind: '127.0.0.1:1234'
-  client-secret: 'client-testo'
-  runner-secret: 'runner-testo'
+  client-secret: 'top-secret'
+  runner-secret: 'top-secret'
 
 ecosystem:
   environment:
@@ -23,3 +23,4 @@ ecosystem:
     mercures_snapshots:
       requires: ['ubuntu', 'cm_db']
       repository: 'git@git.anixe.pl:aclr8/mercures_snapshots.git'
+      # test-command: './test'

@@ -3,4 +3,4 @@ runner:
 
 controller:
   address: 'ws://127.0.0.1:1234/runners/ws'
-  secret: 'runner-testo'
+  secret: 'top-secret'

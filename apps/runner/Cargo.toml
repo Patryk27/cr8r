@@ -1,0 +1,22 @@
+[package]
+name = "runner"
+version = "0.1.0"
+authors = ["Patryk Wychowaniec <wychowaniec.patryk@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+actix = "0.8"
+actix-codec = "0.1"
+actix-web = "1.0"
+actix-web-actors = "1.0"
+awc = "0.2"
+futures = "0.1"
+lib_logger = { path = "../../libs/logger" }
+lib_lxd = { path = "../../libs/lxd" }
+lib_protocol_core = { path = "../../libs/protocol/core" }
+lib_runner_protocol = { path = "../../libs/protocol/runner" }
+log = "0.4"
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.8"
+snafu = "0.6"
+uuid = { version = "0.8", features = ["v4"] }

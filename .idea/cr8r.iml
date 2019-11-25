@@ -6,15 +6,15 @@
       <sourceFolder url="file://$MODULE_DIR$/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/benches" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/app_controller/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/controller/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/controller/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/controller/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/controller/benches" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/app_client/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/client/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/client/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/client/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/client/benches" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/app_runner/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/runner/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/runner/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/runner/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/runner/benches" isTestSource="true" />
@@ -26,7 +26,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/runner_protocol/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/runner_protocol/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/runner_protocol/benches" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/lib_protocol/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/protocol/core/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/protocol/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/protocol/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/protocol/benches" isTestSource="true" />
@@ -42,13 +42,81 @@
       <sourceFolder url="file://$MODULE_DIR$/src/app_client/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/app_client/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/app_client/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/lxd/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/lib_lxd/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/lib_lxd/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/lib_lxd/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/libs/lxd/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/libs/lxd/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/libs/lxd/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/logger/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/libs/logger/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/libs/logger/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/libs/logger/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/libs/protocol/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/libs/protocol/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/libs/protocol/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/apps/controller/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/apps/controller/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/apps/controller/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/apps/client/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/apps/client/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/apps/client/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/apps/runner/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/apps/runner/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/apps/runner/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/runner/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/runner/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/runner/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/logger/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/logger/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/logger/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/protocol/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/protocol/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/protocol/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/client/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/client/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/client/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/controller/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/controller/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/controller/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/lxd/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/lxd/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/lxd/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/protocol/core/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/protocol/core/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/protocol/core/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/protocol/client/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/protocol/client/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/protocol/client/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/protocol/client/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/protocol/runner/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/protocol/runner/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/protocol/runner/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/protocol/runner/benches" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/client/target" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/controller/target" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/runner/target" />
+      <excludeFolder url="file://$MODULE_DIR$/libs/logger/target" />
+      <excludeFolder url="file://$MODULE_DIR$/libs/lxd/target" />
+      <excludeFolder url="file://$MODULE_DIR$/libs/protocol/client/target" />
+      <excludeFolder url="file://$MODULE_DIR$/libs/protocol/core/target" />
+      <excludeFolder url="file://$MODULE_DIR$/libs/protocol/runner/target" />
+      <excludeFolder url="file://$MODULE_DIR$/libs/protocol/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/app_client/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/app_controller/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/app_runner/target" />
+      <excludeFolder url="file://$MODULE_DIR$/src/apps/client/target" />
+      <excludeFolder url="file://$MODULE_DIR$/src/apps/controller/target" />
+      <excludeFolder url="file://$MODULE_DIR$/src/apps/runner/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/client/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/client_protocol/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/controller/target" />
+      <excludeFolder url="file://$MODULE_DIR$/src/lib_lxd/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/lib_protocol/target" />
+      <excludeFolder url="file://$MODULE_DIR$/src/libs/logger/target" />
+      <excludeFolder url="file://$MODULE_DIR$/src/libs/lxd/target" />
+      <excludeFolder url="file://$MODULE_DIR$/src/libs/protocol/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/protocol/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/runner/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/runner_protocol/target" />

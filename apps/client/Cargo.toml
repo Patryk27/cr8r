@@ -1,0 +1,19 @@
+[package]
+name = "client"
+version = "0.1.0"
+authors = ["Patryk Wychowaniec <wychowaniec.patryk@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+colored = "1.9"
+lib_client_protocol = { path = "../../libs/protocol/client" }
+lib_logger = { path = "../../libs/logger" }
+lib_protocol_core = { path = "../../libs/protocol/core" }
+prettytable-rs = "0.8"
+reqwest = "0.9"
+semver = { version = "0.9", features = ["serde"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.8"
+snafu = "0.6"
+structopt = "0.3"
+uuid = { version = "0.8", features = ["v4"] }
