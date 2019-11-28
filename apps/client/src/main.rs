@@ -18,7 +18,8 @@ mod commands;
 mod error;
 mod system;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let cmd = Command::from_args();
 
     // Initialize the system
@@ -29,18 +30,18 @@ fn main() {
             println!("{}: Failed to initialize the application.", "Error".red());
             println!("Please make sure the `{}` file exists and has a correct structure.", "client.yaml".green());
             println!();
-            println!("Caused by: {:?}", err);
+            println!("{} {}", "Caused by:".red(), err);
 
             exit(1);
         }
     };
 
     // Takeoff!
-    match cmd.run(system) {
+    match cmd.run(system).await {
         Ok(_) => (),
 
         Err(err) => {
-            println!("{}: {:?}", "Error.".red(), err);
+            println!("{} {}", "Error:".red(), err);
 
             exit(2);
         }

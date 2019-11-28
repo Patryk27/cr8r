@@ -10,9 +10,9 @@ pub enum ControllerCommand {
 }
 
 impl ControllerCommand {
-    pub fn run(self, system: System) -> Result<()> {
+    pub async fn run(self, system: System) -> Result<()> {
         match self {
-            ControllerCommand::Status => status::run(system),
+            ControllerCommand::Status => status::run(system).await,
         }
     }
 }

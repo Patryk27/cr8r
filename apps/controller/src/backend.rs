@@ -1,19 +1,19 @@
-use crate::config;
+use bastion::Bastion;
 
-pub use self::{
-    compiler::*,
-    runner::*,
-    system::*,
-};
+pub use self::system::*;
 
-mod compiler;
-mod runner;
 mod system;
 
-pub fn start(ecosystem: config::Ecosystem, runner_secret: String) -> (actix::SystemRunner, System) {
-    let actix = actix::System::new("cr8r");
-    let compiler = Compiler::new(ecosystem);
-    let system = System::spawn(runner_secret, compiler);
+pub fn start() -> System {
+    Bastion::init();
 
-    (actix, system)
+    let children = Bastion::children(|children| {
+        children.with_exec(System::start)
+    }).unwrap();
+
+    Bastion::start();
+
+    System::new(
+        children.elems()[0].clone()
+    )
 }

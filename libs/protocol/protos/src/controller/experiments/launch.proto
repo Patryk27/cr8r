@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package cr8r.controller.experiments.launch;
+
+import "../../core.proto";
+
+message Request {
+    oneof experiment {
+        TryToolchainExperiment try_toolchain = 1;
+        TrySystemExperiment try_system = 2;
+    }
+}
+
+message TryToolchainExperiment {
+    string toolchain = 1;
+}
+
+message TrySystemExperiment {
+    string system = 1;
+}
+
+message Reply {
+    oneof reply {
+        SuccessReply success = 1;
+        core.Error failure = 2;
+    }
+}
+
+message SuccessReply {
+    string id = 1;
+    uint32 position_in_queue = 2;
+}

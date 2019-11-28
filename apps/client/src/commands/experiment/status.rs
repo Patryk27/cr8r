@@ -1,11 +1,11 @@
 use crate::{Result, System};
 
-pub fn run(system: System, id: String) -> Result<()> {
-    let experiment = system
-        .connector()
-        .experiment(id)?;
-
-    println!("{:#?}", experiment);
+pub async fn run(system: System, id: String) -> Result<()> {
+//    let experiment = system
+//        .client()
+//        .experiment(id)?;
+//
+//    println!("{:#?}", experiment);
 
     Ok(())
 }

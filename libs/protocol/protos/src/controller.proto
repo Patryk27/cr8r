@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package cr8r.controller;
+
+import "controller/hello.proto";
+import "controller/experiments/cancel.proto";
+import "controller/experiments/find.proto";
+import "controller/experiments/launch.proto";
+import "controller/runners/find.proto";
+import "controller/runners/register.proto";
+
+service Controller {
+    rpc Hello (HelloRequest) returns (HelloReply);
+
+    // Experiment-related actions
+    rpc CancelExperiment (experiments.cancel.Request) returns (experiments.cancel.Reply);
+    rpc FindExperiments (experiments.find.Request) returns (experiments.find.Reply);
+    rpc LaunchExperiment (experiments.launch.Request) returns (experiments.launch.Reply);
+
+    // Runner-related actions
+    rpc FindRunners (runners.find.Request) returns (runners.find.Reply);
+    rpc RegisterRunner (runners.register.Request) returns (runners.register.Reply);
+}

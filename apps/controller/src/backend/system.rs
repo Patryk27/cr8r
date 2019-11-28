@@ -1,55 +1,41 @@
-use std::collections::{HashMap, VecDeque};
+use bastion::prelude::*;
 
-use actix::{Actor, Addr};
-use actix::prelude::Request;
+#[derive(Debug)]
+enum Command {
+    Hello,
+}
 
-use lib_protocol_core::{ExperimentDefinition, RunnerId, RunnerName};
-
-use crate::backend::{Compiler, Runner};
-
-pub use self::actor::SystemActor;
-
-mod actor;
-mod messages;
-
-#[derive(Clone)]
 pub struct System {
-    addr: Addr<SystemActor>,
+    conn: ChildRef,
 }
 
 impl System {
-    pub fn spawn(runner_secret: String, compiler: Compiler) -> Self {
-        let addr = SystemActor {
-            runner_secret,
-            compiler,
-
-            runners: HashMap::new(),
-            idle_runners: VecDeque::new(),
-
-            experiments: HashMap::new(),
-            awaiting_experiments: VecDeque::new(),
-        }.start();
-
-        Self { addr }
+    pub fn new(conn: ChildRef) -> Self {
+        Self { conn }
     }
 
-    pub fn status(&self) -> Request<SystemActor, messages::GetControllerStatus> {
-        self.addr.send(messages::GetControllerStatus)
+    pub async fn start(ctx: BastionContext) -> Result<(), ()> {
+        loop {
+            let mut packet = ctx.recv().await?;
+
+            let tx = packet.take_sender().unwrap();
+            let cmd = packet.downcast().unwrap(): Command;
+
+            match cmd {
+                Command::Hello => {
+                    tx.send("Hi".to_string());
+                }
+            }
+        }
     }
 
-    pub fn launch_experiment(&self, definition: ExperimentDefinition) -> Request<SystemActor, messages::CreateExperiment> {
-        self.addr.send(messages::CreateExperiment { definition })
-    }
-
-    pub fn authenticate_runner(&self, runner: Runner, id: RunnerId, name: RunnerName, secret: String) -> Request<SystemActor, messages::AuthenticateRunner> {
-        self.addr.send(messages::AuthenticateRunner { runner, id, name, secret })
-    }
-
-    pub fn deauthenticate_runner(&self, id: RunnerId) -> Request<SystemActor, messages::DeauthenticateRunner> {
-        self.addr.send(messages::DeauthenticateRunner { id })
-    }
-
-    pub fn unpark_runner(&self, id: RunnerId) -> Request<SystemActor, messages::UnparkRunner> {
-        self.addr.send(messages::UnparkRunner { id })
+    pub async fn hello(&self) -> String {
+        self.conn
+            .ask(Command::Hello)
+            .unwrap()
+            .await
+            .unwrap()
+            .downcast()
+            .unwrap()
     }
 }

@@ -13,19 +13,25 @@ pub enum Error {
         source: Box<dyn std::error::Error>,
     },
 
-    #[snafu(display("Failed to perform request to the controller: {:?}", source))]
-    FailedToPerformRequest {
-        source: reqwest::Error,
+    #[snafu(display("Failed to connect to the controller: {}", source))]
+    FailedToConnectToController {
+        source: tonic::transport::Error,
     },
 
-    #[snafu(display("Failed to process response from the controller: {:?}", source))]
-    FailedToProcessResponse {
-        source: Box<dyn std::error::Error>,
+    #[snafu(display("Failed to call the controller: {}", source))]
+    FailedToCallController {
+        source: tonic::Status,
     },
 }
 
-impl From<reqwest::Error> for Error {
-    fn from(source: reqwest::Error) -> Self {
-        Error::FailedToPerformRequest { source }
+impl From<tonic::transport::Error> for Error {
+    fn from(source: tonic::transport::Error) -> Self {
+        Error::FailedToConnectToController { source }
+    }
+}
+
+impl From<tonic::Status> for Error {
+    fn from(source: tonic::Status) -> Self {
+        Error::FailedToCallController { source }
     }
 }

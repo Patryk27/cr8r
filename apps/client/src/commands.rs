@@ -17,10 +17,10 @@ pub enum Command {
 }
 
 impl Command {
-    pub fn run(self, system: System) -> Result<()> {
+    pub async fn run(self, system: System) -> Result<()> {
         match self {
-            Command::Controller(cmd) => cmd.run(system),
-            Command::Experiment(cmd) => cmd.run(system),
+            Command::Controller(cmd) => cmd.run(system).await,
+            Command::Experiment(cmd) => cmd.run(system).await,
         }
     }
 }

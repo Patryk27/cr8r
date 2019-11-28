@@ -5,16 +5,14 @@ authors = ["Patryk Wychowaniec <wychowaniec.patryk@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-actix = "0.8"
-actix-web = "1.0"
-actix-web-actors = "1.0"
-futures = "0.1"
-lib_client_protocol = { path = "../../libs/protocol/client" }
-lib_logger = { path = "../../libs/logger" }
-lib_protocol_core = { path = "../../libs/protocol/core" }
-lib_runner_protocol = { path = "../../libs/protocol/runner" }
-log = "0.4"
+bastion = "0.3"
+bytes = "0.4"
+lib_log = { path = "../../libs/log" }
+lib_protocol = { path = "../../libs/protocol" }
+prost = "0.5"
+prost-derive = "0.5"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.8"
 snafu = "0.6"
-uuid = { version = "0.8", features = ["v4"] }
+tokio = "=0.2.0-alpha.6"
+tonic = "0.1.0-alpha.6"

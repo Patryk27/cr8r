@@ -32,13 +32,13 @@ pub enum ExperimentCommand {
 }
 
 impl ExperimentCommand {
-    pub fn run(self, system: System) -> Result<()> {
+    pub async fn run(self, system: System) -> Result<()> {
         match self {
-            ExperimentCommand::Abort { id: experiment_id } => abort::run(system, experiment_id),
-            ExperimentCommand::Report { id: experiment_id } => report::run(system, experiment_id),
-            ExperimentCommand::Launch(cmd) => cmd.run(system),
-            ExperimentCommand::Status { id: experiment_id } => status::run(system, experiment_id),
-            ExperimentCommand::Watch { id: experiment_id } => watch::run(system, experiment_id),
+            ExperimentCommand::Abort { id: experiment_id } => abort::run(system, experiment_id).await,
+            ExperimentCommand::Report { id: experiment_id } => report::run(system, experiment_id).await,
+            ExperimentCommand::Launch(cmd) => cmd.run(system).await,
+            ExperimentCommand::Status { id: experiment_id } => status::run(system, experiment_id).await,
+            ExperimentCommand::Watch { id: experiment_id } => watch::run(system, experiment_id).await,
         }
     }
 }

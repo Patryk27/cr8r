@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package cr8r.controller.runners.register;
+
+import "../../core.proto";
+
+message Request {
+    string name = 1;
+    string secret = 2;
+}
+
+message Reply {
+    oneof reply {
+        SuccessReply success = 1;
+        core.Error failure = 2;
+    }
+}
+
+message SuccessReply {
+    string token = 1;
+}

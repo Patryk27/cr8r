@@ -1,15 +1,17 @@
 use colored::Colorize;
 use structopt::StructOpt;
 
-use lib_protocol_core::ExperimentDefinition;
+use lib_protocol::controller::{LaunchExperimentRequest, LaunchTrySystemExperiment, LaunchTryToolchainExperiment};
+use lib_protocol::controller::launch_experiment_reply::Status;
+use lib_protocol::controller::launch_experiment_request::Experiment;
 
 use crate::{Result, System};
 
 #[derive(Debug, StructOpt)]
 pub enum LaunchExperimentCommand {
-    #[structopt(name = "try-os")]
-    TryOs {
-        os: String,
+    #[structopt(name = "try-system")]
+    TrySystem {
+        system: String,
     },
 
     #[structopt(name = "try-toolchain")]
@@ -19,31 +21,40 @@ pub enum LaunchExperimentCommand {
 }
 
 impl LaunchExperimentCommand {
-    pub fn run(self, system: System) -> Result<()> {
+    pub async fn run(self, system: System) -> Result<()> {
         run(system, match self {
-            LaunchExperimentCommand::TryOs { os } => {
-                ExperimentDefinition::TryOs { os }
+            LaunchExperimentCommand::TrySystem { system } => {
+                Experiment::TrySystem(LaunchTrySystemExperiment { system })
             }
 
             LaunchExperimentCommand::TryToolchain { toolchain } => {
-                ExperimentDefinition::TryToolchain { toolchain }
+                Experiment::TryToolchain(LaunchTryToolchainExperiment { toolchain })
             }
-        })
+        }).await
     }
 }
 
-fn run(system: System, experiment: ExperimentDefinition) -> Result<()> {
-    let id = system
-        .connector()
-        .launch_experiment(experiment)?;
+async fn run(mut system: System, experiment: Experiment) -> Result<()> {
+    let request = LaunchExperimentRequest { experiment: Some(experiment) };
 
-    println!("{}", "Success!".green());
-    println!();
-    println!("Experiment `{}` has been created.", id.to_string().blue());
-    println!("It\'s now waiting for a runner to pick it up.");
-    println!();
-    println!("You can see status of your experiment using:");
-    println!("$ {}", format!("cr8r experiment status {}", id).green());
+    let reply = system
+        .client().await?
+        .launch_experiment(request).await?
+        .into_inner();
+
+    match reply.status.unwrap() {
+        Status::Success(reply) => {
+            println!("{}", "Success!".green());
+            println!();
+            println!("Experiment `{}` has been created.", reply.experiment_id.blue());
+            println!("It\'s now waiting for a runner to pick it up.");
+            println!();
+            println!("You can see status of your experiment using:");
+            println!("$ {}", format!("cr8r experiment status {}", reply.experiment_id).green());
+        }
+
+        _ => unimplemented!(),
+    }
 
     Ok(())
 }
