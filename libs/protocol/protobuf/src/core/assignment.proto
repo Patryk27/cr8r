@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package cr8r.core;
+
+import "core/experiment.proto";
+import "core/scenario.proto";
+
+message Assignment {
+    string experiment_id = 1;
+    repeated Scenario scenarios = 2;
+}

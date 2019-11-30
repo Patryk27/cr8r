@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package cr8r.client;
+
+import "core/experiment.proto";
+
+message LaunchExperimentRequest {
+    core.ExperimentDefinition experiment = 1;
+}
+
+message LaunchExperimentReply {
+    string id = 1;
+    uint32 position_in_queue = 2;
+}

@@ -1,11 +1,11 @@
 controller:
-  bind: '127.0.0.1:1234'
+  listen: '127.0.0.1:1234'
   client-secret: 'top-secret'
   runner-secret: 'top-secret'
 
 ecosystem:
   environment:
-    default-os: 'ubuntu:18.04'
+    default-system: 'ubuntu:18.04'
     default-toolchain: 'stable'
 
   flora:
@@ -17,10 +17,11 @@ ecosystem:
 
   fauna:
     aclr8:
-      requires: ['ubuntu']
+      requirements: ['ubuntu']
       repository: 'git@git.anixe.pl:aclr8/aclr8.git'
 
     mercures_snapshots:
-      requires: ['ubuntu', 'cm_db']
+      requirements: ['ubuntu', 'cm_db']
       repository: 'git@git.anixe.pl:aclr8/mercures_snapshots.git'
       # test-command: './test'
+      # build-command: './test'

@@ -8,6 +8,6 @@ pub type ProjectName = String;
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Project {
-    pub requires: Vec<String>,
+    pub requirements: Vec<String>,
     pub repository: String,
 }

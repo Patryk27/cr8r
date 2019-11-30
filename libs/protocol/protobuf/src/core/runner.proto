@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package cr8r.core;
+
+message Runner {
+    string name = 1;
+    RunnerStatus status = 2;
+}
+
+enum RunnerStatus {
+    IDLE = 0;
+    WORKING = 1;
+}

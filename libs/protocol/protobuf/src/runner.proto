@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package cr8r.runner;
+
+import "runner/hello.proto";
+import "runner/register.proto";
+import "runner/experiments/report.proto";
+import "runner/experiments/request.proto";
+
+service Runner {
+    rpc Hello (HelloRequest) returns (HelloReply);
+    rpc Register (RegisterRequest) returns (RegisterReply);
+
+    rpc ReportExperiment (ReportExperimentRequest) returns (ReportExperimentReply);
+    rpc RequestExperiment (RequestExperimentRequest) returns (RequestExperimentReply);
+}

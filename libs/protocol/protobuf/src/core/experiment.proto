@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package cr8r.core;
+
+message Experiment {
+    string id = 1;
+    ExperimentStatus status = 2;
+}
+
+enum ExperimentStatus {
+    AWAITING_RUNNER = 0;
+    RUNNING = 1;
+    FINISHED = 2;
+}
+
+// ----- //
+
+message ExperimentDefinition {
+    message TryToolchain {
+        string toolchain = 1;
+    }
+
+    message TrySystem {
+        string system = 1;
+    }
+
+    oneof experiment_definition_inner {
+        TryToolchain try_toolchain = 1;
+        TrySystem try_system = 2;
+    }
+}

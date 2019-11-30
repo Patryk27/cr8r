@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package cr8r.runner;
+
+import "core/report.proto";
+
+message ReportExperimentRequest {
+    string runner_id = 1;
+    string experiment_id = 2;
+    core.Report report = 3;
+}
+
+message ReportExperimentReply {
+    //
+}
+

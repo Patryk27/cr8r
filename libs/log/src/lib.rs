@@ -26,6 +26,7 @@ pub fn init() -> Result<(), Box<dyn Error>> {
         .level(LevelFilter::Debug)
         .level_for("bastion", LevelFilter::Error)
         .level_for("h2", LevelFilter::Error)
+        .level_for("hyper", LevelFilter::Error)
         .level_for("tokio_reactor", LevelFilter::Error)
         .chain(io::stdout())
         .apply()?;

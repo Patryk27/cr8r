@@ -1,26 +1,33 @@
+#![feature(box_syntax)]
 #![feature(try_blocks)]
 #![feature(type_ascription)]
+
+use std::path::PathBuf;
 
 use snafu::ResultExt;
 
 pub use self::core::*;
 
-mod backend;
+mod system;
 mod core;
-mod frontend;
+mod interface;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     lib_log::init()
         .context(error::FailedToConfigure)?;
 
-    let config = config::load()?;
+    let config = config::load(
+        &PathBuf::from("controller.yaml")
+    )?;
 
-    // Prepare the backend side (actors and stuff)
-    let system = backend::start();
+    let system = system::start(
+        config.controller.runner_secret, config.ecosystem,
+    );
 
-    // Prepare the frontend side (RPC server and stuff) - and takeoff!
-    frontend::start(config.controller.bind, system).await?;
+    interface::start(
+        config.controller.listen, system,
+    ).await?;
 
     Ok(())
 }

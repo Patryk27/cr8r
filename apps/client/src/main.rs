@@ -3,6 +3,7 @@
 #![feature(try_blocks)]
 #![feature(type_ascription)]
 
+use std::path::PathBuf;
 use std::process::exit;
 
 use colored::Colorize;
@@ -10,33 +11,24 @@ use structopt::StructOpt;
 
 pub use self::{
     commands::*,
-    error::{Result, StdResult},
+    core::*,
     system::*,
 };
 
 mod commands;
-mod error;
+mod core;
 mod system;
 
 #[tokio::main]
 async fn main() {
     let cmd = Command::from_args();
 
-    // Initialize the system
-    let system = match System::new() {
-        Ok(system) => system,
+    let config = config::load(
+        &PathBuf::from("client.yaml")
+    ).unwrap(); // @todo error handling
 
-        Err(err) => {
-            println!("{}: Failed to initialize the application.", "Error".red());
-            println!("Please make sure the `{}` file exists and has a correct structure.", "client.yaml".green());
-            println!();
-            println!("{} {}", "Caused by:".red(), err);
+    let system = System::new(config);
 
-            exit(1);
-        }
-    };
-
-    // Takeoff!
     match cmd.run(system).await {
         Ok(_) => (),
 

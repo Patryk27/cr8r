@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package cr8r.core;
+
+import "core/assignment.proto";
+import "core/experiment.proto";
+import "core/report.proto";
+import "core/runner.proto";
+import "core/scenario.proto";

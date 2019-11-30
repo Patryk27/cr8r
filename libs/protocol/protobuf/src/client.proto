@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package cr8r.client;
+
+import "client/hello.proto";
+import "client/experiments/abort.proto";
+import "client/experiments/find.proto";
+import "client/experiments/launch.proto";
+import "client/runners/find.proto";
+
+service Client {
+    rpc Hello (HelloRequest) returns (HelloReply);
+
+    rpc AbortExperiment (AbortExperimentRequest) returns (AbortExperimentReply);
+    rpc FindExperiments (FindExperimentsRequest) returns (FindExperimentsReply);
+    rpc LaunchExperiment (LaunchExperimentRequest) returns (LaunchExperimentReply);
+
+    rpc FindRunners (FindRunnersRequest) returns (FindRunnersReply);
+}

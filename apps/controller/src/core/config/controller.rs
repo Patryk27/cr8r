@@ -3,7 +3,7 @@ use serde::Deserialize;
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Controller {
-    pub bind: String,
+    pub listen: String,
 
     #[serde(rename = "client-secret")]
     pub client_secret: String,

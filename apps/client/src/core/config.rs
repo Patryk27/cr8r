@@ -6,19 +6,17 @@ use snafu::ResultExt;
 
 use crate::{error, Result, StdResult};
 
-pub use self::{
-    controller::*,
-    ecosystem::*,
-};
-
-mod controller;
-mod ecosystem;
-
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
     pub controller: Controller,
-    pub ecosystem: Ecosystem,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Controller {
+    pub secret: String,
+    pub address: String,
 }
 
 pub fn load(file: &Path) -> Result<Config> {

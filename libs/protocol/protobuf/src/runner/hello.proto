@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package cr8r.runner;
+
+message HelloRequest {
+    //
+}
+
+message HelloReply {
+    string version = 1;
+}

@@ -1,9 +1,9 @@
 use colored::Colorize;
 use structopt::StructOpt;
 
-use lib_protocol::controller::{LaunchExperimentRequest, LaunchTrySystemExperiment, LaunchTryToolchainExperiment};
-use lib_protocol::controller::launch_experiment_reply::Status;
-use lib_protocol::controller::launch_experiment_request::Experiment;
+use lib_protocol::client::*;
+use lib_protocol::core::{experiment_definition, ExperimentDefinition};
+use lib_protocol::core::experiment_definition::ExperimentDefinitionInner;
 
 use crate::{Result, System};
 
@@ -24,37 +24,39 @@ impl LaunchExperimentCommand {
     pub async fn run(self, system: System) -> Result<()> {
         run(system, match self {
             LaunchExperimentCommand::TrySystem { system } => {
-                Experiment::TrySystem(LaunchTrySystemExperiment { system })
+                ExperimentDefinitionInner::TrySystem(experiment_definition::TrySystem {
+                    system,
+                })
             }
 
             LaunchExperimentCommand::TryToolchain { toolchain } => {
-                Experiment::TryToolchain(LaunchTryToolchainExperiment { toolchain })
+                ExperimentDefinitionInner::TryToolchain(experiment_definition::TryToolchain {
+                    toolchain,
+                })
             }
         }).await
     }
 }
 
-async fn run(mut system: System, experiment: Experiment) -> Result<()> {
-    let request = LaunchExperimentRequest { experiment: Some(experiment) };
+async fn run(mut system: System, experiment: ExperimentDefinitionInner) -> Result<()> {
+    let request = LaunchExperimentRequest {
+        experiment: Some(ExperimentDefinition {
+            experiment_definition_inner: Some(experiment),
+        }),
+    };
 
     let reply = system
         .client().await?
         .launch_experiment(request).await?
         .into_inner();
 
-    match reply.status.unwrap() {
-        Status::Success(reply) => {
-            println!("{}", "Success!".green());
-            println!();
-            println!("Experiment `{}` has been created.", reply.experiment_id.blue());
-            println!("It\'s now waiting for a runner to pick it up.");
-            println!();
-            println!("You can see status of your experiment using:");
-            println!("$ {}", format!("cr8r experiment status {}", reply.experiment_id).green());
-        }
-
-        _ => unimplemented!(),
-    }
+    println!("{}", "Success!".green());
+    println!();
+    println!("Experiment `{}` has been created.", reply.id.blue());
+    println!("It\'s now waiting for a runner to pick it up.");
+    println!();
+    println!("You can see status of your experiment using:");
+    println!("$ {}", format!("cr8r experiment status {}", reply.id).green());
 
     Ok(())
 }

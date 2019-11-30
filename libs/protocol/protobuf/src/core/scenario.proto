@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package cr8r.core;
+
+message Scenario {
+    string project = 1;
+    string system = 2;
+    string toolchain = 3;
+    repeated ScenarioStep steps = 4;
+}
+
+message ScenarioStep {
+    oneof op {
+        string exec = 1;
+    }
+}
