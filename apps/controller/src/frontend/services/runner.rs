@@ -1,4 +1,4 @@
-use tonic::{Request, Response, Status};
+use tonic::{Code, Request, Response, Status};
 
 use lib_protocol::runner::*;
 use lib_protocol::runner::server::Runner;
@@ -52,6 +52,16 @@ impl Runner for RunnerService {
     ) -> Result<Response<ReportExperimentReply>, Status> {
         let request = request.into_inner();
 
-        unimplemented!()
+        if let Some(report) = request.report {
+            self.system
+                .find_experiment(request.experiment_id).await?
+                .report(request.runner_id, report).await?;
+
+            Ok(Response::new(ReportExperimentReply {
+                //
+            }))
+        } else {
+            Err(Status::new(Code::Internal, "No report has been provided"))
+        }
     }
 }

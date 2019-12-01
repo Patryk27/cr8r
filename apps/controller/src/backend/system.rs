@@ -33,16 +33,14 @@ impl System {
     }
 }
 
-/// ------------------------ ///
-/// Assignment-related impls ///
+/// Assignment-oriented impls
 impl System {
     pub async fn request_assignment(&self, runner: RunnerId) -> Result<Option<Assignment>> {
         msg!(self.tx, tx, SystemCommand::RequestAssignment { runner, tx })
     }
 }
 
-/// ------------------------ ///
-/// Experiment-related impls ///
+/// Experiment-oriented impls
 impl System {
     pub async fn find_experiment(&self, experiment: ExperimentId) -> Result<Experiment> {
         msg!(self.tx, tx, SystemCommand::FindExperiment { experiment, tx })
@@ -53,8 +51,7 @@ impl System {
     }
 }
 
-/// -------------------- ///
-/// Runner-related impls ///
+/// Runner-oriented impls
 impl System {
     pub async fn register_runner(&self, name: RunnerName, secret: RunnerSecret) -> Result<RunnerId> {
         msg!(self.tx, tx, SystemCommand::RegisterRunner { name, secret, tx })

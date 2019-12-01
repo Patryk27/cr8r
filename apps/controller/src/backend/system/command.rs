@@ -10,16 +10,16 @@ pub type SystemCommandRx = mpsc::UnboundedReceiver<SystemCommand>;
 
 #[derive(Debug)]
 pub enum SystemCommand {
-    // --------------------------- //
-    // Assignment-related commands //
+    // ---------------------------- //
+    // Assignment-oriented commands //
 
     RequestAssignment {
         runner: RunnerId,
         tx: oneshot::Sender<Result<Option<Assignment>>>,
     },
 
-    // --------------------------- //
-    // Experiment-related commands //
+    // ---------------------------- //
+    // Experiment-oriented commands //
 
     FindExperiment {
         experiment: ExperimentId,
@@ -31,8 +31,8 @@ pub enum SystemCommand {
         tx: oneshot::Sender<Result<ExperimentId>>,
     },
 
-    // ----------------------- //
-    // Runner-related commands //
+    // ------------------------ //
+    // Runner-oriented commands //
 
     RegisterRunner {
         name: RunnerName,

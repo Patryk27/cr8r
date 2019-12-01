@@ -25,21 +25,6 @@ impl Client for ClientService {
         }))
     }
 
-    async fn abort_experiment(
-        &self,
-        request: Request<AbortExperimentRequest>,
-    ) -> Result<Response<AbortExperimentReply>, Status> {
-        let request = request.into_inner();
-
-        unimplemented!()
-
-//        self.system
-//            .find_experiment(request.id).await?
-//            .abort();
-//
-//        Ok(Response::new(AbortExperimentReply {}))
-    }
-
     async fn launch_experiment(
         &self,
         request: Request<LaunchExperimentRequest>,
@@ -54,7 +39,7 @@ impl Client for ClientService {
                 position_in_queue: 1, // @todo
             }))
         } else {
-            Err(Status::new(Code::Internal, "No experiment to launch has been provided"))
+            Err(Status::new(Code::Internal, "No experiment has been provided"))
         }
     }
 }

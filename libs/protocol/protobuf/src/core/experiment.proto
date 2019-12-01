@@ -3,15 +3,23 @@ syntax = "proto3";
 package cr8r.core;
 
 message Experiment {
+    enum Status {
+        AWAITING_RUNNER = 0;
+        RUNNING = 1;
+        FINISHED = 2;
+    }
+
+    message Progress {
+        uint32 total_scenarios = 1;
+        uint32 completed_scenarios = 2;
+    }
+
     string id = 1;
-    ExperimentStatus status = 2;
+    Status status = 2;
+    Progress progress = 3;
 }
 
-enum ExperimentStatus {
-    AWAITING_RUNNER = 0;
-    RUNNING = 1;
-    FINISHED = 2;
-}
+// ----- //
 
 // ----- //
 

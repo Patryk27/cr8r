@@ -1,6 +1,6 @@
 use futures_channel::mpsc;
 
-use lib_protocol::core::{Assignment, ExperimentId, RunnerId, Scenario};
+use lib_protocol::core::{Assignment, ExperimentId, Report, RunnerId, Scenario};
 
 use crate::backend::{msg, Result, System};
 
@@ -28,6 +28,10 @@ impl Experiment {
         ).start(rx));
 
         Self { tx }
+    }
+
+    pub async fn report(&self, runner: RunnerId, report: Report) -> Result<()> {
+        msg!(self.tx, tx, ExperimentCommand::Report { runner, report, tx })
     }
 
     pub async fn start(&self, runner: RunnerId) -> Result<Assignment> {

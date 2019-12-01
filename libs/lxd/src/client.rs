@@ -14,29 +14,29 @@ impl Client {
         }
     }
 
-    pub fn launch(&mut self, container: &str, image: &str) -> Result<()> {
+    pub async fn launch(&mut self, container: &str, image: &str) -> Result<()> {
         self.run(&[
             "launch",
             image,
             container,
             "-c",
             "security.nesting=true",
-        ])
+        ]).await
     }
 
-    pub fn delete(&mut self, _name: &str) -> Result<()> {
+    pub async fn delete(&mut self, _name: &str) -> Result<()> {
         unimplemented!()
     }
 
-    pub fn list(&mut self, _name: &str) -> Result<()> {
+    pub async fn list(&mut self, _name: &str) -> Result<()> {
         unimplemented!()
     }
 
-    pub fn exec(&mut self, _container: &str, _command: &str) -> Result<()> {
+    pub async fn exec(&mut self, _container: &str, _command: &str) -> Result<()> {
         unimplemented!()
     }
 
-    fn run(&mut self, _args: &[&str]) -> Result<()> {
+    async fn run(&mut self, _args: &[&str]) -> Result<()> {
         unimplemented!()
     }
 }

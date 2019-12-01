@@ -3,14 +3,15 @@ use log::*;
 use lib_protocol::core::{Assignment, RunnerId, RunnerName};
 
 use crate::{Client, Result};
+use crate::core::ExperimentClient;
 
 #[derive(Clone)]
-pub struct Session {
+pub struct SessionClient {
     client: Client,
     runner: RunnerId,
 }
 
-impl Session {
+impl SessionClient {
     pub async fn start(runner_name: RunnerName, controller_secret: String, mut client: Client) -> Result<Self> {
         info!("Opening session");
 
@@ -45,11 +46,21 @@ impl Session {
         Ok(())
     }
 
-    pub async fn request_assignment(&mut self) -> Result<Option<Assignment>> {
+    pub async fn request_assignment(&mut self) -> Result<Option<(Assignment, ExperimentClient)>> {
         let reply = self.client
             .request_assignment(self.runner.clone())
             .await?;
 
-        Ok(reply.assignment)
+        if let Some(assignment) = reply.assignment {
+            let client = ExperimentClient::new(
+                self.client.clone(),
+                self.runner.clone(),
+                assignment.experiment_id.clone(),
+            );
+
+            Ok(Some((assignment, client)))
+        } else {
+            Ok(None)
+        }
     }
 }

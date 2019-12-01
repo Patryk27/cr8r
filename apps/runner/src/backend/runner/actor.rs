@@ -1,32 +1,45 @@
 use std::time::Duration;
 
+use colored::Colorize;
 use log::*;
 use tokio::timer;
 
-use crate::core::{Result, Session};
+use crate::core::{Result, SessionClient};
 
 pub struct RunnerActor {
-    session: Session,
+    session_client: SessionClient,
 }
 
 impl RunnerActor {
-    pub fn new(session: Session) -> Self {
-        Self { session }
+    pub fn new(session_client: SessionClient) -> Self {
+        Self { session_client }
     }
 
     pub async fn start(mut self) -> Result<()> {
-        let assignment = loop {
+        let (assignment, mut experiment_client) = loop {
             debug!("Polling controller for an assignment");
 
-            if let Some(assignment) = self.session.request_assignment().await? {
-                info!("We've been assigned an experiment!");
-                info!("-> experiment id: {:?}", assignment.experiment_id);
+            if let Some((assignment, experiment_client)) = self.session_client.request_assignment().await? {
+                info!(
+                    "We've been assigned experiment `{}`",
+                    assignment.experiment_id.to_string().green(),
+                );
 
-                break assignment;
+                break (assignment, experiment_client);
             }
 
             timer::delay_for(Duration::from_secs(1)).await;
         };
+
+        experiment_client.report_experiment_started().await?;
+
+        for scenario in assignment.experiment_scenarios {
+            experiment_client.report_scenario_started().await?;
+            timer::delay_for(Duration::from_secs(2)).await;
+            experiment_client.report_scenario_completed(true).await?;
+        }
+
+        experiment_client.report_experiment_completed().await?;
 
         Ok(())
     }

@@ -23,7 +23,7 @@ impl RunnerActor {
         }
     }
 
-    pub async fn start(mut self, mut rx: RunnerCommandRx) {
+    pub async fn start(self, mut rx: RunnerCommandRx) {
         debug!("Runner actor started, entering the event loop");
         debug!("-> id: {}", self.id);
         debug!("-> name: {}", self.name);

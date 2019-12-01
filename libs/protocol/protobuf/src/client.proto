@@ -14,6 +14,7 @@ service Client {
     rpc AbortExperiment (AbortExperimentRequest) returns (AbortExperimentReply);
     rpc FindExperiments (FindExperimentsRequest) returns (FindExperimentsReply);
     rpc LaunchExperiment (LaunchExperimentRequest) returns (LaunchExperimentReply);
+    rpc MonitorExperiment (MonitorExperimentRequest) returns (stream MonitorExperimentReply);
 
     rpc FindRunners (FindRunnersRequest) returns (FindRunnersReply);
 }

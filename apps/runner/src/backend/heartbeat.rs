@@ -1,4 +1,4 @@
-use crate::core::Session;
+use crate::core::SessionClient;
 
 pub use self::actor::*;
 
@@ -7,9 +7,9 @@ mod actor;
 pub struct Heartbeat;
 
 impl Heartbeat {
-    pub fn spawn(mut session: Session) {
+    pub fn spawn(session_client: SessionClient) {
         tokio::spawn(HeartbeatActor::new(
-            session,
+            session_client,
         ).start());
     }
 }
