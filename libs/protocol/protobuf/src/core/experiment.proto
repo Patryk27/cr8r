@@ -16,16 +16,16 @@ enum ExperimentStatus {
 // ----- //
 
 message ExperimentDefinition {
-    message TryToolchain {
-        string toolchain = 1;
-    }
-
     message TrySystem {
         string system = 1;
     }
 
+    message TryToolchain {
+        string toolchain = 1;
+    }
+
     oneof experiment_definition_inner {
-        TryToolchain try_toolchain = 1;
-        TrySystem try_system = 2;
+        TrySystem try_system = 1;
+        TryToolchain try_toolchain = 2;
     }
 }

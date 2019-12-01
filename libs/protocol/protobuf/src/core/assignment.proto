@@ -7,5 +7,5 @@ import "core/scenario.proto";
 
 message Assignment {
     string experiment_id = 1;
-    repeated Scenario scenarios = 2;
+    repeated Scenario experiment_scenarios = 2;
 }

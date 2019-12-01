@@ -102,9 +102,14 @@
       <sourceFolder url="file://$MODULE_DIR$/libs/log/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libs/log/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/libs/log/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/actor/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/actor/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/actor/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/actor/benches" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/apps/client/target" />
       <excludeFolder url="file://$MODULE_DIR$/apps/controller/target" />
       <excludeFolder url="file://$MODULE_DIR$/apps/runner/target" />
+      <excludeFolder url="file://$MODULE_DIR$/libs/actor/target" />
       <excludeFolder url="file://$MODULE_DIR$/libs/log/target" />
       <excludeFolder url="file://$MODULE_DIR$/libs/logger/target" />
       <excludeFolder url="file://$MODULE_DIR$/libs/lxd/target" />

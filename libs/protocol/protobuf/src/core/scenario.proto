@@ -10,7 +10,16 @@ message Scenario {
 }
 
 message ScenarioStep {
+    message Exec {
+        string command = 1;
+    }
+
+    message Print {
+        string message = 2;
+    }
+
     oneof op {
-        string exec = 1;
+        Exec exec = 1;
+        Print print = 2;
     }
 }

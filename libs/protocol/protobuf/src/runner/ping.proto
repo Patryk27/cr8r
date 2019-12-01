@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package cr8r.runner;
+
+message PingRequest {
+    string runner_id = 1;
+}
+
+message PingReply {
+    //
+}

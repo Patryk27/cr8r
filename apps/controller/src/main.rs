@@ -1,4 +1,5 @@
 #![feature(box_syntax)]
+#![feature(decl_macro)]
 #![feature(try_blocks)]
 #![feature(type_ascription)]
 
@@ -6,26 +7,24 @@ use std::path::PathBuf;
 
 use snafu::ResultExt;
 
-pub use self::core::*;
-
-mod system;
+mod backend;
 mod core;
-mod interface;
+mod frontend;
 
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() -> core::Result<()> {
     lib_log::init()
-        .context(error::FailedToConfigure)?;
+        .context(core::error::FailedToConfigure)?;
 
-    let config = config::load(
+    let config = core::config::load(
         &PathBuf::from("controller.yaml")
     )?;
 
-    let system = system::start(
+    let system = backend::start(
         config.controller.runner_secret, config.ecosystem,
     );
 
-    interface::start(
+    frontend::start(
         config.controller.listen, system,
     ).await?;
 

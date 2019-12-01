@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package cr8r.runner;
+
+import "core/assignment.proto";
+
+message RequestAssignmentRequest {
+    string runner_id = 1;
+}
+
+message RequestAssignmentReply {
+    core.Assignment assignment = 1;
+}

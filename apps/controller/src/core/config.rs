@@ -4,7 +4,7 @@ use std::path::Path;
 use serde::Deserialize;
 use snafu::ResultExt;
 
-use crate::{error, Result, StdResult};
+use crate::core::{error, Result, StdResult};
 
 pub use self::{
     controller::*,

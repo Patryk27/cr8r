@@ -1,11 +1,23 @@
 ///
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct HelloRequest {}
+
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct HelloReply {
     #[prost(string, tag = "1")]
     pub version: std::string::String,
 }
+
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct PingRequest {
+    #[prost(string, tag = "1")]
+    pub runner_id: std::string::String,
+}
+
+///
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct PingReply {}
+
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RegisterRequest {
     #[prost(string, tag = "1")]
@@ -13,11 +25,37 @@ pub struct RegisterRequest {
     #[prost(string, tag = "2")]
     pub secret: std::string::String,
 }
+
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RegisterReply {
     #[prost(string, tag = "1")]
     pub id: std::string::String,
 }
+
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ConfirmAssignmentRequest {
+    #[prost(string, tag = "1")]
+    pub runner_id: std::string::String,
+    #[prost(string, tag = "2")]
+    pub experiment_id: std::string::String,
+}
+
+///
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct ConfirmAssignmentReply {}
+
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct RequestAssignmentRequest {
+    #[prost(string, tag = "1")]
+    pub runner_id: std::string::String,
+}
+
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct RequestAssignmentReply {
+    #[prost(message, optional, tag = "1")]
+    pub assignment: ::std::option::Option<super::core::Assignment>,
+}
+
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ReportExperimentRequest {
     #[prost(string, tag = "1")]
@@ -27,44 +65,40 @@ pub struct ReportExperimentRequest {
     #[prost(message, optional, tag = "3")]
     pub report: ::std::option::Option<super::core::Report>,
 }
+
 ///
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ReportExperimentReply {}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct RequestExperimentRequest {
-    #[prost(string, tag = "1")]
-    pub runner_id: std::string::String,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct RequestExperimentReply {
-    #[prost(message, optional, tag = "1")]
-    pub assignment: ::std::option::Option<super::core::Assignment>,
-}
+
 #[doc = r" Generated client implementations."]
 pub mod client {
     #![allow(unused_variables, dead_code, missing_docs)]
+
     use tonic::codegen::*;
+
     pub struct RunnerClient<T> {
         inner: tonic::client::Grpc<T>,
     }
+
     impl RunnerClient<tonic::transport::Channel> {
         #[doc = r" Attempt to create a new client by connecting to a given endpoint."]
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
-        where
-            D: std::convert::TryInto<tonic::transport::Endpoint>,
-            D::Error: Into<StdError>,
+            where
+                D: std::convert::TryInto<tonic::transport::Endpoint>,
+                D::Error: Into<StdError>,
         {
             let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
             Ok(Self::new(conn))
         }
     }
+
     impl<T> RunnerClient<T>
-    where
-        T: tonic::client::GrpcService<tonic::body::BoxBody>,
-        T::ResponseBody: Body + HttpBody + Send + 'static,
-        T::Error: Into<StdError>,
-        <T::ResponseBody as HttpBody>::Error: Into<StdError> + Send,
-        <T::ResponseBody as HttpBody>::Data: Into<bytes::Bytes> + Send,
+        where
+            T: tonic::client::GrpcService<tonic::body::BoxBody>,
+            T::ResponseBody: Body + HttpBody + Send + 'static,
+            T::Error: Into<StdError>,
+            <T::ResponseBody as HttpBody>::Error: Into<StdError> + Send,
+            <T::ResponseBody as HttpBody>::Data: Into<bytes::Bytes> + Send,
     {
         pub fn new(inner: T) -> Self {
             let inner = tonic::client::Grpc::new(inner);
@@ -88,6 +122,15 @@ pub mod client {
             let path = http::uri::PathAndQuery::from_static("/cr8r.runner.Runner/Hello");
             self.inner.unary(request.into_request(), path, codec).await
         }
+        pub async fn ping(
+            &mut self,
+            request: impl tonic::IntoRequest<super::PingRequest>,
+        ) -> Result<tonic::Response<super::PingReply>, tonic::Status> {
+            self.ready().await?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/cr8r.runner.Runner/Ping");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
         pub async fn register(
             &mut self,
             request: impl tonic::IntoRequest<super::RegisterRequest>,
@@ -95,6 +138,16 @@ pub mod client {
             self.ready().await?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static("/cr8r.runner.Runner/Register");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        pub async fn request_assignment(
+            &mut self,
+            request: impl tonic::IntoRequest<super::RequestAssignmentRequest>,
+        ) -> Result<tonic::Response<super::RequestAssignmentReply>, tonic::Status> {
+            self.ready().await?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path =
+                http::uri::PathAndQuery::from_static("/cr8r.runner.Runner/RequestAssignment");
             self.inner.unary(request.into_request(), path, codec).await
         }
         pub async fn report_experiment(
@@ -106,17 +159,8 @@ pub mod client {
             let path = http::uri::PathAndQuery::from_static("/cr8r.runner.Runner/ReportExperiment");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        pub async fn request_experiment(
-            &mut self,
-            request: impl tonic::IntoRequest<super::RequestExperimentRequest>,
-        ) -> Result<tonic::Response<super::RequestExperimentReply>, tonic::Status> {
-            self.ready().await?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/cr8r.runner.Runner/RequestExperiment");
-            self.inner.unary(request.into_request(), path, codec).await
-        }
     }
+
     impl<T: Clone> Clone for RunnerClient<T> {
         fn clone(&self) -> Self {
             Self {
@@ -125,10 +169,13 @@ pub mod client {
         }
     }
 }
+
 #[doc = r" Generated server implementations."]
 pub mod server {
     #![allow(unused_variables, dead_code, missing_docs)]
+
     use tonic::codegen::*;
+
     #[doc = "Generated trait containing gRPC methods that should be implemented for use with RunnerServer."]
     #[async_trait]
     pub trait Runner: Send + Sync + 'static {
@@ -138,10 +185,22 @@ pub mod server {
         ) -> Result<tonic::Response<super::HelloReply>, tonic::Status> {
             Err(tonic::Status::unimplemented("Not yet implemented"))
         }
+        async fn ping(
+            &self,
+            request: tonic::Request<super::PingRequest>,
+        ) -> Result<tonic::Response<super::PingReply>, tonic::Status> {
+            Err(tonic::Status::unimplemented("Not yet implemented"))
+        }
         async fn register(
             &self,
             request: tonic::Request<super::RegisterRequest>,
         ) -> Result<tonic::Response<super::RegisterReply>, tonic::Status> {
+            Err(tonic::Status::unimplemented("Not yet implemented"))
+        }
+        async fn request_assignment(
+            &self,
+            request: tonic::Request<super::RequestAssignmentRequest>,
+        ) -> Result<tonic::Response<super::RequestAssignmentReply>, tonic::Status> {
             Err(tonic::Status::unimplemented("Not yet implemented"))
         }
         async fn report_experiment(
@@ -150,24 +209,21 @@ pub mod server {
         ) -> Result<tonic::Response<super::ReportExperimentReply>, tonic::Status> {
             Err(tonic::Status::unimplemented("Not yet implemented"))
         }
-        async fn request_experiment(
-            &self,
-            request: tonic::Request<super::RequestExperimentRequest>,
-        ) -> Result<tonic::Response<super::RequestExperimentReply>, tonic::Status> {
-            Err(tonic::Status::unimplemented("Not yet implemented"))
-        }
     }
+
     #[derive(Debug)]
     #[doc(hidden)]
     pub struct RunnerServer<T: Runner> {
         inner: Arc<T>,
     }
+
     impl<T: Runner> RunnerServer<T> {
         pub fn new(inner: T) -> Self {
             let inner = Arc::new(inner);
             Self { inner }
         }
     }
+
     impl<T: Runner> Service<http::Request<HyperBody>> for RunnerServer<T> {
         type Response = http::Response<tonic::body::BoxBody>;
         type Error = Never;
@@ -202,6 +258,30 @@ pub mod server {
                     };
                     Box::pin(fut)
                 }
+                "/cr8r.runner.Runner/Ping" => {
+                    struct PingSvc<T: Runner>(pub Arc<T>);
+                    impl<T: Runner> tonic::server::UnaryService<super::PingRequest> for PingSvc<T> {
+                        type Response = super::PingReply;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::PingRequest>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut = async move { inner.ping(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = PingSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec);
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
                 "/cr8r.runner.Runner/Register" => {
                     struct RegisterSvc<T: Runner>(pub Arc<T>);
                     impl<T: Runner> tonic::server::UnaryService<super::RegisterRequest> for RegisterSvc<T> {
@@ -226,10 +306,36 @@ pub mod server {
                     };
                     Box::pin(fut)
                 }
+                "/cr8r.runner.Runner/RequestAssignment" => {
+                    struct RequestAssignmentSvc<T: Runner>(pub Arc<T>);
+                    impl<T: Runner> tonic::server::UnaryService<super::RequestAssignmentRequest>
+                    for RequestAssignmentSvc<T>
+                    {
+                        type Response = super::RequestAssignmentReply;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::RequestAssignmentRequest>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut = async move { inner.request_assignment(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = RequestAssignmentSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec);
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
                 "/cr8r.runner.Runner/ReportExperiment" => {
                     struct ReportExperimentSvc<T: Runner>(pub Arc<T>);
                     impl<T: Runner> tonic::server::UnaryService<super::ReportExperimentRequest>
-                        for ReportExperimentSvc<T>
+                    for ReportExperimentSvc<T>
                     {
                         type Response = super::ReportExperimentReply;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
@@ -252,32 +358,6 @@ pub mod server {
                     };
                     Box::pin(fut)
                 }
-                "/cr8r.runner.Runner/RequestExperiment" => {
-                    struct RequestExperimentSvc<T: Runner>(pub Arc<T>);
-                    impl<T: Runner> tonic::server::UnaryService<super::RequestExperimentRequest>
-                        for RequestExperimentSvc<T>
-                    {
-                        type Response = super::RequestExperimentReply;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::RequestExperimentRequest>,
-                        ) -> Self::Future {
-                            let inner = self.0.clone();
-                            let fut = async move { inner.request_experiment(request).await };
-                            Box::pin(fut)
-                        }
-                    }
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = RequestExperimentSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec);
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
                 _ => Box::pin(async move {
                     Ok(http::Response::builder()
                         .status(200)
@@ -288,12 +368,14 @@ pub mod server {
             }
         }
     }
+
     impl<T: Runner> Clone for RunnerServer<T> {
         fn clone(&self) -> Self {
             let inner = self.inner.clone();
             Self { inner }
         }
     }
+
     impl<T: Runner> tonic::transport::ServiceName for RunnerServer<T> {
         const NAME: &'static str = "cr8r.runner.Runner";
     }

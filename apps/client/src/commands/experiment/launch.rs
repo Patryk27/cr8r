@@ -53,7 +53,7 @@ async fn run(mut system: System, experiment: ExperimentDefinitionInner) -> Resul
     println!("{}", "Success!".green());
     println!();
     println!("Experiment `{}` has been created.", reply.id.blue());
-    println!("It\'s now waiting for a runner to pick it up.");
+    println!("It's now waiting for a runner to pick it up.");
     println!();
     println!("You can see status of your experiment using:");
     println!("$ {}", format!("cr8r experiment status {}", reply.id).green());

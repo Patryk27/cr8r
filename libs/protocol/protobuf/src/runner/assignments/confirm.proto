@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package cr8r.runner;
+
+import "core/assignment.proto";
+
+message ConfirmAssignmentRequest {
+    string runner_id = 1;
+    string experiment_id = 2;
+}
+
+message ConfirmAssignmentReply {
+    //
+}

@@ -5,8 +5,7 @@ package cr8r.core;
 message Report {
     oneof report_inner {
         ExperimentHeartbeatReport heartbeat = 1;
-        ExperimentStartedReport started = 2;
-        ExperimentFinishedReport finished = 3;
+        ExperimentCompletedReport completed = 2;
     }
 }
 
@@ -14,10 +13,6 @@ message ExperimentHeartbeatReport {
     //
 }
 
-message ExperimentStartedReport {
-    //
-}
-
-message ExperimentFinishedReport {
+message ExperimentCompletedReport {
     bool success = 1;
 }
