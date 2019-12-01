@@ -6,7 +6,7 @@ use bastion::prelude::{BastionContext, ChildRef};
 use lib_protocol::core::Assignment;
 use lib_protocol::core::experiment_definition::ExperimentDefinitionInner;
 
-use crate::system::{Compiler, ExperimentId, ExperimentSession, Result, RunnerName, RunnerSecret, RunnerSession};
+use crate::system::{Compiler, ExperimentId, ExperimentSession, Result, RunnerId, RunnerName, RunnerSecret, RunnerSession};
 
 pub use self::{
     actor::*,
@@ -23,6 +23,8 @@ pub struct System {
 
 macro_rules! ask {
     ($self:expr, $cmd:expr) => {
+        // @todo
+
         $self.conn
             .ask($cmd)
             .unwrap()
@@ -52,11 +54,11 @@ impl System {
         ask!(self, Command::LaunchExperiment { experiment })
     }
 
-    pub async fn report_experiment(&self, runner: RunnerToken, experiment: ExperimentId, report: ()) -> Result<()> {
+    pub async fn report_experiment(&self, runner: RunnerId, experiment: ExperimentId, report: ()) -> Result<()> {
         ask!(self, Command::ReportExperiment { runner, experiment, report })
     }
 
-    pub async fn request_experiment(&self, runner: RunnerToken) -> Result<Option<Assignment>> {
+    pub async fn request_experiment(&self, runner: RunnerId) -> Result<Option<Assignment>> {
         ask!(self, Command::RequestExperiment { runner })
     }
 

@@ -48,13 +48,15 @@ impl Client for ClientService {
         let request = request.into_inner();
 
         if let Some(ExperimentDefinition { experiment_definition_inner: Some(experiment) }) = request.experiment {
-            self.system.launch_experiment(experiment)
-                .await
-                .map(|(id, position_in_queue)| Response::new(LaunchExperimentReply {
-                    id: id.to_hyphenated().to_string(),
-                    position_in_queue,
-                }))
-                .map_err(|err| Status::new(Code::Internal, err))
+            unimplemented!()
+
+//            self.system.launch_experiment(experiment)
+//                .await
+//                .map(|(id, position_in_queue)| Response::new(LaunchExperimentReply {
+//                    id: id.to_hyphenated().to_string(),
+//                    position_in_queue,
+//                }))
+//                .map_err(|err| Status::new(Code::Internal, err))
         } else {
             Err(Status::new(Code::Internal, "No experiment has been provided"))
         }

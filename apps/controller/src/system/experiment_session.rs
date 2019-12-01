@@ -7,7 +7,7 @@ use crate::system::System;
 
 pub type ExperimentId = Uuid;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct ExperimentSession {
     conn: ChildRef,
 }

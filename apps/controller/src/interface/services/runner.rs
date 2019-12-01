@@ -26,12 +26,13 @@ impl Runner for RunnerService {
     async fn register(&self, request: Request<RegisterRequest>) -> Result<Response<RegisterReply>, Status> {
         let request = request.into_inner();
 
-        self.system.register_runner(request.name, request.secret)
-            .await
-            .map(|token| Response::new(RegisterReply {
-                token: token.to_hyphenated().to_string(),
-            }))
-            .map_err(|err| Status::new(Code::Internal, err))
+        unimplemented!()
+//        self.system.register_runner(request.name, request.secret)
+//            .await
+//            .map(|token| Response::new(RegisterReply {
+//                token: token.to_hyphenated().to_string(),
+//            }))
+//            .map_err(|err| Status::new(Code::Internal, err))
     }
 
     async fn request_experiment(
@@ -40,8 +41,8 @@ impl Runner for RunnerService {
     ) -> Result<Response<RequestExperimentReply>, Status> {
         let request = request.into_inner();
 
-        if let Ok(token) = request.token.parse() {
-            self.system.request_experiment(token)
+        if let Ok(runner_id) = request.runner_id.parse() {
+            self.system.request_experiment(runner_id)
                 .await
                 .map(|assignment| Response::new(RequestExperimentReply {
                     assignment,

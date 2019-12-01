@@ -1,6 +1,6 @@
 use lib_protocol::core::experiment_definition::ExperimentDefinitionInner;
 
-use crate::system::{ExperimentId, RunnerName, RunnerSecret, RunnerToken};
+use crate::system::{ExperimentId, RunnerId, RunnerName, RunnerSecret};
 
 #[derive(Debug)]
 pub enum Command {
@@ -13,13 +13,13 @@ pub enum Command {
     },
 
     ReportExperiment {
-        runner: RunnerToken,
+        runner: RunnerId,
         experiment: ExperimentId,
         report: (), // @todo
     },
 
     RequestExperiment {
-        runner: RunnerToken,
+        runner: RunnerId,
     },
 
     RegisterRunner {

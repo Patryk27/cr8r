@@ -17,20 +17,22 @@ impl Runners {
         }
     }
 
-    pub fn register(&mut self, name: RunnerName) -> Result<RunnerToken> {
-        if self.index.contains_right(name) {
+    pub fn register(&mut self, name: RunnerName) -> Result<RunnerId> {
+        if self.index.contains_right(&name) {
             return Err("Runner with such name has been already registered".to_string());
         }
 
-        let id = RunnerId::new_v4();
-        let session = RunnerSession::start();
-
-        Ok(token)
+        unimplemented!()
+//
+//        let id = RunnerId::new_v4();
+//        let session = RunnerSession::start();
+//
+//        Ok(token)
     }
 
-    pub fn unregister(&mut self, token: RunnerToken) -> bool {
+    pub fn unregister(&mut self, id: RunnerId) -> bool {
         self.index
-            .remove_by_right(&token)
+            .remove_by_left(&id)
             .is_some()
     }
 }

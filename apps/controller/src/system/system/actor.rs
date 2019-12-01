@@ -6,7 +6,7 @@ use log::*;
 
 use lib_protocol::core::experiment_definition::ExperimentDefinitionInner;
 
-use crate::system::{Command, Compiler, ExperimentId, Result, RunnerName, RunnerSecret};
+use crate::system::{Command, Compiler, ExperimentId, Result, RunnerId, RunnerName, RunnerSecret};
 
 use self::{
     experiments::*,
@@ -75,7 +75,7 @@ impl Actor {
         Ok((id, 1)) // @todo return proper position in queue
     }
 
-    async fn request_experiment(&mut self, runner: RunnerToken) -> Result<Option<ExperimentId>> {
+    async fn request_experiment(&mut self, runner: RunnerId) -> Result<Option<ExperimentId>> {
         if let Some(experiment) = self.experiments.take_pending() {
             self.experiments.claim(experiment, runner);
             Ok(Some(experiment))
@@ -84,7 +84,7 @@ impl Actor {
         }
     }
 
-    async fn register_runner(&mut self, name: RunnerName, secret: RunnerSecret) -> Result<RunnerToken> {
+    async fn register_runner(&mut self, name: RunnerName, secret: RunnerSecret) -> Result<RunnerId> {
         if secret != *self.runner_secret {
             return Err("Invalid secret token".to_string());
         }

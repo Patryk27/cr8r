@@ -3,9 +3,7 @@ use std::result;
 use bastion::prelude::ChildRef;
 use uuid::Uuid;
 
-use crate::system::{ExperimentId, System};
-
-use self::actor::*;
+use crate::system::System;
 
 pub type RunnerId = Uuid;
 pub type RunnerName = String;
@@ -13,7 +11,7 @@ pub type RunnerSecret = String;
 
 mod actor;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct RunnerSession {
     conn: ChildRef,
 }
