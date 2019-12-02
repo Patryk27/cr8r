@@ -3,7 +3,8 @@ use futures_channel::mpsc;
 use lib_protocol::core::{Assignment, ExperimentId, RunnerId, RunnerName, RunnerSecret};
 use lib_protocol::core::experiment_definition::ExperimentDefinitionInner;
 
-use crate::backend::{Compiler, Experiment, msg, Result};
+use crate::backend::{Compiler, Experiment, Result, Runner};
+use crate::msg;
 
 pub use self::{
     actor::*,
@@ -46,6 +47,10 @@ impl System {
         msg!(self.tx, tx, SystemCommand::FindExperiment { experiment, tx })
     }
 
+    pub async fn find_experiments(&self) -> Vec<Experiment> {
+        msg!(self.tx, tx, SystemCommand::FindExperiments { tx })
+    }
+
     pub async fn launch_experiment(&self, experiment: ExperimentDefinitionInner) -> Result<ExperimentId> {
         msg!(self.tx, tx, SystemCommand::LaunchExperiment { experiment, tx })
     }
@@ -53,6 +58,10 @@ impl System {
 
 /// Runner-oriented impls
 impl System {
+    pub async fn find_runners(&self) -> Vec<Runner> {
+        msg!(self.tx, tx, SystemCommand::FindRunners { tx })
+    }
+
     pub async fn register_runner(&self, name: RunnerName, secret: RunnerSecret) -> Result<RunnerId> {
         msg!(self.tx, tx, SystemCommand::RegisterRunner { name, secret, tx })
     }

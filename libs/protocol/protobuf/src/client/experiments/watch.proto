@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package cr8r.client;
+
+import "core/report.proto";
+
+message WatchExperimentRequest {
+    string experiment_id = 1;
+}
+
+message WatchExperimentReply {
+    core.Report report = 1;
+}

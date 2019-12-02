@@ -3,25 +3,39 @@ syntax = "proto3";
 package cr8r.core;
 
 message Experiment {
-    enum Status {
-        AWAITING_RUNNER = 0;
-        RUNNING = 1;
-        FINISHED = 2;
-    }
+    message Status {
+        message AwaitingRunner {
+            string since = 1;
+        }
 
-    message Progress {
-        uint32 total_scenarios = 1;
-        uint32 completed_scenarios = 2;
+        message Completed {
+            string since = 1;
+        }
+
+        message Running {
+            string since = 1;
+            string runner_id = 2;
+            uint32 completed_scenarios = 3;
+            uint32 total_scenarios = 4;
+        }
+
+        message Zombie {
+            string since = 1;
+        }
+
+        oneof op {
+            AwaitingRunner awaiting_runner = 1;
+            Completed completed = 2;
+            Running running = 3;
+            Zombie zombie = 4;
+        }
     }
 
     string id = 1;
-    Status status = 2;
-    Progress progress = 3;
+    string created_at = 2;
+    string heartbeaten_at = 3;
+    Status status = 4;
 }
-
-// ----- //
-
-// ----- //
 
 message ExperimentDefinition {
     message TrySystem {

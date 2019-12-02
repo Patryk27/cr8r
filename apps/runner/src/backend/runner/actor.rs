@@ -33,9 +33,14 @@ impl RunnerActor {
 
         experiment_client.report_experiment_started().await?;
 
-        for scenario in assignment.experiment_scenarios {
+        for _ in assignment.experiment_scenarios {
             experiment_client.report_scenario_started().await?;
-            timer::delay_for(Duration::from_secs(2)).await;
+
+            for i in 0.. {
+                experiment_client.report_output(format!("hello: {}", i)).await?;
+                timer::delay_for(Duration::from_secs(2)).await;
+            }
+
             experiment_client.report_scenario_completed(true).await?;
         }
 

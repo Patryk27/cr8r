@@ -2,27 +2,40 @@ use chrono::{DateTime, Utc};
 use futures_util::StreamExt;
 use log::*;
 
-use lib_protocol::core::{Assignment, ExperimentId, Report, RunnerId, Scenario};
+use lib_protocol::core::{self, Assignment, ExperimentId, Report, RunnerId, Scenario};
 
-use crate::backend::{ExperimentCommand, ExperimentCommandRx, Result, System};
+use crate::backend::{ExperimentCommand, ExperimentCommandRx, ExperimentWatcher, Result, System};
 
 pub struct ExperimentActor {
     system: System,
     id: ExperimentId,
     scenarios: Vec<Scenario>,
-    heartbeat: DateTime<Utc>,
-    state: ExperimentActorState,
+    created_at: DateTime<Utc>,
+    heartbeaten_at: DateTime<Utc>,
+    watcher: Option<ExperimentWatcher>,
+    status: ExperimentActorStatus,
 }
 
 #[derive(PartialEq)]
-enum ExperimentActorState {
-    AwaitingRunner,
+enum ExperimentActorStatus {
+    AwaitingRunner {
+        since: DateTime<Utc>,
+    },
 
-    Completed,
+    Completed {
+        since: DateTime<Utc>,
+    },
 
     Running {
+        since: DateTime<Utc>,
         runner: RunnerId,
         reports: Vec<Report>,
+        completed_scenarios: u32,
+        total_scenarios: u32,
+    },
+
+    Zombie {
+        since: DateTime<Utc>,
     },
 }
 
@@ -32,13 +45,18 @@ impl ExperimentActor {
             system,
             id,
             scenarios,
-            heartbeat: Utc::now(),
-            state: ExperimentActorState::AwaitingRunner,
+            created_at: Utc::now(),
+            heartbeaten_at: Utc::now(),
+            watcher: None,
+
+            status: ExperimentActorStatus::AwaitingRunner {
+                since: Utc::now(),
+            },
         }
     }
 
     pub async fn start(mut self, mut rx: ExperimentCommandRx) {
-        debug!("Experiment actor started, entering the event loop");
+        debug!("Actor started, entering event loop");
         debug!("-> id: {}", self.id);
         debug!("-> scenarios: {}", self.scenarios.len());
 
@@ -46,51 +64,125 @@ impl ExperimentActor {
             debug!("Processing command: {:?}", cmd);
 
             match cmd {
+                ExperimentCommand::AsModel { tx } => {
+                    let _ = tx.send(
+                        self.as_model(),
+                    );
+                }
+
                 ExperimentCommand::Report { runner, report, tx } => {
                     let _ = tx.send(
-                        self.do_report(runner, report).await,
+                        self.report(runner, report),
                     );
                 }
 
                 ExperimentCommand::Start { runner, tx } => {
                     let _ = tx.send(
-                        self.do_start(runner).await,
+                        self.start_(runner),
+                    );
+                }
+
+                ExperimentCommand::Watch { tx } => {
+                    let _ = tx.send(
+                        self.watch(),
                     );
                 }
             }
         }
 
-        debug!("Experiment actor has been orphaned, halting it");
+        debug!("Actor orphaned, halting it");
     }
 
-    async fn do_report(&mut self, runner: RunnerId, report: Report) -> Result<()> {
-        match &mut self.state {
-            ExperimentActorState::AwaitingRunner => {
-                Err("This experiment has not yet been started.".into())
+    fn as_model(&self) -> core::Experiment {
+        use self::core::experiment::status;
+
+        let status = match &self.status {
+            ExperimentActorStatus::AwaitingRunner { since } => {
+                status::Op::AwaitingRunner(status::AwaitingRunner {
+                    since: since.to_rfc3339(),
+                })
             }
 
-            ExperimentActorState::Completed => {
+            ExperimentActorStatus::Completed { since } => {
+                status::Op::Completed(status::Completed {
+                    since: since.to_rfc3339(),
+                })
+            }
+
+            ExperimentActorStatus::Running { since, runner, completed_scenarios, total_scenarios, .. } => {
+                status::Op::Running(status::Running {
+                    since: since.to_rfc3339(),
+                    runner_id: runner.to_owned(),
+                    completed_scenarios: *completed_scenarios,
+                    total_scenarios: *total_scenarios,
+                })
+            }
+
+            ExperimentActorStatus::Zombie { since } => {
+                status::Op::Zombie(status::Zombie {
+                    since: since.to_rfc3339(),
+                })
+            }
+        };
+
+        core::Experiment {
+            id: self.id.clone(),
+            created_at: self.created_at.to_rfc3339(),
+            heartbeaten_at: self.heartbeaten_at.to_rfc3339(),
+
+            status: Some(core::experiment::Status {
+                op: Some(status),
+            }),
+        }
+    }
+
+    fn report(&mut self, runner: RunnerId, report: Report) -> Result<()> {
+        match &mut self.status {
+            ExperimentActorStatus::AwaitingRunner { .. } => {
+                Err("This experiment has not yet been started".into())
+            }
+
+            ExperimentActorStatus::Completed { .. } => {
                 Err("This experiment has been already completed".into())
             }
 
-            ExperimentActorState::Running { runner: st_runner, reports: st_reports } => {
+            ExperimentActorStatus::Running {
+                runner: st_runner,
+                reports: st_reports,
+                total_scenarios: st_total_scenarios,
+                completed_scenarios: st_completed_scenarios,
+                ..
+            } => {
                 if &runner != st_runner {
-                    return Err("This runner is not allowed to report on this experiment.".into());
+                    return Err("Specified runner is not allowed to report on this experiment".into());
+                }
+
+                if let Some(watcher) = &mut self.watcher {
+                    watcher.add(report.clone());
                 }
 
                 st_reports.push(report);
 
+                // @todo increase total / completed
+
                 Ok(())
+            }
+
+            ExperimentActorStatus::Zombie { .. } => {
+                Err("This experiment has been abandoned by its runner and has become a zombie - it can be only aborted or restarted".into())
             }
         }
     }
 
-    async fn do_start(&mut self, runner: RunnerId) -> Result<Assignment> {
-        match &self.state {
-            ExperimentActorState::AwaitingRunner => {
-                self.state = ExperimentActorState::Running {
+    fn start_(&mut self, runner: RunnerId) -> Result<Assignment> {
+        match &self.status {
+            ExperimentActorStatus::AwaitingRunner { .. } => {
+                self.status = ExperimentActorStatus::Running {
+                    since: Utc::now(),
                     runner,
                     reports: Vec::new(),
+                    total_scenarios: 0,
+                    completed_scenarios: 0,
                 };
 
                 Ok(Assignment {
@@ -99,16 +191,33 @@ impl ExperimentActor {
                 })
             }
 
-            ExperimentActorState::Completed => {
+            ExperimentActorStatus::Completed { .. } => {
                 Err("This experiment has been already completed".into())
             }
 
-            ExperimentActorState::Running { runner, .. } => {
+            ExperimentActorStatus::Running { runner, .. } => {
                 Err(format!(
                     "This experiment is already running on runner `{}`; if the runner's crashed, please wait a few minutes before trying again",
                     runner,
                 ).into())
             }
+
+            ExperimentActorStatus::Zombie { .. } => {
+                unimplemented!()
+            }
         }
+    }
+
+    fn watch(&mut self) -> ExperimentWatcher {
+        if let Some(mut watcher) = self.watcher.take() {
+            watcher.kill();
+        }
+
+        let watcher = ExperimentWatcher::spawn();
+
+        // @todo allow handling many watchers at once
+        self.watcher = Some(watcher.clone());
+
+        watcher
     }
 }

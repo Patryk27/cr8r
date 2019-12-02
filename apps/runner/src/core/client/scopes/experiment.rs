@@ -58,10 +58,10 @@ impl ExperimentClient {
         })).await
     }
 
-    async fn report(&mut self, op: report::Op) -> Result<()> {
+    async fn report(&mut self, report: report::Op) -> Result<()> {
         let report = Report {
-            at: Utc::now().to_rfc3339(),
-            op: Some(op),
+            created_at: Utc::now().to_rfc3339(),
+            op: Some(report),
         };
 
         self.client.report_experiment(

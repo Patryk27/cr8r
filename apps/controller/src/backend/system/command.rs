@@ -3,7 +3,7 @@ use futures_channel::{mpsc, oneshot};
 use lib_protocol::core::{Assignment, ExperimentId, RunnerId, RunnerName, RunnerSecret};
 use lib_protocol::core::experiment_definition::ExperimentDefinitionInner;
 
-use crate::backend::{Experiment, Result};
+use crate::backend::{Experiment, Result, Runner};
 
 pub type SystemCommandTx = mpsc::UnboundedSender<SystemCommand>;
 pub type SystemCommandRx = mpsc::UnboundedReceiver<SystemCommand>;
@@ -26,6 +26,10 @@ pub enum SystemCommand {
         tx: oneshot::Sender<Result<Experiment>>,
     },
 
+    FindExperiments {
+        tx: oneshot::Sender<Vec<Experiment>>,
+    },
+
     LaunchExperiment {
         experiment: ExperimentDefinitionInner,
         tx: oneshot::Sender<Result<ExperimentId>>,
@@ -33,6 +37,10 @@ pub enum SystemCommand {
 
     // ------------------------ //
     // Runner-oriented commands //
+
+    FindRunners {
+        tx: oneshot::Sender<Vec<Runner>>,
+    },
 
     RegisterRunner {
         name: RunnerName,

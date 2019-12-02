@@ -22,9 +22,7 @@ async fn main() -> Result<()> {
     let client = Client::connect(config.controller.address).await?;
     let session_client = SessionClient::start(config.runner.name, config.controller.secret, client).await?;
 
-    info!("");
-    info!("{}", "🚀 We are ready to accept commands  ".green());
-    info!("");
+    info!("{}", "🚀 We are ready to accept commands".green());
 
     Heartbeat::spawn(
         session_client.clone()

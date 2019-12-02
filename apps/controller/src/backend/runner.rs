@@ -1,8 +1,9 @@
 use futures_channel::mpsc;
 
-use lib_protocol::core::{RunnerId, RunnerName};
+use lib_protocol::core::{self, RunnerId, RunnerName};
 
 use crate::backend::System;
+use crate::msg;
 
 pub use self::{
     actor::*,
@@ -14,7 +15,7 @@ mod command;
 
 #[derive(Clone, Debug)]
 pub struct Runner {
-    tx: mpsc::UnboundedSender<RunnerCommand>,
+    tx: RunnerCommandTx,
 }
 
 impl Runner {
@@ -30,7 +31,7 @@ impl Runner {
         Self { tx }
     }
 
-    pub fn heartbeat(&self) {
-        unimplemented!()
+    pub async fn as_model(&self) -> core::Runner {
+        msg!(self.tx, tx, RunnerCommand::AsModel { tx })
     }
 }

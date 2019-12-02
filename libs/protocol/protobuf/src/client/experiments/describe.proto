@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package cr8r.client;
+
+import "core/experiment.proto";
+
+message DescribeExperimentRequest {
+    string experiment_id = 1;
+}
+
+message DescribeExperimentReply {
+    string line = 1;
+}

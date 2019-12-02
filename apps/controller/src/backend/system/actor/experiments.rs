@@ -2,7 +2,8 @@ use std::collections::{HashMap, VecDeque};
 
 use lib_protocol::core::{ExperimentId, Scenario};
 
-use crate::backend::{Experiment, Result, System, uuid};
+use crate::backend::{Experiment, Result, System};
+use crate::id;
 
 pub struct Experiments {
     system: System,
@@ -20,7 +21,7 @@ impl Experiments {
     }
 
     pub fn create(&mut self, scenarios: Vec<Scenario>) -> ExperimentId {
-        let id = uuid!();
+        let id = id!();
 
         let experiment = Experiment::spawn(
             self.system.clone(),
@@ -34,12 +35,6 @@ impl Experiments {
         id
     }
 
-    pub fn find_by_id(&mut self, id: &ExperimentId) -> Result<&Experiment> {
-        self.experiments
-            .get(id)
-            .ok_or_else(|| format!("Experiment `{}` does not exist", id).into())
-    }
-
     pub fn take(&mut self) -> Option<Experiment> {
         let id = self.pending.pop_back()?;
 
@@ -49,5 +44,19 @@ impl Experiments {
             .to_owned();
 
         Some(experiment)
+    }
+
+    pub fn get(&self, id: &ExperimentId) -> Result<Experiment> {
+        self.experiments
+            .get(id)
+            .map(ToOwned::to_owned)
+            .ok_or_else(|| format!("Experiment `{}` does not exist", id).into())
+    }
+
+    pub fn all(&self) -> Vec<Experiment> {
+        self.experiments
+            .values()
+            .map(ToOwned::to_owned)
+            .collect()
     }
 }

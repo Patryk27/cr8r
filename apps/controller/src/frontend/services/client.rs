@@ -1,3 +1,4 @@
+use tokio::sync::mpsc;
 use tonic::{Code, Request, Response, Status};
 
 use lib_protocol::client::*;
@@ -25,6 +26,23 @@ impl Client for ClientService {
         }))
     }
 
+    async fn find_experiments(
+        &self,
+        _: Request<FindExperimentsRequest>,
+    ) -> Result<Response<FindExperimentsReply>, Status> {
+        let mut experiments = Vec::new();
+
+        for experiment in self.system.find_experiments().await {
+            experiments.push(
+                experiment.as_model().await,
+            );
+        }
+
+        Ok(Response::new(FindExperimentsReply {
+            experiments,
+        }))
+    }
+
     async fn launch_experiment(
         &self,
         request: Request<LaunchExperimentRequest>,
@@ -41,5 +59,48 @@ impl Client for ClientService {
         } else {
             Err(Status::new(Code::Internal, "No experiment has been provided"))
         }
+    }
+
+    type WatchExperimentStream = mpsc::Receiver<Result<WatchExperimentReply, Status>>;
+
+    async fn watch_experiment(
+        &self,
+        request: Request<WatchExperimentRequest>,
+    ) -> Result<Response<Self::WatchExperimentStream>, Status> {
+        let request = request.into_inner();
+
+        let mut watcher = self.system
+            .find_experiment(request.experiment_id).await?
+            .watch().await;
+
+        let (mut tx, rx) = mpsc::channel(4);
+
+        tokio::spawn(async move {
+            while let Some(report) = watcher.get().await {
+                let reply = WatchExperimentReply {
+                    report: Some(report),
+                };
+
+                tx.send(Ok(reply))
+                    .await
+                    .unwrap();
+            }
+        });
+
+        Ok(Response::new(rx))
+    }
+
+    async fn find_runners(&self, _: Request<FindRunnersRequest>) -> Result<Response<FindRunnersReply>, Status> {
+        let mut runners = Vec::new();
+
+        for runner in self.system.find_runners().await {
+            runners.push(
+                runner.as_model().await,
+            );
+        }
+
+        Ok(Response::new(FindRunnersReply {
+            runners,
+        }))
     }
 }

@@ -4,7 +4,8 @@ use bimap::BiMap;
 
 use lib_protocol::core::{RunnerId, RunnerName};
 
-use crate::backend::{Result, Runner, System, uuid};
+use crate::backend::{Result, Runner, System};
+use crate::id;
 
 pub struct Runners {
     system: System,
@@ -26,7 +27,7 @@ impl Runners {
             return Err("Runner with such name has been already registered".into());
         }
 
-        let id = uuid!();
+        let id = id!();
 
         let runner = Runner::spawn(
             self.system.clone(),
@@ -40,9 +41,16 @@ impl Runners {
         Ok(id)
     }
 
-    pub fn unregister(&mut self, id: RunnerId) -> bool {
+    pub fn remove(&mut self, id: RunnerId) -> bool {
         self.index
             .remove_by_left(&id)
             .is_some()
+    }
+
+    pub fn all(&self) -> Vec<Runner> {
+        self.runners
+            .values()
+            .map(ToOwned::to_owned)
+            .collect()
     }
 }

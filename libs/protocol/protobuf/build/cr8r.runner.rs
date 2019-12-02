@@ -1,19 +1,23 @@
 ///
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct HelloRequest {}
+
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct HelloReply {
     #[prost(string, tag = "1")]
     pub version: std::string::String,
 }
+
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PingRequest {
     #[prost(string, tag = "1")]
     pub runner_id: std::string::String,
 }
+
 ///
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PingReply {}
+
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RegisterRequest {
     #[prost(string, tag = "1")]
@@ -21,11 +25,13 @@ pub struct RegisterRequest {
     #[prost(string, tag = "2")]
     pub secret: std::string::String,
 }
+
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RegisterReply {
     #[prost(string, tag = "1")]
     pub id: std::string::String,
 }
+
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ConfirmAssignmentRequest {
     #[prost(string, tag = "1")]
@@ -33,19 +39,23 @@ pub struct ConfirmAssignmentRequest {
     #[prost(string, tag = "2")]
     pub experiment_id: std::string::String,
 }
+
 ///
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ConfirmAssignmentReply {}
+
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RequestAssignmentRequest {
     #[prost(string, tag = "1")]
     pub runner_id: std::string::String,
 }
+
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RequestAssignmentReply {
     #[prost(message, optional, tag = "1")]
     pub assignment: ::std::option::Option<super::core::Assignment>,
 }
+
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ReportExperimentRequest {
     #[prost(string, tag = "1")]
@@ -55,34 +65,40 @@ pub struct ReportExperimentRequest {
     #[prost(message, optional, tag = "3")]
     pub report: ::std::option::Option<super::core::Report>,
 }
+
 ///
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ReportExperimentReply {}
+
 #[doc = r" Generated client implementations."]
 pub mod client {
     #![allow(unused_variables, dead_code, missing_docs)]
+
     use tonic::codegen::*;
+
     pub struct RunnerClient<T> {
         inner: tonic::client::Grpc<T>,
     }
+
     impl RunnerClient<tonic::transport::Channel> {
         #[doc = r" Attempt to create a new client by connecting to a given endpoint."]
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
-        where
-            D: std::convert::TryInto<tonic::transport::Endpoint>,
-            D::Error: Into<StdError>,
+            where
+                D: std::convert::TryInto<tonic::transport::Endpoint>,
+                D::Error: Into<StdError>,
         {
             let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
             Ok(Self::new(conn))
         }
     }
+
     impl<T> RunnerClient<T>
-    where
-        T: tonic::client::GrpcService<tonic::body::BoxBody>,
-        T::ResponseBody: Body + HttpBody + Send + 'static,
-        T::Error: Into<StdError>,
-        <T::ResponseBody as HttpBody>::Error: Into<StdError> + Send,
-        <T::ResponseBody as HttpBody>::Data: Into<bytes::Bytes> + Send,
+        where
+            T: tonic::client::GrpcService<tonic::body::BoxBody>,
+            T::ResponseBody: Body + HttpBody + Send + 'static,
+            T::Error: Into<StdError>,
+            <T::ResponseBody as HttpBody>::Error: Into<StdError> + Send,
+            <T::ResponseBody as HttpBody>::Data: Into<bytes::Bytes> + Send,
     {
         pub fn new(inner: T) -> Self {
             let inner = tonic::client::Grpc::new(inner);
@@ -144,6 +160,7 @@ pub mod client {
             self.inner.unary(request.into_request(), path, codec).await
         }
     }
+
     impl<T: Clone> Clone for RunnerClient<T> {
         fn clone(&self) -> Self {
             Self {
@@ -152,10 +169,13 @@ pub mod client {
         }
     }
 }
+
 #[doc = r" Generated server implementations."]
 pub mod server {
     #![allow(unused_variables, dead_code, missing_docs)]
+
     use tonic::codegen::*;
+
     #[doc = "Generated trait containing gRPC methods that should be implemented for use with RunnerServer."]
     #[async_trait]
     pub trait Runner: Send + Sync + 'static {
@@ -190,17 +210,20 @@ pub mod server {
             Err(tonic::Status::unimplemented("Not yet implemented"))
         }
     }
+
     #[derive(Debug)]
     #[doc(hidden)]
     pub struct RunnerServer<T: Runner> {
         inner: Arc<T>,
     }
+
     impl<T: Runner> RunnerServer<T> {
         pub fn new(inner: T) -> Self {
             let inner = Arc::new(inner);
             Self { inner }
         }
     }
+
     impl<T: Runner> Service<http::Request<HyperBody>> for RunnerServer<T> {
         type Response = http::Response<tonic::body::BoxBody>;
         type Error = Never;
@@ -286,7 +309,7 @@ pub mod server {
                 "/cr8r.runner.Runner/RequestAssignment" => {
                     struct RequestAssignmentSvc<T: Runner>(pub Arc<T>);
                     impl<T: Runner> tonic::server::UnaryService<super::RequestAssignmentRequest>
-                        for RequestAssignmentSvc<T>
+                    for RequestAssignmentSvc<T>
                     {
                         type Response = super::RequestAssignmentReply;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
@@ -312,7 +335,7 @@ pub mod server {
                 "/cr8r.runner.Runner/ReportExperiment" => {
                     struct ReportExperimentSvc<T: Runner>(pub Arc<T>);
                     impl<T: Runner> tonic::server::UnaryService<super::ReportExperimentRequest>
-                        for ReportExperimentSvc<T>
+                    for ReportExperimentSvc<T>
                     {
                         type Response = super::ReportExperimentReply;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
@@ -345,12 +368,14 @@ pub mod server {
             }
         }
     }
+
     impl<T: Runner> Clone for RunnerServer<T> {
         fn clone(&self) -> Self {
             let inner = self.inner.clone();
             Self { inner }
         }
     }
+
     impl<T: Runner> tonic::transport::ServiceName for RunnerServer<T> {
         const NAME: &'static str = "cr8r.runner.Runner";
     }

@@ -5,10 +5,10 @@ pub mod client {
 pub mod core {
     include!("../protobuf/build/cr8r.core.rs");
 
-    // Experiment-related types
+    // Experiment-oriented types
     pub type ExperimentId = String;
 
-    // Runner-related types
+    // Runner-oriented types
     pub type RunnerId = String;
     pub type RunnerName = String;
     pub type RunnerSecret = String;

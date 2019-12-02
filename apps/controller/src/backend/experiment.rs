@@ -1,8 +1,9 @@
 use futures_channel::mpsc;
 
-use lib_protocol::core::{Assignment, ExperimentId, Report, RunnerId, Scenario};
+use lib_protocol::core::{self, Assignment, ExperimentId, Report, RunnerId, Scenario};
 
-use crate::backend::{msg, Result, System};
+use crate::backend::{ExperimentWatcher, Result, System};
+use crate::msg;
 
 pub use self::{
     actor::*,
@@ -30,11 +31,19 @@ impl Experiment {
         Self { tx }
     }
 
+    pub async fn as_model(&self) -> core::Experiment {
+        msg!(self.tx, tx, ExperimentCommand::AsModel { tx })
+    }
+
     pub async fn report(&self, runner: RunnerId, report: Report) -> Result<()> {
         msg!(self.tx, tx, ExperimentCommand::Report { runner, report, tx })
     }
 
     pub async fn start(&self, runner: RunnerId) -> Result<Assignment> {
         msg!(self.tx, tx, ExperimentCommand::Start { runner, tx })
+    }
+
+    pub async fn watch(&self) -> ExperimentWatcher {
+        msg!(self.tx, tx, ExperimentCommand::Watch { tx })
     }
 }

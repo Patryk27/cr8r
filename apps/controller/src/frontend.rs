@@ -17,7 +17,7 @@ mod services;
 pub async fn start(addr: String, system: System) -> Result<()> {
     let addr = addr.parse()?: SocketAddr;
 
-    info!("Listening on: {}", addr.to_string().green());
+    info!("🚀 Listening on: {}", addr.to_string().green());
 
     Server::builder()
         .add_service(ClientServer::new(ClientService::new(system.clone())))

@@ -31,7 +31,7 @@ message Report {
         bool success = 1;
     }
 
-    string at = 1;
+    string created_at = 1;
 
     oneof op {
         Ping ping = 100;

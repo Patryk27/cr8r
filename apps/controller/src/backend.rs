@@ -6,6 +6,7 @@ pub use self::{
     compiler::*,
     error::*,
     experiment::*,
+    experiment_watcher::*,
     runner::*,
     system::*,
 };
@@ -13,6 +14,7 @@ pub use self::{
 mod compiler;
 mod error;
 mod experiment;
+mod experiment_watcher;
 mod runner;
 mod system;
 
@@ -22,14 +24,13 @@ pub fn start(runner_secret: RunnerSecret, ecosystem: Ecosystem) -> System {
     System::spawn(runner_secret, compiler)
 }
 
-// IntelliJ's Rust plugin doesn't yet understand how to properly format declarative macros, so we're disabling it here
-// @formatter:off
-macro msg {
+#[macro_export]
+macro_rules! msg {
     ($self_tx:expr, $msg:expr) => {{
         if !$self_tx.unbounded_send($msg).is_ok() {
             panic!("Failed to send message to the actor - did it die prematurely?"); // @todo
         }
-    }},
+    }};
 
     ($self_tx:expr, $tx:ident, $msg:expr) => {{
         let ($tx, rx) = futures_channel::oneshot::channel();
@@ -43,12 +44,14 @@ macro msg {
         } else {
             panic!("Failed to send message to the actor - did it die prematurely?"); // @todo
         }
-    }},
+    }};
 }
 
-macro uuid () {
-    uuid::Uuid::new_v4()
-        .to_hyphenated()
-        .to_string()
+#[macro_export]
+macro_rules! id {
+    () => {
+        uuid::Uuid::new_v4()
+            .to_hyphenated()
+            .to_string()
+    }
 }
-// @formatter:on

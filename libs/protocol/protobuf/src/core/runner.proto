@@ -3,11 +3,30 @@ syntax = "proto3";
 package cr8r.core;
 
 message Runner {
-    string name = 1;
-    RunnerStatus status = 2;
-}
+    message Status {
+        message Idle {
+            string since = 1;
+        }
 
-enum RunnerStatus {
-    IDLE = 0;
-    WORKING = 1;
+        message Working {
+            string since = 1;
+            string experiment_id = 2;
+        }
+
+        message Zombie {
+            string since = 1;
+        }
+
+        oneof op {
+            Idle idle = 1;
+            Working working = 2;
+            Zombie zombie = 3;
+        }
+    }
+
+    string id = 1;
+    string name = 2;
+    string joined_at = 3;
+    string heartbeaten_at = 4;
+    Status status = 5;
 }
