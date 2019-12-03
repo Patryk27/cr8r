@@ -4,11 +4,12 @@ use log::*;
 
 use lib_protocol::core::{self, Assignment, ExperimentId, Report, RunnerId, Scenario};
 
-use crate::backend::{ExperimentCommand, ExperimentCommandRx, ExperimentWatcher, Result, System};
+use crate::backend::{ExperimentMsg, ExperimentRx, ExperimentWatcher, Result, System};
 
 pub struct ExperimentActor {
+    rx: ExperimentRx,
     system: System,
-    id: ExperimentId,
+    experiment: ExperimentId,
     scenarios: Vec<Scenario>,
     created_at: DateTime<Utc>,
     heartbeaten_at: DateTime<Utc>,
@@ -40,10 +41,16 @@ enum ExperimentActorStatus {
 }
 
 impl ExperimentActor {
-    pub fn new(system: System, id: ExperimentId, scenarios: Vec<Scenario>) -> Self {
+    pub fn new(
+        rx: ExperimentRx,
+        system: System,
+        experiment: ExperimentId,
+        scenarios: Vec<Scenario>,
+    ) -> Self {
         Self {
+            rx,
             system,
-            id,
+            experiment,
             scenarios,
             created_at: Utc::now(),
             heartbeaten_at: Utc::now(),
@@ -55,42 +62,34 @@ impl ExperimentActor {
         }
     }
 
-    pub async fn start(mut self, mut rx: ExperimentCommandRx) {
+    pub async fn start(mut self) {
         debug!("Actor started, entering event loop");
-        debug!("-> id: {}", self.id);
+        debug!("-> experiment: {}", self.experiment);
         debug!("-> scenarios: {}", self.scenarios.len());
 
-        while let Some(cmd) = rx.next().await {
-            debug!("Processing command: {:?}", cmd);
+        while let Some(msg) = self.rx.next().await {
+            debug!("Processing message: {:?}", msg);
 
-            match cmd {
-                ExperimentCommand::AsModel { tx } => {
-                    let _ = tx.send(
-                        self.as_model(),
-                    );
+            match msg {
+                ExperimentMsg::AsModel { tx } => {
+                    let _ = tx.send(self.as_model());
                 }
 
-                ExperimentCommand::Report { runner, report, tx } => {
-                    let _ = tx.send(
-                        self.report(runner, report),
-                    );
+                ExperimentMsg::Report { runner, report, tx } => {
+                    let _ = tx.send(self.report(runner, report));
                 }
 
-                ExperimentCommand::Start { runner, tx } => {
-                    let _ = tx.send(
-                        self.start_(runner),
-                    );
+                ExperimentMsg::Start { runner, tx } => {
+                    let _ = tx.send(self.start_(runner));
                 }
 
-                ExperimentCommand::Watch { tx } => {
-                    let _ = tx.send(
-                        self.watch(),
-                    );
+                ExperimentMsg::Watch { tx } => {
+                    let _ = tx.send(self.watch());
                 }
             }
         }
 
-        debug!("Actor orphaned, halting it");
+        debug!("Actor orphaned, halting");
     }
 
     fn as_model(&self) -> core::Experiment {
@@ -126,7 +125,7 @@ impl ExperimentActor {
         };
 
         core::Experiment {
-            id: self.id.clone(),
+            id: self.experiment.clone(),
             created_at: self.created_at.to_rfc3339(),
             heartbeaten_at: self.heartbeaten_at.to_rfc3339(),
 
@@ -186,7 +185,7 @@ impl ExperimentActor {
                 };
 
                 Ok(Assignment {
-                    experiment_id: self.id.clone(),
+                    experiment_id: self.experiment.clone(),
                     experiment_scenarios: self.scenarios.clone(),
                 })
             }

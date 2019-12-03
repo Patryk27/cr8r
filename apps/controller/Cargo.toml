@@ -10,6 +10,7 @@ chrono = "0.4"
 colored = "1.9"
 futures-channel-preview = "0.3.0-alpha.19"
 futures-util-preview = "0.3.0-alpha.19"
+lib_actor = { path = "../../libs/actor" }
 lib_log = { path = "../../libs/log" }
 lib_protocol = { path = "../../libs/protocol" }
 log = "0.4"

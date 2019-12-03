@@ -21,7 +21,7 @@ async fn main() -> core::Result<()> {
     )?;
 
     let system = backend::start(
-        config.controller.runner_secret, config.ecosystem,
+        config.ecosystem,
     );
 
     frontend::start(

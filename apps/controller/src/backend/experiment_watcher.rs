@@ -1,20 +1,19 @@
 use futures_channel::mpsc;
 
+use lib_actor::{ask, tell};
 use lib_protocol::core::Report;
-
-use crate::msg;
 
 pub use self::{
     actor::*,
-    command::*,
+    message::*,
 };
 
 mod actor;
-mod command;
+mod message;
 
 #[derive(Clone, Debug)]
 pub struct ExperimentWatcher {
-    tx: ExperimentWatcherCommandTx,
+    tx: ExperimentWatcherTx,
 }
 
 impl ExperimentWatcher {
@@ -22,21 +21,21 @@ impl ExperimentWatcher {
         let (tx, rx) = mpsc::unbounded();
 
         tokio::spawn(ExperimentWatcherActor::new(
-            //
-        ).start(rx));
+            rx,
+        ).start());
 
         Self { tx }
     }
 
     pub fn add(&mut self, report: Report) {
-        msg!(self.tx, ExperimentWatcherCommand::Add { report })
+        tell!(self.tx, ExperimentWatcherMsg::Add { report })
     }
 
-    pub async fn get(&mut self) -> Option<Report> {
-        msg!(self.tx, tx, ExperimentWatcherCommand::Get { tx })
+    pub async fn get(&mut self) -> Option<String> {
+        ask!(self.tx, ExperimentWatcherMsg::Get)
     }
 
     pub fn kill(&mut self) {
-        msg!(self.tx, ExperimentWatcherCommand::Kill)
+        tell!(self.tx, ExperimentWatcherMsg::Kill)
     }
 }

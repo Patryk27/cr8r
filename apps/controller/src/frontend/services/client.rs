@@ -17,6 +17,7 @@ impl ClientService {
     }
 }
 
+// @todo validate client's secret key
 #[tonic::async_trait]
 impl Client for ClientService {
     async fn hello(&self, _: Request<HelloRequest>) -> Result<Response<HelloReply>, Status> {
@@ -76,14 +77,14 @@ impl Client for ClientService {
         let (mut tx, rx) = mpsc::channel(4);
 
         tokio::spawn(async move {
-            while let Some(report) = watcher.get().await {
-                let reply = WatchExperimentReply {
-                    report: Some(report),
-                };
+            while let Some(line) = watcher.get().await {
+                let reply = Ok(WatchExperimentReply {
+                    line,
+                });
 
-                tx.send(Ok(reply))
-                    .await
-                    .unwrap();
+                if tx.send(reply).await.is_err() {
+                    break;
+                }
             }
         });
 

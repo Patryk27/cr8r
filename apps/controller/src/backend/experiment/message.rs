@@ -4,11 +4,11 @@ use lib_protocol::core::{self, Assignment, Report, RunnerId};
 
 use crate::backend::{ExperimentWatcher, Result};
 
-pub type ExperimentCommandTx = mpsc::UnboundedSender<ExperimentCommand>;
-pub type ExperimentCommandRx = mpsc::UnboundedReceiver<ExperimentCommand>;
+pub type ExperimentTx = mpsc::UnboundedSender<ExperimentMsg>;
+pub type ExperimentRx = mpsc::UnboundedReceiver<ExperimentMsg>;
 
 #[derive(Debug)]
-pub enum ExperimentCommand {
+pub enum ExperimentMsg {
     AsModel {
         tx: oneshot::Sender<core::Experiment>,
     },

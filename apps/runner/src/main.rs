@@ -20,15 +20,15 @@ async fn main() -> Result<()> {
 
     let config = config::load()?;
     let client = Client::connect(config.controller.address).await?;
-    let session_client = SessionClient::start(config.runner.name, config.controller.secret, client).await?;
+    let client = SessionClient::start(config.runner.name, config.controller.secret, client).await?;
 
     info!("{}", "🚀 We are ready to accept commands".green());
 
-    Heartbeat::spawn(
-        session_client.clone()
+    SystemHeartbeat::spawn(
+        client.clone()
     );
 
-    RunnerActor::new(session_client)
+    SystemActor::new(client)
         .start()
         .await
 }

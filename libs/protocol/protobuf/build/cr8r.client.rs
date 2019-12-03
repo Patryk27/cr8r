@@ -1,7 +1,6 @@
 ///
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct HelloRequest {}
-
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct HelloReply {
     #[prost(string, tag = "1")]
@@ -9,45 +8,37 @@ pub struct HelloReply {
     #[prost(uint64, tag = "2")]
     pub uptime: u64,
 }
-
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AbortExperimentRequest {
     #[prost(string, tag = "1")]
     pub id: std::string::String,
 }
-
 ///
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AbortExperimentReply {}
-
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct DescribeExperimentRequest {
     #[prost(string, tag = "1")]
     pub experiment_id: std::string::String,
 }
-
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct DescribeExperimentReply {
     #[prost(string, tag = "1")]
     pub line: std::string::String,
 }
-
 ///
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FindExperimentsRequest {}
-
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FindExperimentsReply {
     #[prost(message, repeated, tag = "1")]
     pub experiments: ::std::vec::Vec<super::core::Experiment>,
 }
-
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LaunchExperimentRequest {
     #[prost(message, optional, tag = "1")]
     pub experiment: ::std::option::Option<super::core::ExperimentDefinition>,
 }
-
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LaunchExperimentReply {
     #[prost(string, tag = "1")]
@@ -55,58 +46,49 @@ pub struct LaunchExperimentReply {
     #[prost(uint32, tag = "2")]
     pub position_in_queue: u32,
 }
-
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct WatchExperimentRequest {
     #[prost(string, tag = "1")]
     pub experiment_id: std::string::String,
 }
-
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct WatchExperimentReply {
-    #[prost(message, optional, tag = "1")]
-    pub report: ::std::option::Option<super::core::Report>,
+    #[prost(string, tag = "1")]
+    pub line: std::string::String,
 }
-
 ///
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FindRunnersRequest {}
-
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FindRunnersReply {
     #[prost(message, repeated, tag = "1")]
     pub runners: ::std::vec::Vec<super::core::Runner>,
 }
-
 #[doc = r" Generated client implementations."]
 pub mod client {
     #![allow(unused_variables, dead_code, missing_docs)]
-
     use tonic::codegen::*;
-
     pub struct ClientClient<T> {
         inner: tonic::client::Grpc<T>,
     }
-
     impl ClientClient<tonic::transport::Channel> {
         #[doc = r" Attempt to create a new client by connecting to a given endpoint."]
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
-            where
-                D: std::convert::TryInto<tonic::transport::Endpoint>,
-                D::Error: Into<StdError>,
+        where
+            D: std::convert::TryInto<tonic::transport::Endpoint>,
+            D::Error: Into<StdError>,
         {
             let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
             Ok(Self::new(conn))
         }
     }
-
     impl<T> ClientClient<T>
-        where
-            T: tonic::client::GrpcService<tonic::body::BoxBody>,
-            T::ResponseBody: Body + HttpBody + Send + 'static,
-            T::Error: Into<StdError>,
-            <T::ResponseBody as HttpBody>::Error: Into<StdError> + Send,
-            <T::ResponseBody as HttpBody>::Data: Into<bytes::Bytes> + Send,
+    where
+        T: tonic::client::GrpcService<tonic::body::BoxBody>,
+        T::ResponseBody: Body + HttpBody + Send + 'static,
+        T::Error: Into<StdError>,
+        <T::ResponseBody as HttpBody>::Error: Into<StdError> + Send,
+        <T::ResponseBody as HttpBody>::Data: Into<bytes::Bytes> + Send,
     {
         pub fn new(inner: T) -> Self {
             let inner = tonic::client::Grpc::new(inner);
@@ -181,7 +163,6 @@ pub mod client {
             self.inner.unary(request.into_request(), path, codec).await
         }
     }
-
     impl<T: Clone> Clone for ClientClient<T> {
         fn clone(&self) -> Self {
             Self {
@@ -190,13 +171,10 @@ pub mod client {
         }
     }
 }
-
 #[doc = r" Generated server implementations."]
 pub mod server {
     #![allow(unused_variables, dead_code, missing_docs)]
-
     use tonic::codegen::*;
-
     #[doc = "Generated trait containing gRPC methods that should be implemented for use with ClientServer."]
     #[async_trait]
     pub trait Client: Send + Sync + 'static {
@@ -225,10 +203,10 @@ pub mod server {
             Err(tonic::Status::unimplemented("Not yet implemented"))
         }
         #[doc = "Server streaming response type for the WatchExperiment method."]
-        type WatchExperimentStream: Stream<Item=Result<super::WatchExperimentReply, tonic::Status>>
-        + Send
-        + Sync
-        + 'static;
+        type WatchExperimentStream: Stream<Item = Result<super::WatchExperimentReply, tonic::Status>>
+            + Send
+            + Sync
+            + 'static;
         async fn watch_experiment(
             &self,
             request: tonic::Request<super::WatchExperimentRequest>,
@@ -242,20 +220,17 @@ pub mod server {
             Err(tonic::Status::unimplemented("Not yet implemented"))
         }
     }
-
     #[derive(Debug)]
     #[doc(hidden)]
     pub struct ClientServer<T: Client> {
         inner: Arc<T>,
     }
-
     impl<T: Client> ClientServer<T> {
         pub fn new(inner: T) -> Self {
             let inner = Arc::new(inner);
             Self { inner }
         }
     }
-
     impl<T: Client> Service<http::Request<HyperBody>> for ClientServer<T> {
         type Response = http::Response<tonic::body::BoxBody>;
         type Error = Never;
@@ -293,7 +268,7 @@ pub mod server {
                 "/cr8r.client.Client/AbortExperiment" => {
                     struct AbortExperimentSvc<T: Client>(pub Arc<T>);
                     impl<T: Client> tonic::server::UnaryService<super::AbortExperimentRequest>
-                    for AbortExperimentSvc<T>
+                        for AbortExperimentSvc<T>
                     {
                         type Response = super::AbortExperimentReply;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
@@ -319,7 +294,7 @@ pub mod server {
                 "/cr8r.client.Client/FindExperiments" => {
                     struct FindExperimentsSvc<T: Client>(pub Arc<T>);
                     impl<T: Client> tonic::server::UnaryService<super::FindExperimentsRequest>
-                    for FindExperimentsSvc<T>
+                        for FindExperimentsSvc<T>
                     {
                         type Response = super::FindExperimentsReply;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
@@ -345,7 +320,7 @@ pub mod server {
                 "/cr8r.client.Client/LaunchExperiment" => {
                     struct LaunchExperimentSvc<T: Client>(pub Arc<T>);
                     impl<T: Client> tonic::server::UnaryService<super::LaunchExperimentRequest>
-                    for LaunchExperimentSvc<T>
+                        for LaunchExperimentSvc<T>
                     {
                         type Response = super::LaunchExperimentReply;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
@@ -371,13 +346,13 @@ pub mod server {
                 "/cr8r.client.Client/WatchExperiment" => {
                     struct WatchExperimentSvc<T: Client>(pub Arc<T>);
                     impl<T: Client>
-                    tonic::server::ServerStreamingService<super::WatchExperimentRequest>
-                    for WatchExperimentSvc<T>
+                        tonic::server::ServerStreamingService<super::WatchExperimentRequest>
+                        for WatchExperimentSvc<T>
                     {
                         type Response = super::WatchExperimentReply;
                         type ResponseStream = T::WatchExperimentStream;
                         type Future =
-                        BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
+                            BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::WatchExperimentRequest>,
@@ -431,14 +406,12 @@ pub mod server {
             }
         }
     }
-
     impl<T: Client> Clone for ClientServer<T> {
         fn clone(&self) -> Self {
             let inner = self.inner.clone();
             Self { inner }
         }
     }
-
     impl<T: Client> tonic::transport::ServiceName for ClientServer<T> {
         const NAME: &'static str = "cr8r.client.Client";
     }

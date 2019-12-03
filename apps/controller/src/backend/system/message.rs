@@ -1,17 +1,17 @@
 use futures_channel::{mpsc, oneshot};
 
-use lib_protocol::core::{Assignment, ExperimentId, RunnerId, RunnerName, RunnerSecret};
+use lib_protocol::core::{Assignment, ExperimentId, RunnerId, RunnerName};
 use lib_protocol::core::experiment_definition::ExperimentDefinitionInner;
 
 use crate::backend::{Experiment, Result, Runner};
 
-pub type SystemCommandTx = mpsc::UnboundedSender<SystemCommand>;
-pub type SystemCommandRx = mpsc::UnboundedReceiver<SystemCommand>;
+pub type SystemTx = mpsc::UnboundedSender<SystemMsg>;
+pub type SystemRx = mpsc::UnboundedReceiver<SystemMsg>;
 
 #[derive(Debug)]
-pub enum SystemCommand {
+pub enum SystemMsg {
     // ---------------------------- //
-    // Assignment-oriented commands //
+    // Assignment-oriented messages //
 
     RequestAssignment {
         runner: RunnerId,
@@ -19,7 +19,7 @@ pub enum SystemCommand {
     },
 
     // ---------------------------- //
-    // Experiment-oriented commands //
+    // Experiment-oriented messages //
 
     FindExperiment {
         experiment: ExperimentId,
@@ -36,7 +36,7 @@ pub enum SystemCommand {
     },
 
     // ------------------------ //
-    // Runner-oriented commands //
+    // Runner-oriented messages //
 
     FindRunners {
         tx: oneshot::Sender<Vec<Runner>>,
@@ -44,7 +44,6 @@ pub enum SystemCommand {
 
     RegisterRunner {
         name: RunnerName,
-        secret: RunnerSecret,
         tx: oneshot::Sender<Result<RunnerId>>,
     },
 }

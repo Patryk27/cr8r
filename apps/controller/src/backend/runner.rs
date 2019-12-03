@@ -1,21 +1,21 @@
 use futures_channel::mpsc;
 
+use lib_actor::ask;
 use lib_protocol::core::{self, RunnerId, RunnerName};
 
 use crate::backend::System;
-use crate::msg;
 
 pub use self::{
     actor::*,
-    command::*,
+    message::*,
 };
 
 mod actor;
-mod command;
+mod message;
 
 #[derive(Clone, Debug)]
 pub struct Runner {
-    tx: RunnerCommandTx,
+    tx: RunnerTx,
 }
 
 impl Runner {
@@ -23,15 +23,16 @@ impl Runner {
         let (tx, rx) = mpsc::unbounded();
 
         tokio::spawn(RunnerActor::new(
+            rx,
             system,
             id,
             name,
-        ).start(rx));
+        ).start());
 
         Self { tx }
     }
 
     pub async fn as_model(&self) -> core::Runner {
-        msg!(self.tx, tx, RunnerCommand::AsModel { tx })
+        ask!(self.tx, RunnerMsg::AsModel)
     }
 }

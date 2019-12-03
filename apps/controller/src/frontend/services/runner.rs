@@ -15,6 +15,7 @@ impl RunnerService {
     }
 }
 
+// @todo validate runner's secret key
 #[tonic::async_trait]
 impl Runner for RunnerService {
     async fn hello(&self, _: Request<HelloRequest>) -> Result<Response<HelloReply>, Status> {
@@ -27,7 +28,7 @@ impl Runner for RunnerService {
         let request = request.into_inner();
 
         let id = self.system
-            .register_runner(request.name, request.secret)
+            .register_runner(request.name)
             .await?;
 
         Ok(Response::new(RegisterReply { id }))

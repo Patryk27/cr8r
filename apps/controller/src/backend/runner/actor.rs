@@ -4,9 +4,10 @@ use log::*;
 
 use lib_protocol::core::{self, RunnerId, RunnerName};
 
-use crate::backend::{RunnerCommand, RunnerCommandRx, System};
+use crate::backend::{RunnerMsg, RunnerRx, System};
 
 pub struct RunnerActor {
+    rx: RunnerRx,
     system: System,
     id: RunnerId,
     name: RunnerName,
@@ -15,8 +16,9 @@ pub struct RunnerActor {
 }
 
 impl RunnerActor {
-    pub fn new(system: System, id: RunnerId, name: RunnerName) -> Self {
+    pub fn new(rx: RunnerRx, system: System, id: RunnerId, name: RunnerName) -> Self {
         Self {
+            rx,
             system,
             id,
             name,
@@ -25,24 +27,22 @@ impl RunnerActor {
         }
     }
 
-    pub async fn start(self, mut rx: RunnerCommandRx) {
+    pub async fn start(mut self) {
         debug!("Actor started, entering event loop");
         debug!("-> id: {}", self.id);
         debug!("-> name: {}", self.name);
 
-        while let Some(cmd) = rx.next().await {
-            debug!("Processing command: {:?}", cmd);
+        while let Some(msg) = self.rx.next().await {
+            debug!("Processing message: {:?}", msg);
 
-            match cmd {
-                RunnerCommand::AsModel { tx } => {
-                    let _ = tx.send(
-                        self.as_model(),
-                    );
+            match msg {
+                RunnerMsg::AsModel { tx } => {
+                    let _ = tx.send(self.as_model());
                 }
             }
         }
 
-        debug!("Actor orphaned, halting it");
+        debug!("Actor orphaned, halting");
     }
 
     fn as_model(&self) -> core::Runner {

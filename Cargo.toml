@@ -3,6 +3,7 @@ members = [
     "apps/client",
     "apps/controller",
     "apps/runner",
+    "libs/actor",
     "libs/log",
     "libs/lxd",
     "libs/protocol",

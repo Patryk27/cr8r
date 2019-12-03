@@ -21,8 +21,8 @@ pub enum LaunchExperimentCommand {
 }
 
 impl LaunchExperimentCommand {
-    pub async fn run(self, system: System) -> Result<()> {
-        run(system, match self {
+    pub async fn run(self, system: System, watch: bool) -> Result<()> {
+        run(system, watch, match self {
             LaunchExperimentCommand::TrySystem { system } => {
                 ExperimentDefinitionInner::TrySystem(experiment_definition::TrySystem {
                     system,
@@ -38,7 +38,11 @@ impl LaunchExperimentCommand {
     }
 }
 
-async fn run(mut system: System, experiment: ExperimentDefinitionInner) -> Result<()> {
+async fn run(
+    mut system: System,
+    watch: bool,
+    experiment: ExperimentDefinitionInner,
+) -> Result<()> {
     let request = LaunchExperimentRequest {
         experiment: Some(ExperimentDefinition {
             experiment_definition_inner: Some(experiment),
@@ -54,11 +58,16 @@ async fn run(mut system: System, experiment: ExperimentDefinitionInner) -> Resul
     println!();
     println!("Your experiment has been created and it\'s now waiting for a runner.");
     println!();
-    println!("You can see status of your experiment using:");
-    println!("$ {}", format!("cr8r experiment status {}", reply.id).blue());
-    println!();
-    println!("Or, if you prefer a semi-real-time view:");
-    println!("$ {}", format!("cr8r experiment watch {}", reply.id).blue());
+
+    if watch {
+        super::watch::run(system, reply.id).await?;
+    } else {
+        println!("You can see status of your experiment using:");
+        println!("$ {}", format!("cr8r experiment status {}", reply.id).blue());
+        println!();
+        println!("Or, if you prefer a semi-real-time view:");
+        println!("$ {}", format!("cr8r experiment watch {}", reply.id).blue());
+    }
 
     Ok(())
 }

@@ -16,7 +16,13 @@ pub enum ExperimentCommand {
         id: String,
     },
 
-    Launch(LaunchExperimentCommand),
+    Launch {
+        #[structopt(short = "w", long = "watch")]
+        watch: bool,
+
+        #[structopt(flatten)]
+        cmd: LaunchExperimentCommand,
+    },
 
     Report {
         id: String,
@@ -34,11 +40,11 @@ pub enum ExperimentCommand {
 impl ExperimentCommand {
     pub async fn run(self, system: System) -> Result<()> {
         match self {
-            ExperimentCommand::Abort { id: experiment_id } => abort::run(system, experiment_id).await,
-            ExperimentCommand::Report { id: experiment_id } => report::run(system, experiment_id).await,
-            ExperimentCommand::Launch(cmd) => cmd.run(system).await,
-            ExperimentCommand::Status { id: experiment_id } => status::run(system, experiment_id).await,
-            ExperimentCommand::Watch { id: experiment_id } => watch::run(system, experiment_id).await,
+            ExperimentCommand::Abort { id } => abort::run(system, id).await,
+            ExperimentCommand::Launch { watch, cmd } => cmd.run(system, watch).await,
+            ExperimentCommand::Report { id } => report::run(system, id).await,
+            ExperimentCommand::Status { id } => status::run(system, id).await,
+            ExperimentCommand::Watch { id } => watch::run(system, id).await,
         }
     }
 }
