@@ -11,8 +11,12 @@ message Report {
         string message = 1;
     }
 
-    message Output {
-        string output = 1;
+    message ProcessStdout {
+        string line = 1;
+    }
+
+    message ProcessStderr {
+        string line = 1;
     }
 
     message ExperimentStarted {
@@ -36,12 +40,14 @@ message Report {
     oneof op {
         Ping ping = 100;
         Message message = 101;
-        Output output = 102;
 
-        ExperimentStarted experiment_started = 200;
-        ExperimentCompleted experiment_completed = 201;
+        ProcessStdout process_stdout = 200;
+        ProcessStderr process_stderr = 201;
 
-        ScenarioStarted scenario_started = 300;
-        ScenarioCompleted scenario_completed = 301;
+        ExperimentStarted experiment_started = 300;
+        ExperimentCompleted experiment_completed = 301;
+
+        ScenarioStarted scenario_started = 400;
+        ScenarioCompleted scenario_completed = 401;
     }
 }

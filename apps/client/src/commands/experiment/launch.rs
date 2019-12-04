@@ -55,7 +55,6 @@ async fn run(
         .into_inner();
 
     println!("{}", "Success!".green());
-    println!();
     println!("Your experiment has been created and it\'s now waiting for a runner.");
     println!();
 

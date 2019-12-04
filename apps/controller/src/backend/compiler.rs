@@ -52,8 +52,6 @@ impl Compiler {
         for (project_name, project) in &self.ecosystem.fauna {
             let mut steps = Vec::new();
 
-            add_step! { steps, print("Setting up requirements") }
-
             for requirement in &project.requirements {
                 let provider = &self.ecosystem.flora[requirement];
 
@@ -61,10 +59,10 @@ impl Compiler {
                 add_step! { steps, exec(provider.setup.join(" && ")) }
             }
 
-            add_step! { steps, print("Requirements ready, starting tests") }
+            add_step! { steps, print("Starting tests") }
             add_step! { steps, exec("cargo test") }
 
-            add_step! { steps, print("Tests passed, performing build") }
+            add_step! { steps, print("Starting build") }
             add_step! { steps, exec("cargo build") }
 
             scenarios.push(Scenario {

@@ -28,9 +28,15 @@ impl ExperimentClient {
         })).await
     }
 
-    pub async fn report_output(&mut self, output: impl Into<String>) -> Result<()> {
-        self.report(report::Op::Output(report::Output {
-            output: output.into(),
+    pub async fn report_process_stdout(&mut self, line: impl Into<String>) -> Result<()> {
+        self.report(report::Op::ProcessStdout(report::ProcessStdout {
+            line: line.into(),
+        })).await
+    }
+
+    pub async fn report_process_stderr(&mut self, line: impl Into<String>) -> Result<()> {
+        self.report(report::Op::ProcessStderr(report::ProcessStderr {
+            line: line.into(),
         })).await
     }
 

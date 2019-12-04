@@ -85,35 +85,41 @@ impl ExperimentWatcherActor {
         use report::*;
 
         if let Some(op) = report.op {
-            match op {
+            let op = match op {
                 Op::Ping(_) => {
                     String::default()
                 }
 
                 Op::Message(Message { message }) => {
-                    message
+                    format!("(msg) {}", message)
                 }
 
-                Op::Output(Output { output }) => {
-                    output
+                Op::ProcessStdout(ProcessStdout { line }) => {
+                    format!("(stdout) {}", line)
+                }
+
+                Op::ProcessStderr(ProcessStderr { line }) => {
+                    format!("(stderr) {}", line)
                 }
 
                 Op::ExperimentStarted(_) => {
-                    "-- experiment started --".to_string()
+                    "(sys) Experiment started".to_string()
                 }
 
                 Op::ExperimentCompleted(_) => {
-                    "-- experiment completed --".to_string()
+                    "(sys) Experiment completed".to_string()
                 }
 
                 Op::ScenarioStarted(_) => {
-                    "-- scenario started --".to_string()
+                    "(sys) Scenario started".to_string()
                 }
 
-                Op::ScenarioCompleted(_) => {
-                    "-- experiment completed --".to_string()
+                Op::ScenarioCompleted(ScenarioCompleted { success }) => {
+                    format!("(sys) Scenario completed (result: {})", if success { "success" } else { "failure" })
                 }
-            }
+            };
+
+            format!("<{}> {}", report.created_at, op)
         } else {
             String::default()
         }

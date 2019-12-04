@@ -1,103 +1,70 @@
-use std::time::Duration;
+use lib_lxd::LxdClient;
+use lib_protocol::core::Assignment;
 
-use futures_util::StreamExt;
-use log::*;
-use tokio::timer;
-
-use lib_protocol::core::{Assignment, Scenario, ScenarioStep};
-
-use crate::backend::{ExecutorMsg, ExecutorRx, ExecutorStatus};
+use crate::backend::{ExecutorRx, ExecutorStatus};
 use crate::core::ExperimentClient;
 
 pub struct ExecutorActor {
     rx: ExecutorRx,
+    lxd: LxdClient,
     assignment: Assignment,
     client: ExperimentClient,
+    container: String,
     status: ExecutorStatus,
 }
 
-// @todo this actor must not fail
-impl ExecutorActor {
-    pub fn new(rx: ExecutorRx, assignment: Assignment, client: ExperimentClient) -> Self {
-        Self {
-            rx,
-            assignment,
-            client,
-            status: ExecutorStatus::Running,
-        }
-    }
+// @todo this could be a regular function
+macro_rules! await_lxd {
+    ($self:expr, $lxd_result:expr) => {{
+        let mut result = $lxd_result.unwrap();
 
-    pub async fn start(mut self) {
-        debug!("Actor started");
-        debug!("-> experiment id: {}", self.assignment.experiment_id);
-        debug!("-> experiment scenarios: {}", self.assignment.experiment_scenarios.len());
+        loop {
+            use lib_lxd::LxdProcessMsg;
+            use futures_util::StreamExt;
 
-        self.client
-            .report_experiment_started()
-            .await
-            .unwrap();
+            match result.next().await {
+                Some(LxdProcessMsg::Exited { status }) => {
+                    break status.success();
+                }
 
-        let scenarios = self.assignment
-            .experiment_scenarios
-            .drain(..)
-            .collect(): Vec<_>;
+                Some(LxdProcessMsg::Stdout { line }) => {
+                    $self.client
+                        .report_process_stdout(line)
+                        .await
+                        .unwrap();
+                }
 
-        for scenario in scenarios {
-            self.execute_scenario(scenario).await;
-        }
+                Some(LxdProcessMsg::Stderr { line }) => {
+                    $self.client
+                        .report_process_stderr(line)
+                        .await
+                        .unwrap();
+                }
 
-        self.client
-            .report_experiment_completed()
-            .await
-            .unwrap();
-
-        debug!("Actor orphaned, halting");
-    }
-
-    async fn execute_scenario(&mut self, mut scenario: Scenario) {
-        let steps = scenario.steps
-            .drain(..)
-            .collect(): Vec<_>;
-
-        self.client
-            .report_scenario_started()
-            .await
-            .unwrap();
-
-        for step in steps {
-            self.execute_step(step).await;
-        }
-
-        self.client
-            .report_scenario_completed(true) // @todo un-hardcode the `true`
-            .await
-            .unwrap();
-    }
-
-    async fn execute_step(&mut self, step: ScenarioStep) {
-        self.process_messages().await;
-
-        for i in 1.. {
-            self.client.report_output(format!("i={}", i))
-                .await
-                .unwrap();
-
-            timer::delay_for(Duration::from_millis(250))
-                .await;
-        }
-    }
-
-    async fn process_messages(&mut self) {
-        while let Ok(Some(msg)) = self.rx.try_next() {
-            match msg {
-                ExecutorMsg::Status { tx } => {
-                    let _ = tx.send(self.status);
+                None => {
+                    break false;
                 }
             }
         }
-    }
+    }}
+}
 
-    fn status(&self) -> ExecutorStatus {
-        self.status
+mod execute_scenario;
+mod execute_step;
+mod process_messages;
+mod start;
+
+impl ExecutorActor {
+    pub fn new(rx: ExecutorRx, lxd: LxdClient, assignment: Assignment, client: ExperimentClient) -> Self {
+        let container = format!("cr8r-{}", assignment.experiment_id);
+
+        Self {
+            rx,
+            lxd,
+            assignment,
+            client,
+            container,
+            status: ExecutorStatus::Running,
+        }
     }
 }

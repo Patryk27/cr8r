@@ -5,6 +5,8 @@ use colored::Colorize;
 use log::*;
 use snafu::ResultExt;
 
+use lib_lxd::LxdClient;
+
 use self::{
     backend::*,
     core::*,
@@ -19,6 +21,7 @@ async fn main() -> Result<()> {
         .context(error::FailedToConfigure)?;
 
     let config = config::load()?;
+    let lxd = LxdClient::new();
     let client = Client::connect(config.controller.address).await?;
     let client = SessionClient::start(config.runner.name, config.controller.secret, client).await?;
 
@@ -28,7 +31,7 @@ async fn main() -> Result<()> {
         client.clone()
     );
 
-    SystemActor::new(client)
+    SystemActor::new(lxd, client)
         .start()
         .await
 }
