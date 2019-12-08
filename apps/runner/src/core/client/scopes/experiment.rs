@@ -16,55 +16,7 @@ impl ExperimentClient {
         Self { client, runner, experiment }
     }
 
-    pub async fn report_ping(&mut self) -> Result<()> {
-        self.report(report::Op::Ping(report::Ping {
-            //
-        })).await
-    }
-
-    pub async fn report_message(&mut self, message: impl Into<String>) -> Result<()> {
-        self.report(report::Op::Message(report::Message {
-            message: message.into(),
-        })).await
-    }
-
-    pub async fn report_process_stdout(&mut self, line: impl Into<String>) -> Result<()> {
-        self.report(report::Op::ProcessStdout(report::ProcessStdout {
-            line: line.into(),
-        })).await
-    }
-
-    pub async fn report_process_stderr(&mut self, line: impl Into<String>) -> Result<()> {
-        self.report(report::Op::ProcessStderr(report::ProcessStderr {
-            line: line.into(),
-        })).await
-    }
-
-    pub async fn report_experiment_started(&mut self) -> Result<()> {
-        self.report(report::Op::ExperimentStarted(report::ExperimentStarted {
-            //
-        })).await
-    }
-
-    pub async fn report_experiment_completed(&mut self) -> Result<()> {
-        self.report(report::Op::ExperimentCompleted(report::ExperimentCompleted {
-            //
-        })).await
-    }
-
-    pub async fn report_scenario_started(&mut self) -> Result<()> {
-        self.report(report::Op::ScenarioStarted(report::ScenarioStarted {
-            // @todo pass scenario id / project name / anything
-        })).await
-    }
-
-    pub async fn report_scenario_completed(&mut self, success: bool) -> Result<()> {
-        self.report(report::Op::ScenarioCompleted(report::ScenarioCompleted {
-            success,
-        })).await
-    }
-
-    async fn report(&mut self, report: report::Op) -> Result<()> {
+    pub async fn report(&mut self, report: report::Op) -> Result<()> {
         let report = Report {
             created_at: Utc::now().to_rfc3339(),
             op: Some(report),

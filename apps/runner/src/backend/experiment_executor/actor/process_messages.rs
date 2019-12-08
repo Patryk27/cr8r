@@ -1,10 +1,10 @@
-use crate::backend::{ExecutorActor, ExecutorMsg, ExecutorStatus};
+use crate::backend::{ExecutorStatus, ExperimentExecutorActor, ExperimentExecutorMsg};
 
-impl ExecutorActor {
+impl ExperimentExecutorActor {
     pub(super) async fn process_messages(&mut self) {
         while let Ok(Some(msg)) = self.rx.try_next() {
             match msg {
-                ExecutorMsg::Status { tx } => {
+                ExperimentExecutorMsg::Status { tx } => {
                     let _ = tx.send(self.status);
                 }
             }

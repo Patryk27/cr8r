@@ -1,27 +1,17 @@
-use std::{error, fmt, result};
+use std::result;
+
+use snafu::Snafu;
 
 pub type Result<T> = result::Result<T, Error>;
 
-#[derive(Debug)]
+#[derive(Debug, Snafu)]
+#[snafu(visibility(pub (crate)))]
 pub enum Error {
-    IoError {
-        message: String,
+    #[snafu(display("Could not find LXD's client executable (e.g. `/snap/bin/lxc`) - please ensure you have installed LXD"))]
+    FailedToAutodetectClient,
+
+    #[snafu(display("`{}` is not a valid identifier - please use only alphanumeric characters", ident))]
+    InvalidIdentifier {
+        ident: String,
     },
-
-    LxdError {
-        message: String,
-    },
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Error::IoError { message } => write!(f, "{}", message),
-            Error::LxdError { message } => write!(f, "{}", message),
-        }
-    }
-}
-
-impl error::Error for Error {
-    //
 }

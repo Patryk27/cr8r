@@ -7,4 +7,5 @@ members = [
     "libs/log",
     "libs/lxd",
     "libs/protocol",
+    "libs/sandbox",
 ]

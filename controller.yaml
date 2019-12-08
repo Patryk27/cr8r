@@ -10,10 +10,13 @@ ecosystem:
 
   flora:
     ubuntu:
-      setup: ['apt install -y curl git wget', 'snap install docker']
+      setup:
+        - 'systemctl start snapd.seeded.service && snap install docker'
+        - 'ssh-keyscan -t rsa git.anixe.pl >> ~/.ssh/known_hosts'
 
     cm_db:
-      setup: ['git clone git@git.anixe.pl:aclr8/deploy.git', 'cd roles/cm_db', './restart.sh']
+      setup:
+        - 'git clone git@git.anixe.pl:aclr8/deploy.git && cd deploy/roles/cm_db && ./restart.sh'
 
   fauna:
     aclr8:

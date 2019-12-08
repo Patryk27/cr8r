@@ -56,8 +56,14 @@ impl Compiler {
                 let provider = &self.ecosystem.flora[requirement];
 
                 add_step! { steps, print(format!("Setting up requirement: {}", requirement)) }
-                add_step! { steps, exec(provider.setup.join(" && ")) }
+
+                for cmd in &provider.setup {
+                    add_step! { steps, exec(cmd) }
+                }
             }
+
+            add_step! { steps, print("Cloning project") }
+            add_step! { steps, exec(format!("git clone {} project && cd project", project.repository)) }
 
             add_step! { steps, print("Starting tests") }
             add_step! { steps, exec("cargo test") }

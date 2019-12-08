@@ -4,9 +4,9 @@ pub use self::actor::*;
 
 mod actor;
 
-pub struct SystemHeartbeat;
+pub struct SystemHeartbeater;
 
-impl SystemHeartbeat {
+impl SystemHeartbeater {
     pub fn spawn(client: SessionClient) {
         tokio::spawn(SystemHeartbeatActor::new(
             client,

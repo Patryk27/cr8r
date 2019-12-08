@@ -4,19 +4,19 @@ use colored::Colorize;
 use log::*;
 use tokio::timer;
 
-use lib_lxd::LxdClient;
+use lib_sandbox::SandboxProvider;
 
-use crate::backend::Executor;
+use crate::backend::ExperimentExecutor;
 use crate::core::{Result, SessionClient};
 
 pub struct SystemActor {
-    lxd: LxdClient,
+    sandbox_provider: SandboxProvider,
     client: SessionClient,
 }
 
 impl SystemActor {
-    pub fn new(lxd: LxdClient, client: SessionClient) -> Self {
-        Self { lxd, client }
+    pub fn new(sandbox_provider: SandboxProvider, client: SessionClient) -> Self {
+        Self { sandbox_provider, client }
     }
 
     pub async fn start(mut self) -> Result<()> {
@@ -48,8 +48,12 @@ impl SystemActor {
             }
         };
 
-        let executor = Executor::spawn(
-            self.lxd.clone(), assignment, client,
+        let sandbox = self.sandbox_provider.provide(
+            format!("cr8r-{}", assignment.experiment_id)
+        );
+
+        let executor = ExperimentExecutor::spawn(
+            sandbox, assignment, client,
         );
 
         loop {

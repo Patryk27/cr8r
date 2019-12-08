@@ -1,0 +1,1 @@
+crate::create_ident_type!(LxdContainerName);
