@@ -1,14 +1,14 @@
 use std::collections::{HashMap, VecDeque};
 
-use lib_protocol::core::{ExperimentId, Scenario};
+use lib_protocol::core::{PExperimentId, PScenario};
 
 use crate::backend::{Experiment, Result, System};
 use crate::id;
 
 pub struct Experiments {
     system: System,
-    experiments: HashMap<ExperimentId, Experiment>,
-    pending: VecDeque<ExperimentId>,
+    experiments: HashMap<PExperimentId, Experiment>,
+    pending: VecDeque<PExperimentId>,
 }
 
 impl Experiments {
@@ -20,7 +20,7 @@ impl Experiments {
         }
     }
 
-    pub fn create(&mut self, scenarios: Vec<Scenario>) -> ExperimentId {
+    pub fn create(&mut self, scenarios: Vec<PScenario>) -> PExperimentId {
         let id = id!();
 
         let experiment = Experiment::spawn(
@@ -46,7 +46,7 @@ impl Experiments {
         Some(experiment)
     }
 
-    pub fn get(&self, id: &ExperimentId) -> Result<Experiment> {
+    pub fn get(&self, id: &PExperimentId) -> Result<Experiment> {
         self.experiments
             .get(id)
             .map(ToOwned::to_owned)

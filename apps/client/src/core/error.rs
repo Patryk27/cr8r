@@ -8,8 +8,8 @@ pub type StdResult<T> = result::Result<T, Box<dyn std::error::Error>>;
 #[derive(Debug, Snafu)]
 #[snafu(visibility(pub (crate)))]
 pub enum Error {
-    #[snafu(display("Failed to configure the client: {:?}", source))]
-    FailedToConfigure {
+    #[snafu(display("Failed to start the client: {:?}", source))]
+    FailedToStart {
         source: Box<dyn std::error::Error>,
     },
 

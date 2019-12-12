@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package cr8r.for_client;
+
+message PAbortExperimentRequest {
+    string id = 1;
+}
+
+message PAbortExperimentReply {
+    //
+}

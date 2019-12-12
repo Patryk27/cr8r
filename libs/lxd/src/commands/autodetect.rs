@@ -26,7 +26,7 @@ impl LxdClient {
             }
         }
 
-        Err(Error::FailedToAutodetectClient)
+        Err(Error::ClientNotFound)
     }
 }
 

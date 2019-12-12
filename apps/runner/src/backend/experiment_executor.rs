@@ -1,18 +1,18 @@
 use futures_channel::mpsc;
 
 use lib_actor::ask;
-use lib_protocol::core::Assignment;
+use lib_protocol::core::PAssignment;
 use lib_sandbox::Sandbox;
 
 use crate::backend::ExperimentReporter;
 use crate::core::ExperimentClient;
 
-pub use self::{
+pub(self) use self::{
     actor::*,
     error::*,
     msg::*,
-    status::*,
 };
+pub use self::status::*;
 
 mod actor;
 mod error;
@@ -24,9 +24,8 @@ pub struct ExperimentExecutor {
 }
 
 impl ExperimentExecutor {
-    pub fn spawn(sandbox: Sandbox, assignment: Assignment, client: ExperimentClient) -> Self {
+    pub fn spawn(sandbox: Sandbox, assignment: PAssignment, client: ExperimentClient) -> Self {
         let (tx, rx) = mpsc::unbounded();
-
         let reporter = ExperimentReporter::spawn(client);
 
         tokio::spawn(ExperimentExecutorActor::new(
@@ -34,12 +33,12 @@ impl ExperimentExecutor {
             sandbox,
             assignment,
             reporter,
-        ).start());
+        ).main());
 
         Self { tx }
     }
 
-    pub async fn status(&self) {
-        ask!(self.tx, ExperimentExecutorMsg::Status);
+    pub async fn status(&self) -> ExperimentExecutorStatus {
+        ask!(self.tx, ExperimentExecutorMsg::Status)
     }
 }

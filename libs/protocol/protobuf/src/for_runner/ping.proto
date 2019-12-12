@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package cr8r.for_runner;
+
+message PPingRequest {
+    string runner_id = 1;
+}
+
+message PPingReply {
+    //
+}

@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package cr8r.for_runner;
+
+import "for_runner/hello.proto";
+import "for_runner/ping.proto";
+import "for_runner/register.proto";
+import "for_runner/assignments/confirm.proto";
+import "for_runner/assignments/request.proto";
+import "for_runner/experiments/add_report.proto";
+
+service ForRunner {
+    rpc Hello (PHelloRequest) returns (PHelloReply);
+    rpc Ping (PPingRequest) returns (PPingReply);
+    rpc Register (PRegisterRequest) returns (PRegisterReply);
+
+    rpc RequestAssignment (PRequestAssignmentRequest) returns (PRequestAssignmentReply);
+
+    rpc AddExperimentReport (PAddExperimentReportRequest) returns (PAddExperimentReportReply);
+}

@@ -1,18 +1,18 @@
 use futures_channel::mpsc;
 
 use lib_actor::ask;
-use lib_protocol::core::{Assignment, ExperimentId, RunnerId, RunnerName};
-use lib_protocol::core::experiment_definition::ExperimentDefinitionInner;
+use lib_protocol::core::{PAssignment, PExperimentId, PRunnerId, PRunnerName};
+use lib_protocol::core::p_experiment_definition::Op as PExperimentDefinitionOp;
 
 use crate::backend::{Compiler, Experiment, Result, Runner};
 
-pub use self::{
+pub(self) use self::{
     actor::*,
-    message::*,
+    msg::*,
 };
 
 mod actor;
-mod message;
+mod msg;
 
 #[derive(Clone, Debug)]
 pub struct System {
@@ -28,7 +28,7 @@ impl System {
             rx,
             system.clone(),
             compiler,
-        ).start());
+        ).main());
 
         system
     }
@@ -36,14 +36,14 @@ impl System {
 
 /// Assignment-oriented impls
 impl System {
-    pub async fn request_assignment(&self, runner: RunnerId) -> Result<Option<Assignment>> {
+    pub async fn request_assignment(&self, runner: PRunnerId) -> Result<Option<PAssignment>> {
         ask!(self.tx, SystemMsg::RequestAssignment { runner })
     }
 }
 
 /// Experiment-oriented impls
 impl System {
-    pub async fn find_experiment(&self, experiment: ExperimentId) -> Result<Experiment> {
+    pub async fn find_experiment(&self, experiment: PExperimentId) -> Result<Experiment> {
         ask!(self.tx, SystemMsg::FindExperiment { experiment })
     }
 
@@ -51,7 +51,7 @@ impl System {
         ask!(self.tx, SystemMsg::FindExperiments)
     }
 
-    pub async fn launch_experiment(&self, experiment: ExperimentDefinitionInner) -> Result<ExperimentId> {
+    pub async fn launch_experiment(&self, experiment: PExperimentDefinitionOp) -> Result<PExperimentId> {
         ask!(self.tx, SystemMsg::LaunchExperiment { experiment })
     }
 }
@@ -62,7 +62,7 @@ impl System {
         ask!(self.tx, SystemMsg::FindRunners)
     }
 
-    pub async fn register_runner(&self, name: RunnerName) -> Result<RunnerId> {
+    pub async fn register_runner(&self, name: PRunnerName) -> Result<PRunnerId> {
         ask!(self.tx, SystemMsg::RegisterRunner { name })
     }
 }

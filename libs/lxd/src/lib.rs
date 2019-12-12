@@ -4,14 +4,14 @@ use std::path::{Path, PathBuf};
 
 pub use self::{
     error::*,
-    event::*,
     models::*,
+    response::*,
 };
 
 mod commands;
 mod error;
-mod event;
 mod models;
+mod response;
 
 pub struct LxdClient {
     path: PathBuf,

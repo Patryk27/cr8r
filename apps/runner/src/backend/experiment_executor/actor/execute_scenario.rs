@@ -1,10 +1,9 @@
-use lib_protocol::core::Scenario;
-use lib_sandbox::Sandbox;
+use lib_protocol::core::PScenario;
 
-use crate::backend::{ExecutorResult, ExperimentExecutorActor};
+use crate::backend::experiment_executor::{ExecutorResult, ExperimentExecutorActor};
 
 impl ExperimentExecutorActor {
-    pub(super) async fn execute_scenario(&mut self, mut scenario: Scenario) -> ExecutorResult<()> {
+    pub(super) async fn execute_scenario(&mut self, mut scenario: PScenario) -> ExecutorResult<()> {
         let result = try {
             self.launch_sandbox(&scenario)
                 .await?;
@@ -19,9 +18,8 @@ impl ExperimentExecutorActor {
         result
     }
 
-    async fn launch_sandbox(&mut self, scenario: &Scenario) -> ExecutorResult<()> {
-        self.reporter
-            .report_message(format!("Preparing the sandbox (system: `{}`, toolchain: `{}`)", scenario.system, scenario.toolchain));
+    async fn launch_sandbox(&mut self, scenario: &PScenario) -> ExecutorResult<()> {
+        self.reporter.add_message(format!("Preparing sandbox (system: `{}`, toolchain: `{}`)", scenario.system, scenario.toolchain));
 
         self.sandbox
             .initialize(&scenario.system, &scenario.toolchain)
@@ -29,7 +27,7 @@ impl ExperimentExecutorActor {
             .map_err(|err| format!("Failed to initialize the sandbox: {}", err))
     }
 
-    async fn execute_steps(&mut self, scenario: &mut Scenario) -> ExecutorResult<()> {
+    async fn execute_steps(&mut self, scenario: &mut PScenario) -> ExecutorResult<()> {
         for step in scenario.steps.drain(..) {
             if let Err(err) = self.execute_step(step).await {
                 return Err(format!("Step failed: {}", err));
@@ -39,9 +37,8 @@ impl ExperimentExecutorActor {
         Ok(())
     }
 
-    async fn destroy_sandbox(&mut self, scenario: &Scenario) -> ExecutorResult<()> {
-        self.reporter
-            .report_message("Destroying the sandbox");
+    async fn destroy_sandbox(&mut self, scenario: &PScenario) -> ExecutorResult<()> {
+        self.reporter.add_message("Destroying sandbox");
 
         self.sandbox
             .destroy()

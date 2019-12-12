@@ -1,8 +1,8 @@
 use colored::Colorize;
 use prettytable::*;
 
-use lib_protocol::client::FindRunnersRequest;
-use lib_protocol::core::runner::status;
+use lib_protocol::core::p_runner::p_status::*;
+use lib_protocol::for_client::PFindRunnersRequest;
 
 use crate::{Result, System};
 
@@ -14,22 +14,22 @@ pub async fn print(system: &mut System) -> Result<()> {
 
     let runners = system
         .client().await?
-        .find_runners(FindRunnersRequest {}).await?
+        .find_runners(PFindRunnersRequest {}).await?
         .into_inner()
         .runners;
 
     if runners.is_empty() {
-        println!("There are no runners registered.");
+        println!("There are no runners registered");
         return Ok(());
     }
 
     let mut table = table(row![
-        "Id", "Name", "Status", "Joined at", "Heartbeaten at",
+        "Name", "Status", "Joined at", "Heartbeaten at",
     ]);
 
     for runner in runners {
         let status = match runner.status.unwrap().op.unwrap() {
-            status::Op::Idle(status::Idle { since }) => {
+            Op::Idle(PIdle { since }) => {
                 format!(
                     "{} (since {})",
                     "idle".purple(),
@@ -37,7 +37,7 @@ pub async fn print(system: &mut System) -> Result<()> {
                 )
             }
 
-            status::Op::Working(status::Working { since, .. }) => {
+            Op::Working(PWorking { since, .. }) => {
                 format!(
                     "{} (since {})",
                     "working".green(),
@@ -45,7 +45,7 @@ pub async fn print(system: &mut System) -> Result<()> {
                 )
             }
 
-            status::Op::Zombie(status::Zombie { since }) => {
+            Op::Zombie(PZombie { since }) => {
                 format!(
                     "{} (since {})",
                     "zombie".red(),
@@ -55,8 +55,7 @@ pub async fn print(system: &mut System) -> Result<()> {
         };
 
         table.add_row(row![
-            runner.id.bright_cyan(),
-            runner.name,
+            runner.name.bright_cyan(),
             status,
             runner.joined_at,
             runner.heartbeaten_at,

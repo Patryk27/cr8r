@@ -2,24 +2,24 @@ syntax = "proto3";
 
 package cr8r.core;
 
-message Scenario {
+message PScenario {
     string project = 1;
     string system = 2;
     string toolchain = 3;
-    repeated ScenarioStep steps = 4;
+    repeated PScenarioStep steps = 4;
 }
 
-message ScenarioStep {
-    message Exec {
+message PScenarioStep {
+    message PRun {
         string command = 1;
     }
 
-    message Print {
+    message PPrint {
         string message = 2;
     }
 
     oneof op {
-        Exec exec = 1;
-        Print print = 2;
+        PRun run = 1;
+        PPrint print = 2;
     }
 }

@@ -1,9 +1,9 @@
 use colored::Colorize;
 use structopt::StructOpt;
 
-use lib_protocol::client::*;
-use lib_protocol::core::{experiment_definition, ExperimentDefinition};
-use lib_protocol::core::experiment_definition::ExperimentDefinitionInner;
+use lib_protocol::core::p_experiment_definition::*;
+use lib_protocol::core::PExperimentDefinition;
+use lib_protocol::for_client::PLaunchExperimentRequest;
 
 use crate::{Result, System};
 
@@ -24,34 +24,24 @@ impl LaunchExperimentCommand {
     pub async fn run(self, system: System, watch: bool) -> Result<()> {
         run(system, watch, match self {
             LaunchExperimentCommand::TrySystem { system } => {
-                ExperimentDefinitionInner::TrySystem(experiment_definition::TrySystem {
-                    system,
-                })
+                Op::TrySystem(PTrySystem { system })
             }
 
             LaunchExperimentCommand::TryToolchain { toolchain } => {
-                ExperimentDefinitionInner::TryToolchain(experiment_definition::TryToolchain {
-                    toolchain,
-                })
+                Op::TryToolchain(PTryToolchain { toolchain })
             }
         }).await
     }
 }
 
-async fn run(
-    mut system: System,
-    watch: bool,
-    experiment: ExperimentDefinitionInner,
-) -> Result<()> {
-    let request = LaunchExperimentRequest {
-        experiment: Some(ExperimentDefinition {
-            experiment_definition_inner: Some(experiment),
-        }),
-    };
+async fn run(mut system: System, watch: bool, experiment: Op) -> Result<()> {
+    let experiment = Some(PExperimentDefinition {
+        op: Some(experiment),
+    });
 
     let reply = system
         .client().await?
-        .launch_experiment(request).await?
+        .launch_experiment(PLaunchExperimentRequest { experiment }).await?
         .into_inner();
 
     println!("{}", "Success!".green());

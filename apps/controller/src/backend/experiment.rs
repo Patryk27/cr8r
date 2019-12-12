@@ -1,17 +1,19 @@
 use futures_channel::mpsc;
 
 use lib_actor::ask;
-use lib_protocol::core::{self, Assignment, ExperimentId, Report, RunnerId, Scenario};
+use lib_protocol::core::{PAssignment, PExperiment, PExperimentId, PReport, PRunnerId, PScenario};
 
 use crate::backend::{ExperimentWatcher, Result, System};
 
-pub use self::{
+pub(self) use self::{
     actor::*,
-    message::*,
+    msg::*,
+    status::*,
 };
 
 mod actor;
-mod message;
+mod msg;
+mod status;
 
 #[derive(Clone, Debug)]
 pub struct Experiment {
@@ -19,7 +21,7 @@ pub struct Experiment {
 }
 
 impl Experiment {
-    pub fn spawn(system: System, id: ExperimentId, scenarios: Vec<Scenario>) -> Self {
+    pub fn spawn(system: System, id: PExperimentId, scenarios: Vec<PScenario>) -> Self {
         let (tx, rx) = mpsc::unbounded();
 
         tokio::spawn(ExperimentActor::new(
@@ -27,20 +29,20 @@ impl Experiment {
             system,
             id,
             scenarios,
-        ).start());
+        ).main());
 
         Self { tx }
     }
 
-    pub async fn as_model(&self) -> core::Experiment {
+    pub async fn add_report(&self, runner: PRunnerId, report: PReport) -> Result<()> {
+        ask!(self.tx, ExperimentMsg::AddReport { runner, report })
+    }
+
+    pub async fn as_model(&self) -> PExperiment {
         ask!(self.tx, ExperimentMsg::AsModel)
     }
 
-    pub async fn report(&self, runner: RunnerId, report: Report) -> Result<()> {
-        ask!(self.tx, ExperimentMsg::Report { runner, report })
-    }
-
-    pub async fn start(&self, runner: RunnerId) -> Result<Assignment> {
+    pub async fn start(&self, runner: PRunnerId) -> Result<PAssignment> {
         ask!(self.tx, ExperimentMsg::Start { runner })
     }
 

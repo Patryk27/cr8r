@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package cr8r.for_client;
+
+import "core/experiment.proto";
+
+message PFindExperimentsRequest {
+    //
+}
+
+message PFindExperimentsReply {
+    repeated core.PExperiment experiments = 1;
+}

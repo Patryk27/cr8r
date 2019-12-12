@@ -1,7 +1,7 @@
-use crate::{LxdClient, LxdContainerName, LxdEventRx, LxdImageName, Result};
+use crate::{LxdClient, LxdContainerName, LxdImageName, LxdResponseStream, Result};
 
 impl LxdClient {
-    pub fn launch(&self, image: &LxdImageName, container: &LxdContainerName) -> Result<LxdEventRx> {
+    pub fn launch(&self, image: &LxdImageName, container: &LxdContainerName) -> Result<LxdResponseStream> {
         self.invoke(&[
             "launch".to_string(),
             image.to_string(),

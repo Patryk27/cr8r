@@ -14,7 +14,7 @@ mod frontend;
 #[tokio::main]
 async fn main() -> core::Result<()> {
     lib_log::init()
-        .context(core::error::FailedToConfigure)?;
+        .context(core::error::FailedToStart)?;
 
     let config = core::config::load(
         &PathBuf::from("controller.yaml")

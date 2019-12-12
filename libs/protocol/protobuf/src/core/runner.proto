@@ -2,25 +2,25 @@ syntax = "proto3";
 
 package cr8r.core;
 
-message Runner {
-    message Status {
-        message Idle {
+message PRunner {
+    message PStatus {
+        message PIdle {
             string since = 1;
         }
 
-        message Working {
+        message PWorking {
             string since = 1;
             string experiment_id = 2;
         }
 
-        message Zombie {
+        message PZombie {
             string since = 1;
         }
 
         oneof op {
-            Idle idle = 1;
-            Working working = 2;
-            Zombie zombie = 3;
+            PIdle idle = 1;
+            PWorking working = 2;
+            PZombie zombie = 3;
         }
     }
 
@@ -28,5 +28,5 @@ message Runner {
     string name = 2;
     string joined_at = 3;
     string heartbeaten_at = 4;
-    Status status = 5;
+    PStatus status = 5;
 }

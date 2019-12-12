@@ -4,15 +4,16 @@ use futures_channel::oneshot;
 use futures_util::StreamExt;
 use log::*;
 
-use lib_protocol::core::{Report, report};
+use lib_protocol::core::p_report::*;
+use lib_protocol::core::PReport;
 
-use crate::backend::{ExperimentWatcherMsg, ExperimentWatcherRx};
+use crate::backend::experiment_watcher::ExperimentWatcherRx;
 
 pub struct ExperimentWatcherActor {
     rx: ExperimentWatcherRx,
-    alive: bool,
-    reports: VecDeque<Report>,
-    pending_tx: Option<oneshot::Sender<Option<String>>>,
+    pub(super) alive: bool,
+    pub(super) reports: VecDeque<PReport>,
+    pub(super) pending_get_tx: Option<oneshot::Sender<Option<String>>>,
 }
 
 impl ExperimentWatcherActor {
@@ -21,84 +22,36 @@ impl ExperimentWatcherActor {
             rx,
             alive: true,
             reports: VecDeque::with_capacity(16),
-            pending_tx: None,
+            pending_get_tx: None,
         }
     }
 
-    pub async fn start(mut self) {
-        debug!("Actor started, entering event loop");
+    pub async fn main(mut self) {
+        debug!("Actor started");
 
         while let Some(msg) = self.rx.next().await {
-            debug!("Processing message: {:?}", msg);
-
-            match msg {
-                ExperimentWatcherMsg::Add { report } => {
-                    self.add(report);
-                }
-
-                ExperimentWatcherMsg::Kill => {
-                    self.kill();
-                }
-
-                ExperimentWatcherMsg::Get { tx } => {
-                    self.get(tx);
-                }
-            }
+            msg.process(&mut self);
         }
 
         debug!("Actor orphaned, halting");
     }
 
-    fn add(&mut self, report: Report) {
-        if !self.alive {
-            return;
-        }
-
-        if let Some(tx) = self.pending_tx.take() {
-            let _ = tx.send(Some(
-                Self::print_report(report)
-            ));
-        } else {
-            self.reports.push_back(report);
-        }
-    }
-
-    fn kill(&mut self) {
-        self.alive = false;
-
-        if let Some(tx) = self.pending_tx.take() {
-            let _ = tx.send(None);
-        }
-    }
-
-    fn get(&mut self, tx: oneshot::Sender<Option<String>>) {
-        if let Some(report) = self.reports.pop_front() {
-            let _ = tx.send(Some(
-                Self::print_report(report)
-            ));
-        } else {
-            self.pending_tx = Some(tx);
-        }
-    }
-
-    fn print_report(report: Report) -> String {
-        use report::*;
-
+    pub(super) fn render_report(report: PReport) -> String {
         if let Some(op) = report.op {
             let op = match op {
                 Op::Ping(_) => {
                     String::default()
                 }
 
-                Op::Message(Message { message }) => {
+                Op::Message(PMessage { message }) => {
                     format!("(msg) {}", message)
                 }
 
-                Op::ProcessStdout(ProcessStdout { line }) => {
+                Op::ProcessStdout(PProcessStdout { line }) => {
                     format!("(stdout) {}", line)
                 }
 
-                Op::ProcessStderr(ProcessStderr { line }) => {
+                Op::ProcessStderr(PProcessStderr { line }) => {
                     format!("(stderr) {}", line)
                 }
 
@@ -114,7 +67,7 @@ impl ExperimentWatcherActor {
                     "(sys) Scenario started".to_string()
                 }
 
-                Op::ScenarioCompleted(ScenarioCompleted { success }) => {
+                Op::ScenarioCompleted(PScenarioCompleted { success }) => {
                     format!("(sys) Scenario completed (result: {})", if success { "success" } else { "failure" })
                 }
             };

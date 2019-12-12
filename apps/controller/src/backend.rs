@@ -1,12 +1,12 @@
 use crate::core::Ecosystem;
 
 pub use self::{
-    compiler::*,
-    error::*,
-    experiment::*,
-    experiment_watcher::*,
-    runner::*,
-    system::*,
+    compiler::Compiler,
+    error::{Error, Result},
+    experiment::Experiment,
+    experiment_watcher::ExperimentWatcher,
+    runner::Runner,
+    system::System,
 };
 
 mod compiler;

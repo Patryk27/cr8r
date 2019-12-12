@@ -1,7 +1,7 @@
-use crate::{LxdClient, LxdContainerConfig, LxdContainerName, LxdEventRx, Result};
+use crate::{LxdClient, LxdContainerConfig, LxdContainerName, LxdResponseStream, Result};
 
 impl LxdClient {
-    pub fn config(&self, container: &LxdContainerName, config: LxdContainerConfig) -> Result<LxdEventRx> {
+    pub fn config(&self, container: &LxdContainerName, config: LxdContainerConfig) -> Result<LxdResponseStream> {
         let mut args = vec![
             "config".to_string(),
         ];

@@ -1,9 +1,11 @@
 use std::convert::TryFrom;
 use std::fmt;
 
+use serde::Deserialize;
+
 use crate::Error;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct LxdIdent(String);
 
 impl LxdIdent {
@@ -30,12 +32,13 @@ impl fmt::Display for LxdIdent {
 #[macro_export]
 macro_rules! create_ident_type {
     ($ty:ident) => {
+        use serde::Deserialize;
         use std::convert::TryFrom;
         use std::fmt;
 
         use crate::{Error, LxdIdent};
 
-        #[derive(Clone, Debug)]
+        #[derive(Clone, Debug, Deserialize)]
         pub struct $ty(LxdIdent);
 
         impl $ty {

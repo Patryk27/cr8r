@@ -4,8 +4,8 @@ use colored::Colorize;
 use log::*;
 use tonic::transport::Server;
 
-use lib_protocol::client::server::ClientServer;
-use lib_protocol::runner::server::RunnerServer;
+use lib_protocol::for_client::server::ForClientServer;
+use lib_protocol::for_runner::server::ForRunnerServer;
 
 use crate::backend::System;
 use crate::core::Result;
@@ -20,8 +20,8 @@ pub async fn start(addr: String, system: System) -> Result<()> {
     info!("🚀 Listening on: {}", addr.to_string().green());
 
     Server::builder()
-        .add_service(ClientServer::new(ClientService::new(system.clone())))
-        .add_service(RunnerServer::new(RunnerService::new(system)))
+        .add_service(ForClientServer::new(ForClientService::new(system.clone())))
+        .add_service(ForRunnerServer::new(ForRunnerService::new(system)))
         .serve(addr)
         .await
         .unwrap();

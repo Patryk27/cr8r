@@ -1,19 +1,17 @@
-use futures_util::StreamExt;
-
-use lib_lxd::{LxdClient, LxdEvent, LxdEventRx, Result as LxdResult};
+use lib_lxd::{LxdClient, LxdResponseEvent, LxdResponseStream, Result as LxdResult};
 
 use crate::{Error, Result, Sandbox};
 
 impl Sandbox {
     crate async fn invoke(
         &self,
-        action: impl FnOnce(&LxdClient) -> LxdResult<LxdEventRx>,
+        action: impl FnOnce(&LxdClient) -> LxdResult<LxdResponseStream>,
     ) -> Result<()> {
-        let mut rx = action(&self.lxd)?;
+        let mut response = action(&self.lxd)?;
 
-        while let Some(event) = rx.next().await {
+        while let Some(event) = response.next().await {
             match event {
-                LxdEvent::Exited { status } => {
+                LxdResponseEvent::Exited { status } => {
                     return if status.success() {
                         Ok(())
                     } else {
@@ -21,13 +19,13 @@ impl Sandbox {
                     };
                 }
 
-                LxdEvent::Stdout { line } => {
+                LxdResponseEvent::Stdout { line } => {
                     if let Some(notify) = &self.listener.on_command_stdout {
                         notify(line);
                     }
                 }
 
-                LxdEvent::Stderr { line } => {
+                LxdResponseEvent::Stderr { line } => {
                     if let Some(notify) = &self.listener.on_command_stderr {
                         notify(line);
                     }

@@ -1,8 +1,8 @@
 use colored::Colorize;
 use prettytable::*;
 
-use lib_protocol::client::FindExperimentsRequest;
-use lib_protocol::core::experiment::status;
+use lib_protocol::core::p_experiment::p_status::*;
+use lib_protocol::for_client::PFindExperimentsRequest;
 
 use crate::{Result, System};
 
@@ -14,12 +14,12 @@ pub async fn print(system: &mut System) -> Result<()> {
 
     let experiments = system
         .client().await?
-        .find_experiments(FindExperimentsRequest {}).await?
+        .find_experiments(PFindExperimentsRequest {}).await?
         .into_inner()
         .experiments;
 
     if experiments.is_empty() {
-        println!("There are no experiments registered.");
+        println!("There are no experiments registered");
         return Ok(());
     }
 
@@ -29,7 +29,7 @@ pub async fn print(system: &mut System) -> Result<()> {
 
     for experiment in experiments {
         let status = match experiment.status.unwrap().op.unwrap() {
-            status::Op::AwaitingRunner(status::AwaitingRunner { since }) => {
+            Op::AwaitingRunner(PAwaitingRunner { since }) => {
                 format!(
                     "{} (since {})",
                     "awaiting runner".purple(),
@@ -37,7 +37,7 @@ pub async fn print(system: &mut System) -> Result<()> {
                 )
             }
 
-            status::Op::Completed(status::Completed { since }) => {
+            Op::Completed(PCompleted { since }) => {
                 format!(
                     "{} (since {})",
                     "completed".blue(),
@@ -45,7 +45,7 @@ pub async fn print(system: &mut System) -> Result<()> {
                 )
             }
 
-            status::Op::Running(status::Running { since, completed_scenarios, total_scenarios, .. }) => {
+            Op::Running(PRunning { since, completed_scenarios, total_scenarios, .. }) => {
                 format!(
                     "{} (completed {} of {} scenario(s), since {})",
                     "running".green(),
@@ -55,7 +55,7 @@ pub async fn print(system: &mut System) -> Result<()> {
                 )
             }
 
-            status::Op::Zombie(status::Zombie { since }) => {
+            Op::Zombie(PZombie { since }) => {
                 format!(
                     "{} (since {})",
                     "zombie".red(),

@@ -1,9 +1,9 @@
 use futures_util::StreamExt;
 use log::*;
 
-use lib_protocol::core::report;
+use lib_protocol::core::p_report::*;
 
-use crate::backend::{ExperimentReporterMsg, ExperimentReporterRx};
+use crate::backend::experiment_reporter::{ExperimentReporterMsg, ExperimentReporterRx};
 use crate::core::ExperimentClient;
 
 pub struct ExecutorReporterActor {
@@ -16,13 +16,13 @@ impl ExecutorReporterActor {
         Self { rx, client }
     }
 
-    pub async fn start(mut self) {
+    pub async fn main(mut self) {
         debug!("Actor started");
 
         while let Some(msg) = self.rx.next().await {
             debug!("Processing message: {:?}", msg);
 
-            let report = Self::convert_msg_to_report(msg);
+            let report = Self::msg_to_report(msg);
 
             if let Err(err) = self.client.report(report).await {
                 error!("Could not send report to the controller: {:?}", err);
@@ -33,34 +33,34 @@ impl ExecutorReporterActor {
         debug!("Actor orphaned, halting");
     }
 
-    fn convert_msg_to_report(msg: ExperimentReporterMsg) -> report::Op {
+    fn msg_to_report(msg: ExperimentReporterMsg) -> Op {
         match msg {
-            ExperimentReporterMsg::ReportMessage { message } => {
-                report::Op::Message(report::Message { message })
+            ExperimentReporterMsg::AddMessage { message } => {
+                Op::Message(PMessage { message })
             }
 
-            ExperimentReporterMsg::ReportProcessStdout { line } => {
-                report::Op::ProcessStdout(report::ProcessStdout { line })
+            ExperimentReporterMsg::AddProcessStdout { line } => {
+                Op::ProcessStdout(PProcessStdout { line })
             }
 
-            ExperimentReporterMsg::ReportProcessStderr { line } => {
-                report::Op::ProcessStderr(report::ProcessStderr { line })
+            ExperimentReporterMsg::AddProcessStderr { line } => {
+                Op::ProcessStderr(PProcessStderr { line })
             }
 
-            ExperimentReporterMsg::ReportExperimentStarted => {
-                report::Op::ExperimentStarted(report::ExperimentStarted {})
+            ExperimentReporterMsg::AddExperimentStarted => {
+                Op::ExperimentStarted(PExperimentStarted {})
             }
 
-            ExperimentReporterMsg::ReportExperimentCompleted => {
-                report::Op::ExperimentCompleted(report::ExperimentCompleted {})
+            ExperimentReporterMsg::AddExperimentCompleted => {
+                Op::ExperimentCompleted(PExperimentCompleted {})
             }
 
-            ExperimentReporterMsg::ReportScenarioStarted => {
-                report::Op::ScenarioStarted(report::ScenarioStarted {})
+            ExperimentReporterMsg::AddScenarioStarted => {
+                Op::ScenarioStarted(PScenarioStarted {})
             }
 
-            ExperimentReporterMsg::ReportScenarioCompleted { success } => {
-                report::Op::ScenarioCompleted(report::ScenarioCompleted { success })
+            ExperimentReporterMsg::AddScenarioCompleted { success } => {
+                Op::ScenarioCompleted(PScenarioCompleted { success })
             }
         }
     }

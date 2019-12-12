@@ -1,17 +1,19 @@
 use futures_channel::mpsc;
 
 use lib_actor::ask;
-use lib_protocol::core::{self, RunnerId, RunnerName};
+use lib_protocol::core::{PRunner, PRunnerId, PRunnerName};
 
 use crate::backend::System;
 
-pub use self::{
+pub(self) use self::{
     actor::*,
-    message::*,
+    msg::*,
+    status::*,
 };
 
 mod actor;
-mod message;
+mod msg;
+mod status;
 
 #[derive(Clone, Debug)]
 pub struct Runner {
@@ -19,7 +21,7 @@ pub struct Runner {
 }
 
 impl Runner {
-    pub fn spawn(system: System, id: RunnerId, name: RunnerName) -> Self {
+    pub fn spawn(system: System, id: PRunnerId, name: PRunnerName) -> Self {
         let (tx, rx) = mpsc::unbounded();
 
         tokio::spawn(RunnerActor::new(
@@ -27,12 +29,12 @@ impl Runner {
             system,
             id,
             name,
-        ).start());
+        ).main());
 
         Self { tx }
     }
 
-    pub async fn as_model(&self) -> core::Runner {
+    pub async fn as_model(&self) -> PRunner {
         ask!(self.tx, RunnerMsg::AsModel)
     }
 }

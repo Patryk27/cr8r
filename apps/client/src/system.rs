@@ -1,12 +1,12 @@
 use tonic::transport::Channel;
 
-use lib_protocol::client::client::ClientClient;
+use lib_protocol::for_client::client::ForClientClient;
 
 use crate::{Config, Result};
 
 pub struct System {
     config: Config,
-    client: Option<ClientClient<Channel>>,
+    client: Option<ForClientClient<Channel>>,
 }
 
 impl System {
@@ -21,13 +21,13 @@ impl System {
         &self.config
     }
 
-    pub async fn client(&mut self) -> Result<&mut ClientClient<Channel>> {
+    pub async fn client(&mut self) -> Result<&mut ForClientClient<Channel>> {
         if self.client.is_none() {
-            let address = self.config.controller.address.clone();
+            let client = ForClientClient::connect(
+                self.config.controller.address.clone()
+            ).await?;
 
-            self.client = Some(
-                ClientClient::connect(address).await?,
-            );
+            self.client = Some(client);
         }
 
         Ok(self.client

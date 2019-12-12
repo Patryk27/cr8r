@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package cr8r.for_client;
+
+import "core/experiment.proto";
+
+message PLaunchExperimentRequest {
+    core.PExperimentDefinition experiment = 1;
+}
+
+message PLaunchExperimentReply {
+    string id = 1;
+}

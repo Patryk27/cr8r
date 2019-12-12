@@ -2,52 +2,52 @@ syntax = "proto3";
 
 package cr8r.core;
 
-message Experiment {
-    message Status {
-        message AwaitingRunner {
+message PExperiment {
+    message PStatus {
+        message PAwaitingRunner {
             string since = 1;
         }
 
-        message Completed {
+        message PCompleted {
             string since = 1;
         }
 
-        message Running {
+        message PRunning {
             string since = 1;
             string runner_id = 2;
             uint32 completed_scenarios = 3;
             uint32 total_scenarios = 4;
         }
 
-        message Zombie {
+        message PZombie {
             string since = 1;
         }
 
         oneof op {
-            AwaitingRunner awaiting_runner = 1;
-            Completed completed = 2;
-            Running running = 3;
-            Zombie zombie = 4;
+            PAwaitingRunner awaiting_runner = 1;
+            PCompleted completed = 2;
+            PRunning running = 3;
+            PZombie zombie = 4;
         }
     }
 
     string id = 1;
     string created_at = 2;
     string heartbeaten_at = 3;
-    Status status = 4;
+    PStatus status = 4;
 }
 
-message ExperimentDefinition {
-    message TrySystem {
+message PExperimentDefinition {
+    message PTrySystem {
         string system = 1;
     }
 
-    message TryToolchain {
+    message PTryToolchain {
         string toolchain = 1;
     }
 
-    oneof experiment_definition_inner {
-        TrySystem try_system = 1;
-        TryToolchain try_toolchain = 2;
+    oneof op {
+        PTrySystem try_system = 1;
+        PTryToolchain try_toolchain = 2;
     }
 }

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package cr8r.for_runner;
+
+message PRegisterRequest {
+    string name = 1;
+    string secret = 2;
+}
+
+message PRegisterReply {
+    string id = 1;
+}

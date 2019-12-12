@@ -5,16 +5,16 @@ use tokio::timer;
 
 use crate::core::SessionClient;
 
-pub struct SystemHeartbeatActor {
+pub struct SystemHeartbeaterActor {
     client: SessionClient,
 }
 
-impl SystemHeartbeatActor {
+impl SystemHeartbeaterActor {
     pub fn new(client: SessionClient) -> Self {
         Self { client }
     }
 
-    pub async fn start(mut self) {
+    pub async fn main(mut self) {
         debug!("Actor started");
 
         loop {

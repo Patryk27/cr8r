@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package cr8r.for_runner;
+
+message PHelloRequest {
+    //
+}
+
+message PHelloReply {
+    string version = 1;
+}

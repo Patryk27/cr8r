@@ -19,7 +19,7 @@ impl SystemActor {
         Self { sandbox_provider, client }
     }
 
-    pub async fn start(mut self) -> Result<()> {
+    pub async fn main(mut self) -> Result<()> {
         debug!("Actor started");
 
         let (assignment, client) = loop {
@@ -60,24 +60,6 @@ impl SystemActor {
             executor.status().await;
             timer::delay_for(Duration::from_secs(5)).await;
         }
-
-        // Notify controller that we're starting the experiment
-//        client
-//            .report_experiment_started()
-//            .await?;
-//
-//        for _ in assignment.experiment_scenarios {
-//            client.report_scenario_started().await?;
-//
-//            for i in 0.. {
-//                client.report_output(format!("hello: {}", i)).await?;
-//                timer::delay_for(Duration::from_secs(2)).await;
-//            }
-//
-//            client.report_scenario_completed(true).await?;
-//        }
-//
-//        client.report_experiment_completed().await?;
 
         Ok(())
     }

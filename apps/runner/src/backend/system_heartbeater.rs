@@ -1,6 +1,6 @@
 use crate::core::SessionClient;
 
-pub use self::actor::*;
+pub(self) use self::actor::*;
 
 mod actor;
 
@@ -8,8 +8,8 @@ pub struct SystemHeartbeater;
 
 impl SystemHeartbeater {
     pub fn spawn(client: SessionClient) {
-        tokio::spawn(SystemHeartbeatActor::new(
+        tokio::spawn(SystemHeartbeaterActor::new(
             client,
-        ).start());
+        ).main());
     }
 }

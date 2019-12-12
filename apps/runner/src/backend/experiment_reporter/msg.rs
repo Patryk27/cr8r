@@ -5,25 +5,25 @@ pub type ExperimentReporterRx = mpsc::UnboundedReceiver<ExperimentReporterMsg>;
 
 #[derive(Debug)]
 pub enum ExperimentReporterMsg {
-    ReportMessage {
+    AddMessage {
         message: String,
     },
 
-    ReportProcessStdout {
+    AddProcessStdout {
         line: String,
     },
 
-    ReportProcessStderr {
+    AddProcessStderr {
         line: String,
     },
 
-    ReportExperimentStarted,
+    AddExperimentStarted,
 
-    ReportExperimentCompleted,
+    AddExperimentCompleted,
 
-    ReportScenarioStarted,
+    AddScenarioStarted,
 
-    ReportScenarioCompleted {
+    AddScenarioCompleted {
         success: bool,
     },
 }

@@ -19,15 +19,21 @@ mod core;
 #[tokio::main]
 async fn main() -> Result<()> {
     lib_log::init()
-        .context(error::FailedToConfigure)?;
+        .context(error::FailedToStart)?;
 
     let config = config::load()?;
+    let sandbox_provider = SandboxProvider::new()?;
 
-    let sandbox_provider = SandboxProvider::new()
-        .unwrap(); // @todo
+    info!("Checking for stale containers from previous sessions");
 
-    let client = Client::connect(config.controller.address).await?;
-    let client = SessionClient::start(config.runner.name, config.controller.secret, client).await?;
+    // @todo this should be happening in the background
+    sandbox_provider.gc()?;
+
+    let client = Client::connect(config.controller.address)
+        .await?;
+
+    let client = SessionClient::start(config.runner.name, config.controller.secret, client)
+        .await?;
 
     info!("{}", "🚀 We are ready to accept commands".green());
 
@@ -36,6 +42,6 @@ async fn main() -> Result<()> {
     );
 
     SystemActor::new(sandbox_provider, client)
-        .start()
+        .main()
         .await
 }

@@ -2,52 +2,52 @@ syntax = "proto3";
 
 package cr8r.core;
 
-message Report {
-    message Ping {
+message PReport {
+    message PPing {
         //
     }
 
-    message Message {
+    message PMessage {
         string message = 1;
     }
 
-    message ProcessStdout {
+    message PProcessStdout {
         string line = 1;
     }
 
-    message ProcessStderr {
+    message PProcessStderr {
         string line = 1;
     }
 
-    message ExperimentStarted {
+    message PExperimentStarted {
         //
     }
 
-    message ExperimentCompleted {
+    message PExperimentCompleted {
         //
     }
 
-    message ScenarioStarted {
+    message PScenarioStarted {
         //
     }
 
-    message ScenarioCompleted {
+    message PScenarioCompleted {
         bool success = 1;
     }
 
     string created_at = 1;
 
     oneof op {
-        Ping ping = 100;
-        Message message = 101;
+        PPing ping = 100;
+        PMessage message = 101;
 
-        ProcessStdout process_stdout = 200;
-        ProcessStderr process_stderr = 201;
+        PProcessStdout process_stdout = 200;
+        PProcessStderr process_stderr = 201;
 
-        ExperimentStarted experiment_started = 300;
-        ExperimentCompleted experiment_completed = 301;
+        PExperimentStarted experiment_started = 300;
+        PExperimentCompleted experiment_completed = 301;
 
-        ScenarioStarted scenario_started = 400;
-        ScenarioCompleted scenario_completed = 401;
+        PScenarioStarted scenario_started = 400;
+        PScenarioCompleted scenario_completed = 401;
     }
 }

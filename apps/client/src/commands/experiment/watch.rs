@@ -1,16 +1,16 @@
 use colored::Colorize;
 use indicatif::ProgressBar;
 
-use lib_protocol::client::WatchExperimentRequest;
+use lib_protocol::for_client::PWatchExperimentRequest;
 
 use crate::{Result, System};
 
-pub async fn run(mut system: System, experiment_id: String) -> Result<()> {
-    println!("Attaching to experiment `{}`.", experiment_id.blue());
+pub async fn run(mut system: System, id: String) -> Result<()> {
+    println!("Attaching to experiment `{}`", id.blue());
 
     let mut reply = system
         .client().await?
-        .watch_experiment(WatchExperimentRequest { experiment_id }).await?
+        .watch_experiment(PWatchExperimentRequest { id }).await?
         .into_inner();
 
     println!("Attached, logs follow:");

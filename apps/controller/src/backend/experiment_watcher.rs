@@ -1,15 +1,15 @@
 use futures_channel::mpsc;
 
 use lib_actor::{ask, tell};
-use lib_protocol::core::Report;
+use lib_protocol::core::PReport;
 
-pub use self::{
+pub(self) use self::{
     actor::*,
-    message::*,
+    msg::*,
 };
 
 mod actor;
-mod message;
+mod msg;
 
 #[derive(Clone, Debug)]
 pub struct ExperimentWatcher {
@@ -22,12 +22,12 @@ impl ExperimentWatcher {
 
         tokio::spawn(ExperimentWatcherActor::new(
             rx,
-        ).start());
+        ).main());
 
         Self { tx }
     }
 
-    pub fn add(&mut self, report: Report) {
+    pub fn add(&mut self, report: PReport) {
         tell!(self.tx, ExperimentWatcherMsg::Add { report })
     }
 

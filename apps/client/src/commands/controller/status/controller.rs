@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use colored::Colorize;
 
-use lib_protocol::client::HelloRequest;
+use lib_protocol::for_client::PHelloRequest;
 
 use crate::{Result, System};
 
@@ -14,7 +14,7 @@ pub async fn print(system: &mut System) -> Result<()> {
 
     let status = system
         .client().await?
-        .hello(HelloRequest {}).await?
+        .hello(PHelloRequest {}).await?
         .into_inner();
 
     println!("Version: {}", format!("{}", status.version).green());
