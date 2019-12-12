@@ -4,10 +4,11 @@ use colored::Colorize;
 use log::*;
 use tokio::timer;
 
+use lib_protocol::core::PAssignment;
 use lib_sandbox::SandboxProvider;
 
-use crate::backend::ExperimentExecutor;
-use crate::core::{Result, SessionClient};
+use crate::backend::{ExperimentExecutor, ExperimentExecutorStatus};
+use crate::core::{ExperimentClient, Result, SessionClient};
 
 pub struct SystemActor {
     sandbox_provider: SandboxProvider,
@@ -22,7 +23,29 @@ impl SystemActor {
     pub async fn main(mut self) -> Result<()> {
         debug!("Actor started");
 
-        let (assignment, client) = loop {
+        loop {
+            let (assignment, client) = self
+                .poll_for_assignment()
+                .await;
+
+            match self.conduct_experiment(assignment, client).await {
+                Ok(_) => {
+                    debug!("Experiment conducted successfully");
+                }
+
+                Err(err) => {
+                    // @todo we should notify controller about this incident
+
+                    error!("Failed to conduct experiment: {:?}", err);
+                }
+            }
+        }
+
+        Ok(())
+    }
+
+    async fn poll_for_assignment(&mut self) -> (PAssignment, ExperimentClient) {
+        loop {
             debug!("Polling controller for an assignment");
 
             match self.client.request_assignment().await {
@@ -32,33 +55,47 @@ impl SystemActor {
                         assignment.0.experiment_id.to_string().green(),
                     );
 
-                    break assignment;
+                    return assignment;
                 }
 
                 Ok(None) => {
-                    timer::delay_for(Duration::from_secs(5)).await;
+                    timer::delay_for(Duration::from_secs(5))
+                        .await;
                 }
 
                 Err(err) => {
                     error!("Failed to ask controller for an assignment: {:?}", err);
                     error!("We'll try again in a moment");
 
-                    timer::delay_for(Duration::from_secs(60)).await;
+                    timer::delay_for(Duration::from_secs(60))
+                        .await;
                 }
             }
-        };
+        }
+    }
 
-        let sandbox = self.sandbox_provider.provide(
-            format!("cr8r-{}", assignment.experiment_id)
-        );
+    async fn conduct_experiment(&mut self, assignment: PAssignment, client: ExperimentClient) -> Result<()> {
+        debug!("Conducting experiment");
+
+        let sandbox = self.sandbox_provider
+            .create("cr8r-experiment".to_string())
+            .await?;
 
         let executor = ExperimentExecutor::spawn(
             sandbox, assignment, client,
         );
 
         loop {
-            executor.status().await;
-            timer::delay_for(Duration::from_secs(5)).await;
+            match executor.status().await {
+                ExperimentExecutorStatus::Aborted | ExperimentExecutorStatus::Completed => {
+                    break;
+                }
+
+                ExperimentExecutorStatus::Running => {
+                    timer::delay_for(Duration::from_secs(5))
+                        .await;
+                }
+            }
         }
 
         Ok(())

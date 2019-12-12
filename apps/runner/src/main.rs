@@ -26,9 +26,6 @@ async fn main() -> Result<()> {
 
     info!("Checking for stale containers from previous sessions");
 
-    // @todo this should be happening in the background
-    sandbox_provider.gc()?;
-
     let client = Client::connect(config.controller.address)
         .await?;
 

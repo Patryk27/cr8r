@@ -11,6 +11,8 @@ pub type ExperimentRx = mpsc::UnboundedReceiver<ExperimentMsg>;
 
 #[derive(Debug)]
 pub enum ExperimentMsg {
+    Abort,
+
     AddReport {
         runner: PRunnerId,
         report: PReport,
@@ -31,6 +33,7 @@ pub enum ExperimentMsg {
     },
 }
 
+mod abort;
 mod add_report;
 mod as_model;
 mod start;
@@ -42,6 +45,10 @@ impl ExperimentMsg {
         debug!("Processing message: {:?}", self);
 
         match self {
+            ExperimentMsg::Abort => {
+                abort::process(actor);
+            }
+
             ExperimentMsg::AddReport { runner, report, tx } => {
                 let _ = tx.send(add_report::process(actor, runner, report));
             }

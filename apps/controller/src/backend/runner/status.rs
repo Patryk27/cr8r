@@ -2,7 +2,8 @@ use chrono::{DateTime, Utc};
 
 use lib_protocol::core::PExperimentId;
 
-#[derive(PartialEq)]
+use crate::backend::Experiment;
+
 pub enum RunnerStatus {
     Idle {
         since: DateTime<Utc>,
@@ -10,7 +11,8 @@ pub enum RunnerStatus {
 
     Working {
         since: DateTime<Utc>,
-        experiment: PExperimentId,
+        experiment: Experiment,
+        experiment_id: PExperimentId,
     },
 
     Zombie {

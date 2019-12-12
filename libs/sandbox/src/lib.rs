@@ -1,6 +1,5 @@
 #![feature(crate_visibility_modifier)]
 
-use std::convert::TryInto;
 use std::sync::Arc;
 
 use lib_lxd::{LxdClient, LxdContainerName};
@@ -26,10 +25,10 @@ pub struct Sandbox {
 }
 
 impl Sandbox {
-    pub fn new(lxd: Arc<LxdClient>, name: String) -> Self {
+    pub fn new(lxd: Arc<LxdClient>, container: LxdContainerName) -> Self {
         Self {
             lxd,
-            container: name.try_into().unwrap(),
+            container,
             listener: SandboxListener::default(),
             mount_idx: 0,
         }

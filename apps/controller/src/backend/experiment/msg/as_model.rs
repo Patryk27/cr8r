@@ -12,18 +12,24 @@ pub fn process(actor: &mut ExperimentActor) -> PExperiment {
             })
         }
 
-        ExperimentStatus::Completed { since } => {
-            Op::Completed(PCompleted {
-                since: since.to_rfc3339(),
-            })
-        }
-
         ExperimentStatus::Running { since, runner, completed_scenarios, total_scenarios, .. } => {
             Op::Running(PRunning {
                 since: since.to_rfc3339(),
                 runner_id: runner.to_owned(),
                 completed_scenarios: *completed_scenarios,
                 total_scenarios: *total_scenarios,
+            })
+        }
+
+        ExperimentStatus::Completed { since } => {
+            Op::Completed(PCompleted {
+                since: since.to_rfc3339(),
+            })
+        }
+
+        ExperimentStatus::Aborted { since } => {
+            Op::Aborted(PAborted {
+                since: since.to_rfc3339(),
             })
         }
 

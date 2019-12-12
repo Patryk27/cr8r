@@ -5,7 +5,7 @@ use serde::Deserialize;
 
 use crate::Error;
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
 pub struct LxdIdent(String);
 
 impl LxdIdent {
@@ -38,7 +38,7 @@ macro_rules! create_ident_type {
 
         use crate::{Error, LxdIdent};
 
-        #[derive(Clone, Debug, Deserialize)]
+        #[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
         pub struct $ty(LxdIdent);
 
         impl $ty {

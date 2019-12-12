@@ -27,6 +27,10 @@ message PReport {
         //
     }
 
+    message PExperimentAborted {
+        //
+    }
+
     message PScenarioStarted {
         //
     }
@@ -46,6 +50,7 @@ message PReport {
 
         PExperimentStarted experiment_started = 300;
         PExperimentCompleted experiment_completed = 301;
+        PExperimentAborted experiment_aborted = 302;
 
         PScenarioStarted scenario_started = 400;
         PScenarioCompleted scenario_completed = 401;

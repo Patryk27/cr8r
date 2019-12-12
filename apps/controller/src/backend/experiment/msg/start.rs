@@ -23,15 +23,19 @@ pub fn process(actor: &mut ExperimentActor, runner: PRunnerId) -> Result<PAssign
             })
         }
 
-        ExperimentStatus::Completed { .. } => {
-            Err("This experiment has been already completed".into())
-        }
-
         ExperimentStatus::Running { runner, .. } => {
             Err(format!(
                 "This experiment is already running on runner `{}` and thus cannot be re-claimed yet. If the runner's crashed, please wait a few minutes before trying again.",
                 runner,
             ).into())
+        }
+
+        ExperimentStatus::Completed { .. } => {
+            Err("This experiment has been already completed".into())
+        }
+
+        ExperimentStatus::Aborted { .. } => {
+            Err("This experiment has been aborted".into())
         }
 
         ExperimentStatus::Zombie { .. } => {

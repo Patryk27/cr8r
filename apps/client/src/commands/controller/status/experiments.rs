@@ -37,6 +37,16 @@ pub async fn print(system: &mut System) -> Result<()> {
                 )
             }
 
+            Op::Running(PRunning { since, completed_scenarios, total_scenarios, .. }) => {
+                format!(
+                    "{} (completed {} of {} scenario(s), since {})",
+                    "running".green(),
+                    completed_scenarios,
+                    total_scenarios,
+                    since,
+                )
+            }
+
             Op::Completed(PCompleted { since }) => {
                 format!(
                     "{} (since {})",
@@ -45,12 +55,10 @@ pub async fn print(system: &mut System) -> Result<()> {
                 )
             }
 
-            Op::Running(PRunning { since, completed_scenarios, total_scenarios, .. }) => {
+            Op::Aborted(PAborted { since }) => {
                 format!(
-                    "{} (completed {} of {} scenario(s), since {})",
-                    "running".green(),
-                    completed_scenarios,
-                    total_scenarios,
+                    "{} (since {})",
+                    "aborted".red(),
                     since,
                 )
             }

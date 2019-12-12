@@ -1,6 +1,6 @@
 use futures_channel::mpsc;
 
-use lib_actor::ask;
+use lib_actor::{ask, tell};
 use lib_protocol::core::{PAssignment, PExperiment, PExperimentId, PReport, PRunnerId, PScenario};
 
 use crate::backend::{ExperimentWatcher, Result, System};
@@ -32,6 +32,11 @@ impl Experiment {
         ).main());
 
         Self { tx }
+    }
+
+    // @todo there should be something like `PExperimentAbortReason`
+    pub fn abort(&self) {
+        tell!(self.tx, ExperimentMsg::Abort);
     }
 
     pub async fn add_report(&self, runner: PRunnerId, report: PReport) -> Result<()> {

@@ -35,7 +35,7 @@ impl Experiments {
         id
     }
 
-    pub fn take(&mut self) -> Option<Experiment> {
+    pub fn pop(&mut self) -> Option<Experiment> {
         let id = self.pending.pop_back()?;
 
         let experiment = self.experiments

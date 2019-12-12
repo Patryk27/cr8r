@@ -1,6 +1,6 @@
 use futures_channel::mpsc;
 
-use lib_actor::ask;
+use lib_actor::{ask, tell};
 use lib_protocol::core::{PRunner, PRunnerId, PRunnerName};
 
 use crate::backend::System;
@@ -36,5 +36,9 @@ impl Runner {
 
     pub async fn as_model(&self) -> PRunner {
         ask!(self.tx, RunnerMsg::AsModel)
+    }
+
+    pub fn kill(&self) {
+        tell!(self.tx, RunnerMsg::Kill)
     }
 }

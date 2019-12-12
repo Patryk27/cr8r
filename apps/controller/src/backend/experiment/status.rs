@@ -8,10 +8,6 @@ pub enum ExperimentStatus {
         since: DateTime<Utc>,
     },
 
-    Completed {
-        since: DateTime<Utc>,
-    },
-
     Running {
         since: DateTime<Utc>,
         last_heartbeat: DateTime<Utc>,
@@ -19,6 +15,14 @@ pub enum ExperimentStatus {
         reports: Vec<PReport>,
         completed_scenarios: u32,
         total_scenarios: u32,
+    },
+
+    Completed {
+        since: DateTime<Utc>,
+    },
+
+    Aborted {
+        since: DateTime<Utc>,
     },
 
     Zombie {

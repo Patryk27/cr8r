@@ -1,3 +1,4 @@
+use std::convert::TryInto;
 use std::sync::Arc;
 
 use crate::{LxdClient, Result, Sandbox};
@@ -13,21 +14,23 @@ impl SandboxProvider {
         })
     }
 
-    pub fn gc(&self) -> Result<()> {
+    pub async fn create(&self, name: String) -> Result<Sandbox> {
+        let name = name.try_into()?;
         let containers = self.lxd.list()?;
 
         for container in containers {
-            if container.name.as_str().starts_with("cr8r-") {
+            if &container.name == &name {
                 self.lxd
-                    .delete(&container.name)?
-                    .wait_sync()?;
+                    .delete(&name)?
+                    .wait()
+                    .await?;
+
+                break;
             }
         }
 
-        Ok(())
-    }
-
-    pub fn provide(&self, name: String) -> Sandbox {
-        Sandbox::new(self.lxd.clone(), name)
+        Ok(Sandbox::new(
+            self.lxd.clone(), name,
+        ))
     }
 }

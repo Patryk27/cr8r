@@ -63,6 +63,10 @@ impl ExperimentWatcherActor {
                     "(sys) Experiment completed".to_string()
                 }
 
+                Op::ExperimentAborted(_) => {
+                    "(sys) Experiment aborted".to_string()
+                }
+
                 Op::ScenarioStarted(_) => {
                     "(sys) Scenario started".to_string()
                 }

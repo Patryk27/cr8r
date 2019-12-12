@@ -2,6 +2,7 @@ use chrono::{DateTime, Utc};
 use futures_util::StreamExt;
 use log::*;
 
+use lib_actor::ActorSpirit;
 use lib_protocol::core::{PRunnerId, PRunnerName};
 
 use crate::backend::runner::{RunnerRx, RunnerStatus};
@@ -36,9 +37,28 @@ impl RunnerActor {
         debug!("-> name: {}", self.name);
 
         while let Some(msg) = self.rx.next().await {
-            msg.process(&mut self);
+            match msg.process(&mut self) {
+                ActorSpirit::Alive => {
+                    //
+                }
+
+                ActorSpirit::Dead => {
+                    debug!("Actor killed");
+                    return self.on_killed();
+                }
+            }
         }
 
         debug!("Actor orphaned, halting");
+    }
+
+    fn on_killed(self) {
+        match &self.status {
+            RunnerStatus::Working { experiment, .. } => {
+                experiment.abort();
+            }
+
+            _ => (),
+        }
     }
 }

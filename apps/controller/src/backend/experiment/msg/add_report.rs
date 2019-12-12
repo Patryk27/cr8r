@@ -9,10 +9,6 @@ pub fn process(actor: &mut ExperimentActor, runner: PRunnerId, report: PReport) 
             Err("This experiment has not yet been started".into())
         }
 
-        ExperimentStatus::Completed { .. } => {
-            Err("This experiment has been already completed".into())
-        }
-
         ExperimentStatus::Running {
             runner: expected_runner,
             reports,
@@ -31,6 +27,14 @@ pub fn process(actor: &mut ExperimentActor, runner: PRunnerId, report: PReport) 
             // @todo increase total / completed
 
             Ok(())
+        }
+
+        ExperimentStatus::Completed { .. } => {
+            Err("This experiment has been already completed".into())
+        }
+
+        ExperimentStatus::Aborted { .. } => {
+            Err("This experiment has been aborted".into())
         }
 
         ExperimentStatus::Zombie { .. } => {

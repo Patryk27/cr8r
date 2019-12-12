@@ -41,20 +41,29 @@ impl Runners {
         Ok(id)
     }
 
-    pub fn remove(&mut self, id: PRunnerId) -> bool {
-        self.index
-            .remove_by_left(&id)
-            .is_some()
+    pub fn remove(&mut self, id: &PRunnerId) {
+        self.index.remove_by_left(id);
+        self.runners.remove(id);
+    }
+
+    pub fn get(&self, id: &PRunnerId) -> Option<&Runner> {
+        self.runners.get(id)
+    }
+
+    pub fn all(&self) -> Vec<&Runner> {
+        self.runners
+            .values()
+            .collect()
     }
 
     pub fn name_to_id(&self, name: &PRunnerName) -> Option<&PRunnerId> {
         self.index.get_by_right(name)
     }
 
-    pub fn all(&self) -> Vec<Runner> {
-        self.runners
-            .values()
-            .map(ToOwned::to_owned)
-            .collect()
+    pub fn validate(&self, id: &PRunnerId) -> Result<()> {
+        self.index
+            .get_by_left(id)
+            .map(|_| ())
+            .ok_or_else(|| "No such runner exists".into())
     }
 }

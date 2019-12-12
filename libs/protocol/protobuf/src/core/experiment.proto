@@ -8,15 +8,19 @@ message PExperiment {
             string since = 1;
         }
 
-        message PCompleted {
-            string since = 1;
-        }
-
         message PRunning {
             string since = 1;
             string runner_id = 2;
             uint32 completed_scenarios = 3;
             uint32 total_scenarios = 4;
+        }
+
+        message PCompleted {
+            string since = 1;
+        }
+
+        message PAborted {
+            string since = 1;
         }
 
         message PZombie {
@@ -25,9 +29,10 @@ message PExperiment {
 
         oneof op {
             PAwaitingRunner awaiting_runner = 1;
-            PCompleted completed = 2;
-            PRunning running = 3;
-            PZombie zombie = 4;
+            PRunning running = 2;
+            PCompleted completed = 3;
+            PAborted aborted = 4;
+            PZombie zombie = 5;
         }
     }
 
