@@ -7,7 +7,7 @@ impl LxdClient {
             "--format=json".to_string(),
         ])?;
 
-        let output = response.stdout_sync()?;
+        let output = response.output_sync()?;
 
         // @todo this is grando not nice
         let containers: Vec<LxdContainer> = serde_json::from_str(&output)

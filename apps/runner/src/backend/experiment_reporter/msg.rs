@@ -9,11 +9,7 @@ pub enum ExperimentReporterMsg {
         message: String,
     },
 
-    AddProcessStdout {
-        line: String,
-    },
-
-    AddProcessStderr {
+    AddProcessOutput {
         line: String,
     },
 

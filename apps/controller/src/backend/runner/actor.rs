@@ -14,7 +14,7 @@ pub struct RunnerActor {
     pub(super) id: PRunnerId,
     pub(super) name: PRunnerName,
     pub(super) joined_at: DateTime<Utc>,
-    pub(super) heartbeaten_at: DateTime<Utc>,
+    pub(super) last_heartbeat_at: DateTime<Utc>,
     pub(super) status: RunnerStatus,
 }
 
@@ -26,7 +26,7 @@ impl RunnerActor {
             id,
             name,
             joined_at: Utc::now(),
-            heartbeaten_at: Utc::now(),
+            last_heartbeat_at: Utc::now(),
             status: RunnerStatus::default(),
         }
     }

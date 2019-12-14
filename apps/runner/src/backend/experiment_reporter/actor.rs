@@ -25,7 +25,7 @@ impl ExecutorReporterActor {
             let report = Self::msg_to_report(msg);
 
             if let Err(err) = self.client.report(report).await {
-                error!("Could not send report to the controller: {:?}", err);
+                error!("Couldn't send report to the controller: {:?}", err);
                 // @todo try again in a moment
             }
         }
@@ -39,12 +39,8 @@ impl ExecutorReporterActor {
                 Op::Message(PMessage { message })
             }
 
-            ExperimentReporterMsg::AddProcessStdout { line } => {
-                Op::ProcessStdout(PProcessStdout { line })
-            }
-
-            ExperimentReporterMsg::AddProcessStderr { line } => {
-                Op::ProcessStderr(PProcessStderr { line })
+            ExperimentReporterMsg::AddProcessOutput { line } => {
+                Op::ProcessOutput(PProcessOutput { line })
             }
 
             ExperimentReporterMsg::AddExperimentStarted => {

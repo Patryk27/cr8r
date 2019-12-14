@@ -40,11 +40,25 @@ pub enum ExperimentCommand {
 impl ExperimentCommand {
     pub async fn run(self, system: System) -> Result<()> {
         match self {
-            ExperimentCommand::Abort { id } => abort::run(system, id).await,
-            ExperimentCommand::Launch { watch, cmd } => cmd.run(system, watch).await,
-            ExperimentCommand::Report { id } => report::run(system, id).await,
-            ExperimentCommand::Status { id } => status::run(system, id).await,
-            ExperimentCommand::Watch { id } => watch::run(system, id).await,
+            ExperimentCommand::Abort { id } => {
+                abort::run(system, id).await
+            }
+
+            ExperimentCommand::Launch { watch, cmd } => {
+                cmd.run(system, watch).await
+            }
+
+            ExperimentCommand::Report { id } => {
+                report::run(system, id).await
+            }
+
+            ExperimentCommand::Status { id } => {
+                status::run(system, id).await
+            }
+
+            ExperimentCommand::Watch { id } => {
+                watch::run(system, id).await
+            }
         }
     }
 }

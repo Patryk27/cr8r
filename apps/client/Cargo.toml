@@ -5,6 +5,7 @@ authors = ["Patryk Wychowaniec <wychowaniec.patryk@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+chrono = "0.4"
 colored = "1.9"
 indicatif = "0.13"
 lib_protocol = { path = "../../libs/protocol" }

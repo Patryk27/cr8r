@@ -30,7 +30,7 @@ impl SessionClient {
 
         let runner = client.register(runner_name, controller_secret).await?.id;
 
-        debug!("... We've been registered as: {}", runner);
+        debug!("... ok, we've been registered as: {}", runner);
 
         Ok(Self {
             client,

@@ -12,18 +12,18 @@ pub fn process(actor: &mut ExperimentActor) -> PExperiment {
             })
         }
 
-        ExperimentStatus::Running { since, runner, completed_scenarios, total_scenarios, .. } => {
+        ExperimentStatus::Running { since, last_heartbeat_at, completed_scenarios, .. } => {
             Op::Running(PRunning {
                 since: since.to_rfc3339(),
-                runner_id: runner.to_owned(),
+                last_heartbeat_at: last_heartbeat_at.to_rfc3339(),
                 completed_scenarios: *completed_scenarios,
-                total_scenarios: *total_scenarios,
             })
         }
 
-        ExperimentStatus::Completed { since } => {
+        ExperimentStatus::Completed { since, success } => {
             Op::Completed(PCompleted {
                 since: since.to_rfc3339(),
+                success: *success,
             })
         }
 
@@ -43,7 +43,7 @@ pub fn process(actor: &mut ExperimentActor) -> PExperiment {
     PExperiment {
         id: actor.experiment.clone(),
         created_at: actor.created_at.to_rfc3339(),
-        heartbeaten_at: "@todo".to_string(),
+        scenario_count: actor.scenarios.len() as u32,
 
         status: Some(PStatus {
             op: Some(status),

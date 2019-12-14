@@ -1,7 +1,7 @@
 pub use self::{
-    client::*,
-    runner::*,
+    for_client::*,
+    for_runner::*,
 };
 
-mod client;
-mod runner;
+mod for_client;
+mod for_runner;

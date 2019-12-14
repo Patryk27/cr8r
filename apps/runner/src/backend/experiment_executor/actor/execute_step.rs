@@ -5,7 +5,7 @@ use crate::backend::experiment_executor::{ExecutorResult, ExperimentExecutorActo
 
 impl ExperimentExecutorActor {
     pub(super) async fn execute_step(&mut self, step: PScenarioStep) -> ExecutorResult<()> {
-        self.process_messages().await;
+        self.process_messages_yield();
 
         if let Some(op) = step.op {
             match op {

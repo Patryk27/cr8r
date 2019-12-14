@@ -5,7 +5,7 @@ use lib_protocol::core::p_experiment_definition::*;
 use lib_protocol::core::PExperimentDefinition;
 use lib_protocol::for_client::PLaunchExperimentRequest;
 
-use crate::{Result, System};
+use crate::{Result, spinner, System};
 
 #[derive(Debug, StructOpt)]
 pub enum LaunchExperimentCommand {
@@ -39,10 +39,12 @@ async fn run(mut system: System, watch: bool, experiment: Op) -> Result<()> {
         op: Some(experiment),
     });
 
-    let reply = system
-        .client().await?
-        .launch_experiment(PLaunchExperimentRequest { experiment }).await?
-        .into_inner();
+    let reply = spinner! {
+        system
+            .client().await?
+            .launch_experiment(PLaunchExperimentRequest { experiment }).await?
+            .into_inner()
+    };
 
     println!("{}", "Success!".green());
     println!("Your experiment has been created and it\'s now waiting for a runner.");

@@ -17,7 +17,7 @@ pub async fn run(mut system: System) -> Result<()> {
 
 fn print(result: Result<()>, add_newline: bool) {
     if let Err(err) = result {
-        println!("{}: {}", "Could not fetch data".red(), err);
+        println!("{}: {}", "Couldn't fetch data".red(), err);
     }
 
     if add_newline {

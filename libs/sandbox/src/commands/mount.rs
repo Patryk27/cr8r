@@ -1,6 +1,6 @@
 use std::convert::TryInto;
 
-use lib_lxd::LxdContainerConfig;
+use lib_sandbox_lxd::LxdContainerConfig;
 
 use crate::{Result, Sandbox, SandboxMount};
 

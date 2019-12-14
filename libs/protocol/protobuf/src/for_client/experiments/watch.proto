@@ -7,5 +7,14 @@ message PWatchExperimentRequest {
 }
 
 message PWatchExperimentReply {
-    string line = 1;
+    enum Kind {
+        STREAM_CLOSED = 0;
+        SYSTEM_MESSAGE = 1;
+        USER_MESSAGE = 2;
+        PROCESS_OUTPUT = 3;
+    }
+
+    string created_at = 1;
+    Kind kind = 2;
+    string message = 3;
 }

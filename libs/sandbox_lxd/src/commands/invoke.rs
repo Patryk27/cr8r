@@ -34,9 +34,7 @@ impl LxdClient {
         thread::spawn(move || {
             for line in stdout.lines() {
                 if let Ok(line) = line {
-                    let _ = tx.unbounded_send(LxdResponseEvent::Stdout {
-                        line,
-                    });
+                    let _ = tx.unbounded_send(LxdResponseEvent::Printed { line });
                 }
             }
 
@@ -52,9 +50,7 @@ impl LxdClient {
         thread::spawn(move || {
             for line in stderr.lines() {
                 if let Ok(line) = line {
-                    let _ = tx2.unbounded_send(LxdResponseEvent::Stderr {
-                        line,
-                    });
+                    let _ = tx2.unbounded_send(LxdResponseEvent::Printed { line });
                 }
             }
         });

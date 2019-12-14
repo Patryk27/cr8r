@@ -8,22 +8,6 @@ ecosystem:
     default-system: 'ubuntu:18.04'
     default-toolchain: 'stable'
 
-  flora:
-    ubuntu:
-      setup:
-        #        - 'curl -L https://get.docker.com -o /tmp/get-docker.sh && sh /tmp/get-docker.sh'
-        #        - 'curl -L "https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose'
-        - 'ssh-keyscan -t rsa git.anixe.pl >> ~/.ssh/known_hosts'
-
-  #    cm_db:
-  #      setup:
-  #        - 'git clone git@git.anixe.pl:aclr8/deploy.git && cd deploy/roles/cm_db && ./restart.sh'
-
   fauna:
-    aclr8:
-      requirements: ['ubuntu']
-      repository: 'git@git.anixe.pl:aclr8/aclr8.git'
-#
-#    mercures_snapshots:
-#      requirements: ['ubuntu', 'cm_db']
-#      repository: 'git@git.anixe.pl:aclr8/mercures_snapshots.git'
+    cr8r-test:
+      repository: 'https://gitlab.pwychowaniec.com/patryk/cr8r-test'

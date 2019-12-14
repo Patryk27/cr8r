@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use lib_lxd::{LxdClient, LxdContainerName};
+use lib_sandbox_lxd::{LxdClient, LxdContainerName};
 
 pub use self::{
     error::*,

@@ -14,11 +14,7 @@ pub enum LxdResponseEvent {
         status: ExitStatus,
     },
 
-    Stderr {
-        line: String,
-    },
-
-    Stdout {
+    Printed {
         line: String,
     },
 }
@@ -38,36 +34,34 @@ impl LxdResponseStream {
             .await
     }
 
-    pub async fn stdout(mut self) -> Result<String> {
-        let mut stdout = String::new();
+    pub async fn output(mut self) -> Result<String> {
+        let mut output = String::new();
 
         while let Some(event) = self.next().await {
             match event {
                 LxdResponseEvent::Exited { status } => {
                     return if status.success() {
-                        Ok(stdout)
+                        Ok(output)
                     } else {
                         Err(Error::CommandTerminatedAbruptly)
                     };
                 }
 
-                LxdResponseEvent::Stdout { line } => {
-                    stdout.push_str(&line);
-                    stdout.push('\n');
+                LxdResponseEvent::Printed { line } => {
+                    output.push_str(&line);
+                    output.push('\n');
                 }
-
-                _ => (),
             }
         }
 
         Err(Error::CommandTerminatedAbruptly)
     }
 
-    pub fn stdout_sync(self) -> Result<String> {
+    pub fn output_sync(self) -> Result<String> {
         let (tx, rx) = std_mpsc::sync_channel(1);
 
         tokio::spawn(async move {
-            let stdout = self.stdout().await;
+            let stdout = self.output().await;
 
             tx.send(stdout).unwrap();
         });
@@ -76,13 +70,13 @@ impl LxdResponseStream {
     }
 
     pub async fn wait(self) -> Result<()> {
-        self.stdout()
+        self.output()
             .await
             .map(|_| ())
     }
 
     pub fn wait_sync(self) -> Result<()> {
-        self.stdout_sync()
+        self.output_sync()
             .map(|_| ())
     }
 }

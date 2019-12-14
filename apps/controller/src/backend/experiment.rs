@@ -3,7 +3,7 @@ use futures_channel::mpsc;
 use lib_actor::{ask, tell};
 use lib_protocol::core::{PAssignment, PExperiment, PExperimentId, PReport, PRunnerId, PScenario};
 
-use crate::backend::{ExperimentWatcher, Result, System};
+use crate::backend::{ExperimentWatcher, Result};
 
 pub(self) use self::{
     actor::*,
@@ -21,12 +21,11 @@ pub struct Experiment {
 }
 
 impl Experiment {
-    pub fn spawn(system: System, id: PExperimentId, scenarios: Vec<PScenario>) -> Self {
+    pub fn spawn(id: PExperimentId, scenarios: Vec<PScenario>) -> Self {
         let (tx, rx) = mpsc::unbounded();
 
         tokio::spawn(ExperimentActor::new(
             rx,
-            system,
             id,
             scenarios,
         ).main());
@@ -51,7 +50,7 @@ impl Experiment {
         ask!(self.tx, ExperimentMsg::Start { runner })
     }
 
-    pub async fn watch(&self) -> ExperimentWatcher {
+    pub async fn watch(&self) -> Result<ExperimentWatcher> {
         ask!(self.tx, ExperimentMsg::Watch)
     }
 }

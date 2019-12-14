@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use chrono::{DateTime, Utc};
 
 use lib_protocol::core::{PReport, PRunnerId};
@@ -10,15 +12,15 @@ pub enum ExperimentStatus {
 
     Running {
         since: DateTime<Utc>,
-        last_heartbeat: DateTime<Utc>,
+        last_heartbeat_at: DateTime<Utc>,
         runner: PRunnerId,
-        reports: Vec<PReport>,
+        reports: Vec<Arc<PReport>>,
         completed_scenarios: u32,
-        total_scenarios: u32,
     },
 
     Completed {
         since: DateTime<Utc>,
+        success: bool,
     },
 
     Aborted {

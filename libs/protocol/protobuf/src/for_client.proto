@@ -4,7 +4,6 @@ package cr8r.for_client;
 
 import "for_client/hello.proto";
 import "for_client/experiments/abort.proto";
-import "for_client/experiments/describe.proto";
 import "for_client/experiments/find.proto";
 import "for_client/experiments/launch.proto";
 import "for_client/experiments/watch.proto";

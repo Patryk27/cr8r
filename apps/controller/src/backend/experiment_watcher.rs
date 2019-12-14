@@ -1,7 +1,10 @@
+use std::sync::Arc;
+
 use futures_channel::mpsc;
 
 use lib_actor::{ask, tell};
 use lib_protocol::core::PReport;
+use lib_protocol::for_client::PWatchExperimentReply;
 
 pub(self) use self::{
     actor::*,
@@ -27,12 +30,12 @@ impl ExperimentWatcher {
         Self { tx }
     }
 
-    pub fn add(&mut self, report: PReport) {
-        tell!(self.tx, ExperimentWatcherMsg::Add { report })
+    pub fn push_report(&mut self, report: Arc<PReport>) {
+        tell!(self.tx, ExperimentWatcherMsg::PushReport { report })
     }
 
-    pub async fn get(&mut self) -> Option<String> {
-        ask!(self.tx, ExperimentWatcherMsg::Get)
+    pub async fn pull_reply(&mut self) -> PWatchExperimentReply {
+        ask!(self.tx, ExperimentWatcherMsg::PullReply)
     }
 
     pub fn kill(&mut self) {

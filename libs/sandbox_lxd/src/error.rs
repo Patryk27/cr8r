@@ -7,7 +7,7 @@ pub type Result<T> = result::Result<T, Error>;
 #[derive(Debug, Snafu)]
 #[snafu(visibility(pub (crate)))]
 pub enum Error {
-    #[snafu(display("Could not find LXD's client executable (e.g. `/snap/bin/lxc`) - please ensure you have installed LXD"))]
+    #[snafu(display("Couldn't find LXD's client executable (e.g. `/snap/bin/lxc`) - please ensure you have LXD installed"))]
     ClientNotFound,
 
     #[snafu(display("Command has terminated abruptly, so we couldn't read its output"))]

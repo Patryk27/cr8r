@@ -14,7 +14,7 @@ pub fn process(actor: &mut RunnerActor) -> PRunner {
         id: actor.id.clone(),
         name: actor.name.clone(),
         joined_at: actor.joined_at.to_rfc3339(),
-        heartbeaten_at: actor.heartbeaten_at.to_rfc3339(),
+        last_heartbeat_at: actor.last_heartbeat_at.to_rfc3339(),
 
         status: Some(PStatus {
             op: Some(status),

@@ -1,4 +1,4 @@
-use lib_lxd::{LxdClient, LxdResponseEvent, LxdResponseStream, Result as LxdResult};
+use lib_sandbox_lxd::{LxdClient, LxdResponseEvent, LxdResponseStream, Result as LxdResult};
 
 use crate::{Error, Result, Sandbox};
 
@@ -19,14 +19,8 @@ impl Sandbox {
                     };
                 }
 
-                LxdResponseEvent::Stdout { line } => {
-                    if let Some(notify) = &self.listener.on_command_stdout {
-                        notify(line);
-                    }
-                }
-
-                LxdResponseEvent::Stderr { line } => {
-                    if let Some(notify) = &self.listener.on_command_stderr {
+                LxdResponseEvent::Printed { line } => {
+                    if let Some(notify) = &self.listener.on_command_printed {
                         notify(line);
                     }
                 }

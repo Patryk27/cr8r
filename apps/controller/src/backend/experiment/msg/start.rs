@@ -10,10 +10,9 @@ pub fn process(actor: &mut ExperimentActor, runner: PRunnerId) -> Result<PAssign
         ExperimentStatus::AwaitingRunner { .. } => {
             actor.status = ExperimentStatus::Running {
                 since: Utc::now(),
-                last_heartbeat: Utc::now(),
+                last_heartbeat_at: Utc::now(),
                 runner,
                 reports: Vec::new(),
-                total_scenarios: 0,
                 completed_scenarios: 0,
             };
 
@@ -31,11 +30,11 @@ pub fn process(actor: &mut ExperimentActor, runner: PRunnerId) -> Result<PAssign
         }
 
         ExperimentStatus::Completed { .. } => {
-            Err("This experiment has been already completed".into())
+            Err("This experiment has been already completed - if you want to re-start it, please create a new one".into())
         }
 
         ExperimentStatus::Aborted { .. } => {
-            Err("This experiment has been aborted".into())
+            Err("This experiment has been aborted - if you want to re-start it, please create a new one".into())
         }
 
         ExperimentStatus::Zombie { .. } => {

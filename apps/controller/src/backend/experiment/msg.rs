@@ -29,7 +29,7 @@ pub enum ExperimentMsg {
     },
 
     Watch {
-        tx: oneshot::Sender<ExperimentWatcher>,
+        tx: oneshot::Sender<Result<ExperimentWatcher>>,
     },
 }
 

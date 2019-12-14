@@ -27,6 +27,6 @@ message PRunner {
     string id = 1;
     string name = 2;
     string joined_at = 3;
-    string heartbeaten_at = 4;
+    string last_heartbeat_at = 4;
     PStatus status = 5;
 }

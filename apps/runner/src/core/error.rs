@@ -8,36 +8,36 @@ pub type StdResult<T> = result::Result<T, Box<dyn std::error::Error>>;
 #[derive(Debug, Snafu)]
 #[snafu(visibility(pub (crate)))]
 pub enum Error {
-    #[snafu(display("Failed to start the runner: {:?}", source))]
-    FailedToStart {
+    #[snafu(display("Couldn't start the runner: {:?}", source))]
+    CouldntStart {
         source: Box<dyn std::error::Error>,
     },
 
-    #[snafu(display("Failed to connect to the controller: {}", source))]
-    FailedToConnectToController {
+    #[snafu(display("Couldn't connect to the controller: {}", source))]
+    CouldntConnectToController {
         source: tonic::transport::Error,
     },
 
-    #[snafu(display("Failed to perform request to the controller: {}", source))]
-    FailedToRequestController {
+    #[snafu(display("Couldn't perform request to the controller: {}", source))]
+    CouldntRequestController {
         source: tonic::Status,
     },
 }
 
 impl From<lib_sandbox::Error> for Error {
     fn from(source: lib_sandbox::Error) -> Self {
-        Error::FailedToStart { source: box source }
+        Error::CouldntStart { source: box source }
     }
 }
 
 impl From<tonic::Status> for Error {
     fn from(source: tonic::Status) -> Self {
-        Error::FailedToRequestController { source }
+        Error::CouldntRequestController { source }
     }
 }
 
 impl From<tonic::transport::Error> for Error {
     fn from(source: tonic::transport::Error) -> Self {
-        Error::FailedToConnectToController { source }
+        Error::CouldntConnectToController { source }
     }
 }

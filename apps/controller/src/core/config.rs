@@ -27,5 +27,5 @@ pub fn load(file: &Path) -> Result<Config> {
         let config = serde_yaml::from_str(&config)?;
 
         config
-    }: StdResult<Config>).context(error::FailedToStart)
+    }: StdResult<Config>).context(error::CouldntStart)
 }

@@ -21,10 +21,10 @@ macro_rules! ask {
             if let Ok(rx) = rx.await {
                 rx
             } else {
-                panic!("Connection to actor lost (failed to await response) - did it die prematurely?"); // @todo
+                panic!("Connection to actor lost (couldn't await response) - did it die prematurely?"); // @todo
             }
         } else {
-            panic!("Connection to actor lost (failed to send message) - did it die prematurely?"); // @todo
+            panic!("Connection to actor lost (couldn't send message) - did it die prematurely?"); // @todo
         }
     }};
 }
@@ -32,9 +32,7 @@ macro_rules! ask {
 #[macro_export]
 macro_rules! tell {
     ($tx:expr, $msg:expr) => {{
-        if !$tx.unbounded_send($msg).is_ok() {
-            panic!("Connection to actor lost (failed to send message) - did it die prematurely?"); // @todo
-        }
+        let _ = $tx.unbounded_send($msg);
     }};
 }
 

@@ -19,7 +19,7 @@ impl SystemHeartbeaterActor {
 
         loop {
             if let Err(err) = self.client.ping().await {
-                error!("Failed to ping the controller: {:?}", err);
+                error!("Couldn't ping the controller: {:?}", err);
                 error!("We'll try again in a moment");
             }
 

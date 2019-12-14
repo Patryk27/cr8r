@@ -14,6 +14,9 @@ mod fauna;
 #[serde(deny_unknown_fields)]
 pub struct Ecosystem {
     pub environment: Environment,
+
+    #[serde(default)]
     pub flora: Flora,
+
     pub fauna: Fauna,
 }

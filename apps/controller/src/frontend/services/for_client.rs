@@ -37,9 +37,11 @@ impl ForClient for ForClientService {
         let mut experiments = Vec::new();
 
         for experiment in self.system.find_experiments().await {
-            experiments.push(
-                experiment.as_model().await,
-            );
+            let experiment = experiment
+                .as_model()
+                .await;
+
+            experiments.push(experiment);
         }
 
         Ok(Response::new(PFindExperimentsReply { experiments }))
@@ -52,7 +54,9 @@ impl ForClient for ForClientService {
         let request = request.into_inner();
 
         if let Some(PExperimentDefinition { op: Some(experiment) }) = request.experiment {
-            let id = self.system.launch_experiment(experiment).await?;
+            let id = self.system
+                .launch_experiment(experiment)
+                .await?;
 
             Ok(Response::new(PLaunchExperimentReply { id }))
         } else {
@@ -70,15 +74,17 @@ impl ForClient for ForClientService {
 
         let mut watcher = self.system
             .find_experiment(request.id).await?
-            .watch().await;
+            .watch().await?;
 
         let (mut tx, rx) = mpsc::channel(4);
 
         tokio::spawn(async move {
-            while let Some(line) = watcher.get().await {
-                let reply = Ok(PWatchExperimentReply { line });
+            loop {
+                let reply = watcher
+                    .pull_reply()
+                    .await;
 
-                if tx.send(reply).await.is_err() {
+                if tx.send(Ok(reply)).await.is_err() {
                     break;
                 }
             }
@@ -94,9 +100,11 @@ impl ForClient for ForClientService {
         let mut runners = Vec::new();
 
         for runner in self.system.find_runners().await {
-            runners.push(
-                runner.as_model().await,
-            );
+            let runner = runner
+                .as_model()
+                .await;
+
+            runners.push(runner);
         }
 
         Ok(Response::new(PFindRunnersReply { runners }))

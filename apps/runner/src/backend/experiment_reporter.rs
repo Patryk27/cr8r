@@ -33,12 +33,8 @@ impl ExperimentReporter {
         tell!(self.tx, ExperimentReporterMsg::AddMessage { message: message.into() });
     }
 
-    pub fn add_process_stdout(&self, line: impl Into<String>) {
-        tell!(self.tx, ExperimentReporterMsg::AddProcessStdout { line: line.into() });
-    }
-
-    pub fn add_process_stderr(&self, line: impl Into<String>) {
-        tell!(self.tx, ExperimentReporterMsg::AddProcessStderr { line: line.into() });
+    pub fn add_process_output(&self, line: impl Into<String>) {
+        tell!(self.tx, ExperimentReporterMsg::AddProcessOutput { line: line.into() });
     }
 
     pub fn add_experiment_started(&self) {

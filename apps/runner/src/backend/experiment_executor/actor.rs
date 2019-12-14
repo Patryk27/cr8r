@@ -47,12 +47,8 @@ impl ExperimentExecutorActor {
                 reporter.add_message(format!("Executing: {}", cmd));
             })),
 
-            on_command_stdout: Some(box closure!(clone reporter, |line| {
-                reporter.add_process_stdout(line);
-            })),
-
-            on_command_stderr: Some(box closure!(clone reporter, |line| {
-                reporter.add_process_stderr(line);
+            on_command_printed: Some(box closure!(clone reporter, |line| {
+                reporter.add_process_output(line);
             })),
         });
 
@@ -64,7 +60,7 @@ impl ExperimentExecutorActor {
             .collect(): Vec<_>;
 
         for scenario in scenarios {
-            self.process_messages().await;
+            self.process_messages_yield();
             self.reporter.add_scenario_started();
 
             let success = match self.execute_scenario(scenario).await {
@@ -82,6 +78,10 @@ impl ExperimentExecutorActor {
         }
 
         self.reporter.add_experiment_completed();
+        self.status = ExperimentExecutorStatus::Completed;
+
+        self.process_messages_loop()
+            .await;
 
         debug!("Actor orphaned, halting");
     }

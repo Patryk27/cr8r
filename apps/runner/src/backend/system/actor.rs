@@ -36,12 +36,10 @@ impl SystemActor {
                 Err(err) => {
                     // @todo we should notify controller about this incident
 
-                    error!("Failed to conduct experiment: {:?}", err);
+                    error!("Couldn't conduct experiment: {:?}", err);
                 }
             }
         }
-
-        Ok(())
     }
 
     async fn poll_for_assignment(&mut self) -> (PAssignment, ExperimentClient) {
@@ -59,12 +57,15 @@ impl SystemActor {
                 }
 
                 Ok(None) => {
+                    debug!("Got nothing");
+                    debug!("We'll try again in a moment");
+
                     timer::delay_for(Duration::from_secs(5))
                         .await;
                 }
 
                 Err(err) => {
-                    error!("Failed to ask controller for an assignment: {:?}", err);
+                    error!("Couldn't ask controller for an assignment: {:?}", err);
                     error!("We'll try again in a moment");
 
                     timer::delay_for(Duration::from_secs(60))
@@ -92,7 +93,7 @@ impl SystemActor {
                 }
 
                 ExperimentExecutorStatus::Running => {
-                    timer::delay_for(Duration::from_secs(5))
+                    timer::delay_for(Duration::from_secs(1))
                         .await;
                 }
             }

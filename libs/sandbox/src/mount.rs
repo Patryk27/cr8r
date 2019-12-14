@@ -1,4 +1,4 @@
-use lib_lxd::LxdDeviceDef;
+use lib_sandbox_lxd::LxdDeviceDef;
 
 #[derive(Debug)]
 pub enum SandboxMount {

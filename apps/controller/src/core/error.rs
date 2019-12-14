@@ -8,15 +8,15 @@ pub type StdResult<T> = result::Result<T, Box<dyn std::error::Error>>;
 #[derive(Debug, Snafu)]
 #[snafu(visibility(pub (crate)))]
 pub enum Error {
-    #[snafu(display("Failed to start the controller: {:?}", source))]
-    FailedToStart {
+    #[snafu(display("Couldn't start the controller: {:?}", source))]
+    CouldntStart {
         source: Box<dyn std::error::Error>,
     },
 }
 
 impl From<std::net::AddrParseError> for Error {
     fn from(err: std::net::AddrParseError) -> Self {
-        Error::FailedToStart {
+        Error::CouldntStart {
             source: box err,
         }
     }

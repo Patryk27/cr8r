@@ -65,13 +65,13 @@ impl Compiler {
             }
 
             add_step! { steps, print("Cloning project") }
-            add_step! { steps, run(format!("git clone {} project && cd project", project.repository)) }
+            add_step! { steps, run(format!("git clone {} project", project.repository)) }
 
             add_step! { steps, print("Starting tests") }
-            add_step! { steps, run("cargo test") }
+            add_step! { steps, run("cd project && cargo test") }
 
             add_step! { steps, print("Starting build") }
-            add_step! { steps, run("cargo build") }
+            add_step! { steps, run("cd project && cargo build") }
 
             scenarios.push(PScenario {
                 project: project_name.clone(),

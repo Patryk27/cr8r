@@ -11,11 +11,7 @@ message PReport {
         string message = 1;
     }
 
-    message PProcessStdout {
-        string line = 1;
-    }
-
-    message PProcessStderr {
+    message PProcessOutput {
         string line = 1;
     }
 
@@ -45,8 +41,7 @@ message PReport {
         PPing ping = 100;
         PMessage message = 101;
 
-        PProcessStdout process_stdout = 200;
-        PProcessStderr process_stderr = 201;
+        PProcessOutput process_output = 200;
 
         PExperimentStarted experiment_started = 300;
         PExperimentCompleted experiment_completed = 301;

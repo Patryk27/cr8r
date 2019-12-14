@@ -5,7 +5,7 @@ members = [
     "apps/runner",
     "libs/actor",
     "libs/log",
-    "libs/lxd",
     "libs/protocol",
     "libs/sandbox",
+    "libs/sandbox_lxd",
 ]

@@ -18,6 +18,8 @@ pub use self::{
 mod commands;
 mod core;
 mod system;
+#[macro_use]
+mod ui;
 
 #[tokio::main]
 async fn main() {

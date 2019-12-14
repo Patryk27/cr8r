@@ -4,12 +4,11 @@ use log::*;
 
 use lib_protocol::core::{PExperimentId, PScenario};
 
-use crate::backend::{ExperimentWatcher, System};
 use crate::backend::experiment::{ExperimentRx, ExperimentStatus};
+use crate::backend::ExperimentWatcher;
 
 pub struct ExperimentActor {
     rx: ExperimentRx,
-    pub(super) system: System,
     pub(super) experiment: PExperimentId,
     pub(super) scenarios: Vec<PScenario>,
     pub(super) created_at: DateTime<Utc>,
@@ -20,13 +19,11 @@ pub struct ExperimentActor {
 impl ExperimentActor {
     pub fn new(
         rx: ExperimentRx,
-        system: System,
         experiment: PExperimentId,
         scenarios: Vec<PScenario>,
     ) -> Self {
         Self {
             rx,
-            system,
             experiment,
             scenarios,
             created_at: Utc::now(),
@@ -41,26 +38,24 @@ impl ExperimentActor {
         debug!("-> scenarios: {}", self.scenarios.len());
 
         while let Some(msg) = self.rx.next().await {
-            self.maybe_zombify();
+            self.triage();
             msg.process(&mut self);
         }
 
         debug!("Actor orphaned, halting");
     }
 
-    fn maybe_zombify(&mut self) {
-        let zombify = match self.status {
-            ExperimentStatus::Running { last_heartbeat, .. } => {
-                (Utc::now() - last_heartbeat).num_minutes() >= 5
+    fn triage(&mut self) {
+        match self.status {
+            ExperimentStatus::Running { last_heartbeat_at, .. } => {
+                if (Utc::now() - last_heartbeat_at).num_minutes() >= 5 {
+                    self.status = ExperimentStatus::Zombie {
+                        since: Utc::now(),
+                    };
+                }
             }
 
-            _ => false,
+            _ => (),
         };
-
-        if zombify {
-            self.status = ExperimentStatus::Zombie {
-                since: Utc::now(),
-            }
-        }
     }
 }

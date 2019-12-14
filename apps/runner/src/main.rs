@@ -19,7 +19,7 @@ mod core;
 #[tokio::main]
 async fn main() -> Result<()> {
     lib_log::init()
-        .context(error::FailedToStart)?;
+        .context(error::CouldntStart)?;
 
     let config = config::load()?;
     let sandbox_provider = SandboxProvider::new()?;

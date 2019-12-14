@@ -2,19 +2,17 @@ use std::collections::{HashMap, VecDeque};
 
 use lib_protocol::core::{PExperimentId, PScenario};
 
-use crate::backend::{Experiment, Result, System};
+use crate::backend::{Experiment, Result};
 use crate::id;
 
 pub struct Experiments {
-    system: System,
     experiments: HashMap<PExperimentId, Experiment>,
     pending: VecDeque<PExperimentId>,
 }
 
 impl Experiments {
-    pub fn new(system: System) -> Self {
+    pub fn new() -> Self {
         Self {
-            system,
             experiments: HashMap::new(),
             pending: VecDeque::new(),
         }
@@ -24,7 +22,6 @@ impl Experiments {
         let id = id!();
 
         let experiment = Experiment::spawn(
-            self.system.clone(),
             id.clone(),
             scenarios,
         );

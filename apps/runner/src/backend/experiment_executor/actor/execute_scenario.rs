@@ -12,7 +12,7 @@ impl ExperimentExecutorActor {
                 .await?;
         };
 
-        self.destroy_sandbox(&scenario)
+        self.destroy_sandbox()
             .await?;
 
         result
@@ -24,7 +24,7 @@ impl ExperimentExecutorActor {
         self.sandbox
             .initialize(&scenario.system, &scenario.toolchain)
             .await
-            .map_err(|err| format!("Failed to initialize the sandbox: {}", err))
+            .map_err(|err| format!("Couldn't initialize the sandbox: {}", err))
     }
 
     async fn execute_steps(&mut self, scenario: &mut PScenario) -> ExecutorResult<()> {
@@ -37,12 +37,12 @@ impl ExperimentExecutorActor {
         Ok(())
     }
 
-    async fn destroy_sandbox(&mut self, scenario: &PScenario) -> ExecutorResult<()> {
+    async fn destroy_sandbox(&mut self) -> ExecutorResult<()> {
         self.reporter.add_message("Destroying sandbox");
 
         self.sandbox
             .destroy()
             .await
-            .map_err(|err| format!("Failed to destroy the sandbox: {}", err))
+            .map_err(|err| format!("Couldn't destroy the sandbox: {}", err))
     }
 }

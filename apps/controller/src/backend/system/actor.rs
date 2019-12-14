@@ -21,8 +21,8 @@ pub struct SystemActor {
 
 impl SystemActor {
     pub fn new(rx: SystemRx, system: System, compiler: Compiler) -> Self {
-        let runners = Runners::new(system.clone());
-        let experiments = Experiments::new(system);
+        let runners = Runners::new(system);
+        let experiments = Experiments::new();
 
         Self { rx, compiler, runners, experiments }
     }

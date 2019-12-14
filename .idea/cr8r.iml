@@ -110,7 +110,10 @@
       <sourceFolder url="file://$MODULE_DIR$/libs/sandbox/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libs/sandbox/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/libs/sandbox/benches" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/libs/lxd/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/sandbox_lxd/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/sandbox_lxd/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/sandbox_lxd/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/sandbox_lxd/benches" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/apps/client/target" />
       <excludeFolder url="file://$MODULE_DIR$/apps/controller/target" />
       <excludeFolder url="file://$MODULE_DIR$/apps/runner/target" />
@@ -124,6 +127,7 @@
       <excludeFolder url="file://$MODULE_DIR$/libs/protocol/runner/target" />
       <excludeFolder url="file://$MODULE_DIR$/libs/protocol/target" />
       <excludeFolder url="file://$MODULE_DIR$/libs/sandbox/target" />
+      <excludeFolder url="file://$MODULE_DIR$/libs/sandbox_lxd/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/app_client/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/app_controller/target" />
       <excludeFolder url="file://$MODULE_DIR$/src/app_runner/target" />

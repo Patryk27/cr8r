@@ -10,13 +10,13 @@ message PExperiment {
 
         message PRunning {
             string since = 1;
-            string runner_id = 2;
+            string last_heartbeat_at = 2;
             uint32 completed_scenarios = 3;
-            uint32 total_scenarios = 4;
         }
 
         message PCompleted {
             string since = 1;
+            bool success = 2;
         }
 
         message PAborted {
@@ -37,8 +37,8 @@ message PExperiment {
     }
 
     string id = 1;
-    string created_at = 2;
-    string heartbeaten_at = 3;
+    uint32 scenario_count = 2;
+    string created_at = 3;
     PStatus status = 4;
 }
 
