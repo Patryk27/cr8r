@@ -1,19 +1,20 @@
-use crate::backend::{ExperimentWatcher, Result};
-use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
+use std::sync::Arc;
 
-pub fn process(actor: &mut ExperimentActor) -> Result<ExperimentWatcher> {
+use futures_channel::mpsc;
+
+use lib_protocol::core::PExperimentReport;
+
+use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
+use crate::backend::Result;
+
+pub fn process(actor: &mut ExperimentActor) -> Result<mpsc::UnboundedReceiver<Arc<PExperimentReport>>> {
     match actor.status {
         ExperimentStatus::AwaitingRunner { .. } | ExperimentStatus::Running { .. } | ExperimentStatus::Zombie { .. } => {
-            if let Some(mut watcher) = actor.watcher.take() {
-                watcher.kill();
-            }
+            let (tx, rx) = mpsc::unbounded();
 
-            let watcher = ExperimentWatcher::spawn();
+            actor.watchers.push(tx);
 
-            // @todo allow handling many watchers at once
-            actor.watcher = Some(watcher.clone());
-
-            Ok(watcher)
+            Ok(rx)
         }
 
         ExperimentStatus::Completed { .. } => {

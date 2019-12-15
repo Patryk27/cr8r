@@ -1,7 +1,8 @@
+use futures_util::StreamExt;
 use tokio::sync::mpsc;
 use tonic::{Code, Request, Response, Status};
 
-use lib_protocol::core::PExperimentDefinition;
+use lib_protocol::core::{PExperimentDefinition, PExperimentReport};
 use lib_protocol::for_client::*;
 use lib_protocol::for_client::server::ForClient;
 
@@ -38,7 +39,7 @@ impl ForClient for ForClientService {
 
         for experiment in self.system.find_experiments().await {
             let experiment = experiment
-                .as_model()
+                .get_model()
                 .await;
 
             experiments.push(experiment);
@@ -64,7 +65,7 @@ impl ForClient for ForClientService {
         }
     }
 
-    type WatchExperimentStream = mpsc::Receiver<Result<PWatchExperimentReply, Status>>;
+    type WatchExperimentStream = mpsc::Receiver<Result<PExperimentReport, Status>>;
 
     async fn watch_experiment(
         &self,
@@ -72,19 +73,18 @@ impl ForClient for ForClientService {
     ) -> Result<Response<Self::WatchExperimentStream>, Status> {
         let request = request.into_inner();
 
-        let mut watcher = self.system
+        let mut report_rx = self.system
             .find_experiment(request.id).await?
             .watch().await?;
 
         let (mut tx, rx) = mpsc::channel(4);
 
         tokio::spawn(async move {
-            loop {
-                let reply = watcher
-                    .pull_reply()
-                    .await;
+            while let Some(report) = report_rx.next().await {
+                // @todo can we avoid this clone somehow?
+                let report = (&*report).to_owned();
 
-                if tx.send(Ok(reply)).await.is_err() {
+                if tx.send(Ok(report)).await.is_err() {
                     break;
                 }
             }

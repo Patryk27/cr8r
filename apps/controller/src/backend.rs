@@ -4,7 +4,6 @@ pub use self::{
     compiler::Compiler,
     error::{Error, Result},
     experiment::Experiment,
-    experiment_watcher::ExperimentWatcher,
     runner::Runner,
     system::System,
 };
@@ -12,7 +11,6 @@ pub use self::{
 mod compiler;
 mod error;
 mod experiment;
-mod experiment_watcher;
 mod runner;
 mod system;
 

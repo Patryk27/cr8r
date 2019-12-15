@@ -1,11 +1,11 @@
 use futures_channel::mpsc;
 
-pub type ExperimentReporterTx = mpsc::UnboundedSender<ExperimentReporterMsg>;
-pub type ExperimentReporterRx = mpsc::UnboundedReceiver<ExperimentReporterMsg>;
+pub type ExperimentJournalistTx = mpsc::UnboundedSender<ExperimentJournalistMsg>;
+pub type ExperimentJournalistRx = mpsc::UnboundedReceiver<ExperimentJournalistMsg>;
 
 #[derive(Debug)]
-pub enum ExperimentReporterMsg {
-    AddMessage {
+pub enum ExperimentJournalistMsg {
+    AddCustomMessage {
         message: String,
     },
 

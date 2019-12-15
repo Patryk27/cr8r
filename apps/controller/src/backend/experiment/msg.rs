@@ -1,10 +1,12 @@
+use std::sync::Arc;
+
 use futures_channel::{mpsc, oneshot};
 use log::*;
 
-use lib_protocol::core::{PAssignment, PExperiment, PReport, PRunnerId};
+use lib_protocol::core::{PAssignment, PExperiment, PExperimentEvent, PExperimentReport, PRunnerId};
 
-use crate::backend::{ExperimentWatcher, Result};
 use crate::backend::experiment::ExperimentActor;
+use crate::backend::Result;
 
 pub type ExperimentTx = mpsc::UnboundedSender<ExperimentMsg>;
 pub type ExperimentRx = mpsc::UnboundedReceiver<ExperimentMsg>;
@@ -13,14 +15,18 @@ pub type ExperimentRx = mpsc::UnboundedReceiver<ExperimentMsg>;
 pub enum ExperimentMsg {
     Abort,
 
-    AddReport {
+    AddEvent {
         runner: PRunnerId,
-        report: PReport,
+        event: PExperimentEvent,
         tx: oneshot::Sender<Result<()>>,
     },
 
-    AsModel {
+    GetModel {
         tx: oneshot::Sender<PExperiment>,
+    },
+
+    GetReports {
+        tx: oneshot::Sender<Vec<Arc<PExperimentReport>>>,
     },
 
     Start {
@@ -29,13 +35,14 @@ pub enum ExperimentMsg {
     },
 
     Watch {
-        tx: oneshot::Sender<Result<ExperimentWatcher>>,
+        tx: oneshot::Sender<Result<mpsc::UnboundedReceiver<Arc<PExperimentReport>>>>,
     },
 }
 
 mod abort;
-mod add_report;
-mod as_model;
+mod add_event;
+mod get_model;
+mod get_reports;
 mod start;
 mod watch;
 
@@ -49,12 +56,16 @@ impl ExperimentMsg {
                 abort::process(actor);
             }
 
-            ExperimentMsg::AddReport { runner, report, tx } => {
-                let _ = tx.send(add_report::process(actor, runner, report));
+            ExperimentMsg::AddEvent { runner, event, tx } => {
+                let _ = tx.send(add_event::process(actor, runner, event));
             }
 
-            ExperimentMsg::AsModel { tx } => {
-                let _ = tx.send(as_model::process(actor));
+            ExperimentMsg::GetModel { tx } => {
+                let _ = tx.send(get_model::process(actor));
+            }
+
+            ExperimentMsg::GetReports { tx } => {
+                let _ = tx.send(get_reports::process(actor));
             }
 
             ExperimentMsg::Start { runner, tx } => {

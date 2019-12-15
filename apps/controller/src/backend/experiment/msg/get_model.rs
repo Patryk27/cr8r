@@ -20,7 +20,7 @@ pub fn process(actor: &mut ExperimentActor) -> PExperiment {
             })
         }
 
-        ExperimentStatus::Completed { since, success } => {
+        ExperimentStatus::Completed { since, success, .. } => {
             Op::Completed(PCompleted {
                 since: since.to_rfc3339(),
                 success: *success,

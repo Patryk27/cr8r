@@ -1,8 +1,6 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use colored::Colorize;
-use log::*;
 use serde::Deserialize;
 use snafu::ResultExt;
 
@@ -35,8 +33,6 @@ pub fn load() -> Result<Config> {
 }
 
 pub fn from_file(file: &Path) -> Result<Config> {
-    info!("Loading configuration from: {}", file.display().to_string().green());
-
     (try {
         let config = fs::read_to_string(file)?;
         let config = serde_yaml::from_str(&config)?;

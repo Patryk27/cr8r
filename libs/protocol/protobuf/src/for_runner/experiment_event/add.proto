@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package cr8r.for_runner;
+
+import "core/experiment_event.proto";
+
+message PAddExperimentEventRequest {
+    string runner_id = 1;
+    string experiment_id = 2;
+    core.PExperimentEvent experiment_event = 3;
+}
+
+message PAddExperimentEventReply {
+    //
+}
+

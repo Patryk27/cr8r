@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package cr8r.core;
+
+message PExperimentReport {
+    enum Kind {
+        SYSTEM_MESSAGE = 0;
+        CUSTOM_MESSAGE = 1;
+        PROCESS_OUTPUT = 2;
+    }
+
+    string created_at = 1;
+    Kind kind = 2;
+    string message = 3;
+}

@@ -1,7 +1,7 @@
 use chrono::Utc;
 
-use lib_protocol::core::{PExperimentId, PReport, PRunnerId};
-use lib_protocol::core::p_report;
+use lib_protocol::core::{PExperimentEvent, PExperimentId, PRunnerId};
+use lib_protocol::core::p_experiment_event;
 
 use crate::core::{Client, Result};
 
@@ -17,16 +17,16 @@ impl ExperimentClient {
         Self { client, runner, experiment }
     }
 
-    pub async fn report(&mut self, report: p_report::Op) -> Result<()> {
-        let report = PReport {
+    pub async fn add_event(&mut self, report: p_experiment_event::Op) -> Result<()> {
+        let event = PExperimentEvent {
             created_at: Utc::now().to_rfc3339(),
             op: Some(report),
         };
 
-        self.client.add_experiment_report(
+        self.client.add_experiment_event(
             self.runner.clone(),
             self.experiment.clone(),
-            report,
+            event,
         ).await?;
 
         Ok(())

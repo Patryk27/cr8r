@@ -53,20 +53,20 @@ impl ForRunner for ForRunnerService {
         Ok(Response::new(PRequestAssignmentReply { assignment }))
     }
 
-    async fn add_experiment_report(
+    async fn add_experiment_event(
         &self,
-        request: Request<PAddExperimentReportRequest>,
-    ) -> Result<Response<PAddExperimentReportReply>, Status> {
+        request: Request<PAddExperimentEventRequest>,
+    ) -> Result<Response<PAddExperimentEventReply>, Status> {
         let request = request.into_inner();
 
-        if let Some(report) = request.report {
+        if let Some(event) = request.experiment_event {
             self.system
                 .find_experiment(request.experiment_id).await?
-                .add_report(request.runner_id, report).await?;
+                .add_event(request.runner_id, event).await?;
 
-            Ok(Response::new(PAddExperimentReportReply {}))
+            Ok(Response::new(PAddExperimentEventReply::default()))
         } else {
-            Err(Status::new(Code::Internal, "No report has been provided"))
+            Err(Status::new(Code::Internal, "No event has been provided"))
         }
     }
 }

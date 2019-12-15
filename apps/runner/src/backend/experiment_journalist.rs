@@ -13,15 +13,15 @@ mod actor;
 mod msg;
 
 #[derive(Clone)]
-pub struct ExperimentReporter {
-    tx: ExperimentReporterTx,
+pub struct ExperimentJournalist {
+    tx: ExperimentJournalistTx,
 }
 
-impl ExperimentReporter {
+impl ExperimentJournalist {
     pub fn spawn(client: ExperimentClient) -> Self {
         let (tx, rx) = mpsc::unbounded();
 
-        tokio::spawn(ExecutorReporterActor::new(
+        tokio::spawn(ExperimentJournalistActor::new(
             rx,
             client,
         ).main());
@@ -30,26 +30,26 @@ impl ExperimentReporter {
     }
 
     pub fn add_message(&self, message: impl Into<String>) {
-        tell!(self.tx, ExperimentReporterMsg::AddMessage { message: message.into() });
+        tell!(self.tx, ExperimentJournalistMsg::AddCustomMessage { message: message.into() });
     }
 
     pub fn add_process_output(&self, line: impl Into<String>) {
-        tell!(self.tx, ExperimentReporterMsg::AddProcessOutput { line: line.into() });
+        tell!(self.tx, ExperimentJournalistMsg::AddProcessOutput { line: line.into() });
     }
 
     pub fn add_experiment_started(&self) {
-        tell!(self.tx, ExperimentReporterMsg::AddExperimentStarted);
+        tell!(self.tx, ExperimentJournalistMsg::AddExperimentStarted);
     }
 
     pub fn add_experiment_completed(&self) {
-        tell!(self.tx, ExperimentReporterMsg::AddExperimentCompleted);
+        tell!(self.tx, ExperimentJournalistMsg::AddExperimentCompleted);
     }
 
     pub fn add_scenario_started(&self) {
-        tell!(self.tx, ExperimentReporterMsg::AddScenarioStarted);
+        tell!(self.tx, ExperimentJournalistMsg::AddScenarioStarted);
     }
 
     pub fn add_scenario_completed(&self, success: bool) {
-        tell!(self.tx, ExperimentReporterMsg::AddScenarioCompleted { success });
+        tell!(self.tx, ExperimentJournalistMsg::AddScenarioCompleted { success });
     }
 }

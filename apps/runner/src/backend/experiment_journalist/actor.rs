@@ -1,18 +1,18 @@
 use futures_util::StreamExt;
 use log::*;
 
-use lib_protocol::core::p_report::*;
+use lib_protocol::core::p_experiment_event::*;
 
-use crate::backend::experiment_reporter::{ExperimentReporterMsg, ExperimentReporterRx};
+use crate::backend::experiment_journalist::{ExperimentJournalistMsg, ExperimentJournalistRx};
 use crate::core::ExperimentClient;
 
-pub struct ExecutorReporterActor {
-    rx: ExperimentReporterRx,
+pub struct ExperimentJournalistActor {
+    rx: ExperimentJournalistRx,
     client: ExperimentClient,
 }
 
-impl ExecutorReporterActor {
-    pub fn new(rx: ExperimentReporterRx, client: ExperimentClient) -> Self {
+impl ExperimentJournalistActor {
+    pub fn new(rx: ExperimentJournalistRx, client: ExperimentClient) -> Self {
         Self { rx, client }
     }
 
@@ -24,7 +24,7 @@ impl ExecutorReporterActor {
 
             let report = Self::msg_to_report(msg);
 
-            if let Err(err) = self.client.report(report).await {
+            if let Err(err) = self.client.add_event(report).await {
                 error!("Couldn't send report to the controller: {:?}", err);
                 // @todo try again in a moment
             }
@@ -33,29 +33,29 @@ impl ExecutorReporterActor {
         debug!("Actor orphaned, halting");
     }
 
-    fn msg_to_report(msg: ExperimentReporterMsg) -> Op {
+    fn msg_to_report(msg: ExperimentJournalistMsg) -> Op {
         match msg {
-            ExperimentReporterMsg::AddMessage { message } => {
-                Op::Message(PMessage { message })
+            ExperimentJournalistMsg::AddCustomMessage { message } => {
+                Op::CustomMessage(PCustomMessage { message })
             }
 
-            ExperimentReporterMsg::AddProcessOutput { line } => {
+            ExperimentJournalistMsg::AddProcessOutput { line } => {
                 Op::ProcessOutput(PProcessOutput { line })
             }
 
-            ExperimentReporterMsg::AddExperimentStarted => {
+            ExperimentJournalistMsg::AddExperimentStarted => {
                 Op::ExperimentStarted(PExperimentStarted {})
             }
 
-            ExperimentReporterMsg::AddExperimentCompleted => {
+            ExperimentJournalistMsg::AddExperimentCompleted => {
                 Op::ExperimentCompleted(PExperimentCompleted {})
             }
 
-            ExperimentReporterMsg::AddScenarioStarted => {
+            ExperimentJournalistMsg::AddScenarioStarted => {
                 Op::ScenarioStarted(PScenarioStarted {})
             }
 
-            ExperimentReporterMsg::AddScenarioCompleted { success } => {
+            ExperimentJournalistMsg::AddScenarioCompleted { success } => {
                 Op::ScenarioCompleted(PScenarioCompleted { success })
             }
         }

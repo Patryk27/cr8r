@@ -12,6 +12,7 @@ pub fn process(actor: &mut ExperimentActor, runner: PRunnerId) -> Result<PAssign
                 since: Utc::now(),
                 last_heartbeat_at: Utc::now(),
                 runner,
+                events: Vec::new(),
                 reports: Vec::new(),
                 completed_scenarios: 0,
             };

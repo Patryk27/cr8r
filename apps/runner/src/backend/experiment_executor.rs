@@ -4,7 +4,7 @@ use lib_actor::ask;
 use lib_protocol::core::PAssignment;
 use lib_sandbox::Sandbox;
 
-use crate::backend::ExperimentReporter;
+use crate::backend::ExperimentJournalist;
 use crate::core::ExperimentClient;
 
 pub(self) use self::{
@@ -26,7 +26,7 @@ pub struct ExperimentExecutor {
 impl ExperimentExecutor {
     pub fn spawn(sandbox: Sandbox, assignment: PAssignment, client: ExperimentClient) -> Self {
         let (tx, rx) = mpsc::unbounded();
-        let reporter = ExperimentReporter::spawn(client);
+        let reporter = ExperimentJournalist::spawn(client);
 
         tokio::spawn(ExperimentExecutorActor::new(
             rx,

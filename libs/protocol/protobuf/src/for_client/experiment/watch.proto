@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package cr8r.for_client;
+
+message PWatchExperimentRequest {
+    string id = 1;
+}

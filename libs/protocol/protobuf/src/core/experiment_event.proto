@@ -2,12 +2,12 @@ syntax = "proto3";
 
 package cr8r.core;
 
-message PReport {
+message PExperimentEvent {
     message PPing {
         //
     }
 
-    message PMessage {
+    message PCustomMessage {
         string message = 1;
     }
 
@@ -39,15 +39,16 @@ message PReport {
 
     oneof op {
         PPing ping = 100;
-        PMessage message = 101;
 
-        PProcessOutput process_output = 200;
+        PCustomMessage custom_message = 200;
 
-        PExperimentStarted experiment_started = 300;
-        PExperimentCompleted experiment_completed = 301;
-        PExperimentAborted experiment_aborted = 302;
+        PProcessOutput process_output = 300;
 
-        PScenarioStarted scenario_started = 400;
-        PScenarioCompleted scenario_completed = 401;
+        PExperimentStarted experiment_started = 400;
+        PExperimentCompleted experiment_completed = 401;
+        PExperimentAborted experiment_aborted = 402;
+
+        PScenarioStarted scenario_started = 500;
+        PScenarioCompleted scenario_completed = 501;
     }
 }

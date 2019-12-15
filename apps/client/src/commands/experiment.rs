@@ -6,8 +6,7 @@ pub use self::launch::*;
 
 mod abort;
 mod launch;
-mod report;
-mod status;
+mod show;
 mod watch;
 
 #[derive(Debug, StructOpt)]
@@ -24,11 +23,10 @@ pub enum ExperimentCommand {
         cmd: LaunchExperimentCommand,
     },
 
-    Report {
-        id: String,
-    },
+    Show {
+        #[structopt(short = "r", long = "show-reports")]
+        show_reports: bool,
 
-    Status {
         id: String,
     },
 
@@ -48,12 +46,8 @@ impl ExperimentCommand {
                 cmd.run(system, watch).await
             }
 
-            ExperimentCommand::Report { id } => {
-                report::run(system, id).await
-            }
-
-            ExperimentCommand::Status { id } => {
-                status::run(system, id).await
+            ExperimentCommand::Show { id, show_reports: report } => {
+                show::run(system, &id, report).await
             }
 
             ExperimentCommand::Watch { id } => {

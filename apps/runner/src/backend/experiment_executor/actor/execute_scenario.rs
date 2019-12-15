@@ -19,7 +19,7 @@ impl ExperimentExecutorActor {
     }
 
     async fn launch_sandbox(&mut self, scenario: &PScenario) -> ExecutorResult<()> {
-        self.reporter.add_message(format!("Preparing sandbox (system: `{}`, toolchain: `{}`)", scenario.system, scenario.toolchain));
+        self.reporter.add_message(format!("Preparing sandbox (system `{}`, toolchain `{}`)", scenario.system, scenario.toolchain));
 
         self.sandbox
             .initialize(&scenario.system, &scenario.toolchain)

@@ -14,7 +14,7 @@ impl ControllerCommand {
         match self {
             ControllerCommand::Status => {
                 status::run(system).await
-            },
+            }
         }
     }
 }

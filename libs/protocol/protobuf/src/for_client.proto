@@ -2,20 +2,28 @@ syntax = "proto3";
 
 package cr8r.for_client;
 
+import "core/experiment_report.proto";
+
 import "for_client/hello.proto";
-import "for_client/experiments/abort.proto";
-import "for_client/experiments/find.proto";
-import "for_client/experiments/launch.proto";
-import "for_client/experiments/watch.proto";
-import "for_client/runners/find.proto";
+import "for_client/experiment/abort.proto";
+import "for_client/experiment/find.proto";
+import "for_client/experiment/launch.proto";
+import "for_client/experiment/watch.proto";
+import "for_client/experiment_reports/find.proto";
+import "for_client/runner/find.proto";
 
 service ForClient {
     rpc Hello (PHelloRequest) returns (PHelloReply);
 
+    // Experiment-oriented methods
     rpc AbortExperiment (PAbortExperimentRequest) returns (PAbortExperimentReply);
     rpc FindExperiments (PFindExperimentsRequest) returns (PFindExperimentsReply);
     rpc LaunchExperiment (PLaunchExperimentRequest) returns (PLaunchExperimentReply);
-    rpc WatchExperiment (PWatchExperimentRequest) returns (stream PWatchExperimentReply);
+    rpc WatchExperiment (PWatchExperimentRequest) returns (stream core.PExperimentReport);
 
+    // Experiment-report-oriented methods
+    rpc FindExperimentReports (PFindExperimentReportsRequest) returns (PFindExperimentReportsReply);
+
+    // Runner-oriented methods
     rpc FindRunners (PFindRunnersRequest) returns (PFindRunnersReply);
 }

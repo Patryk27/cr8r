@@ -24,8 +24,6 @@ async fn main() -> Result<()> {
     let config = config::load()?;
     let sandbox_provider = SandboxProvider::new()?;
 
-    info!("Checking for stale containers from previous sessions");
-
     let client = Client::connect(config.controller.address)
         .await?;
 

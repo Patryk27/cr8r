@@ -1,18 +1,21 @@
+use std::sync::Arc;
+
 use chrono::{DateTime, Utc};
+use futures_channel::mpsc;
 use futures_util::StreamExt;
 use log::*;
 
-use lib_protocol::core::{PExperimentId, PScenario};
+use lib_protocol::core::{PExperimentEvent, PExperimentId, PExperimentReport, PScenario};
+use lib_protocol::core::p_experiment_event::Op;
 
 use crate::backend::experiment::{ExperimentRx, ExperimentStatus};
-use crate::backend::ExperimentWatcher;
 
 pub struct ExperimentActor {
     rx: ExperimentRx,
     pub(super) experiment: PExperimentId,
     pub(super) scenarios: Vec<PScenario>,
     pub(super) created_at: DateTime<Utc>,
-    pub(super) watcher: Option<ExperimentWatcher>,
+    pub(super) watchers: Vec<mpsc::UnboundedSender<Arc<PExperimentReport>>>,
     pub(super) status: ExperimentStatus,
 }
 
@@ -27,7 +30,7 @@ impl ExperimentActor {
             experiment,
             scenarios,
             created_at: Utc::now(),
-            watcher: None,
+            watchers: Vec::new(),
             status: ExperimentStatus::default(),
         }
     }

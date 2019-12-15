@@ -1,9 +1,11 @@
+use std::sync::Arc;
+
 use futures_channel::mpsc;
 
 use lib_actor::{ask, tell};
-use lib_protocol::core::{PAssignment, PExperiment, PExperimentId, PReport, PRunnerId, PScenario};
+use lib_protocol::core::{PAssignment, PExperiment, PExperimentEvent, PExperimentId, PExperimentReport, PRunnerId, PScenario};
 
-use crate::backend::{ExperimentWatcher, Result};
+use crate::backend::Result;
 
 pub(self) use self::{
     actor::*,
@@ -38,19 +40,23 @@ impl Experiment {
         tell!(self.tx, ExperimentMsg::Abort);
     }
 
-    pub async fn add_report(&self, runner: PRunnerId, report: PReport) -> Result<()> {
-        ask!(self.tx, ExperimentMsg::AddReport { runner, report })
+    pub async fn add_event(&self, runner: PRunnerId, event: PExperimentEvent) -> Result<()> {
+        ask!(self.tx, ExperimentMsg::AddEvent { runner, event })
     }
 
-    pub async fn as_model(&self) -> PExperiment {
-        ask!(self.tx, ExperimentMsg::AsModel)
+    pub async fn get_model(&self) -> PExperiment {
+        ask!(self.tx, ExperimentMsg::GetModel)
+    }
+
+    pub async fn get_reports(&self) -> Vec<Arc<PExperimentReport>> {
+        ask!(self.tx, ExperimentMsg::GetReports)
     }
 
     pub async fn start(&self, runner: PRunnerId) -> Result<PAssignment> {
         ask!(self.tx, ExperimentMsg::Start { runner })
     }
 
-    pub async fn watch(&self) -> Result<ExperimentWatcher> {
+    pub async fn watch(&self) -> Result<mpsc::UnboundedReceiver<Arc<PExperimentReport>>> {
         ask!(self.tx, ExperimentMsg::Watch)
     }
 }

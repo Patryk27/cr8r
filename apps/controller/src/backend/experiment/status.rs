@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use chrono::{DateTime, Utc};
 
-use lib_protocol::core::{PReport, PRunnerId};
+use lib_protocol::core::{PExperimentEvent, PExperimentReport, PRunnerId};
 
 #[derive(PartialEq)]
 pub enum ExperimentStatus {
@@ -14,12 +14,14 @@ pub enum ExperimentStatus {
         since: DateTime<Utc>,
         last_heartbeat_at: DateTime<Utc>,
         runner: PRunnerId,
-        reports: Vec<Arc<PReport>>,
+        events: Vec<Arc<PExperimentEvent>>,
+        reports: Vec<Arc<PExperimentReport>>,
         completed_scenarios: u32,
     },
 
     Completed {
         since: DateTime<Utc>,
+        reports: Vec<Arc<PExperimentReport>>,
         success: bool,
     },
 

@@ -1,5 +1,4 @@
 use colored::Colorize;
-use prettytable::*;
 
 use crate::{Result, System};
 
@@ -8,14 +7,14 @@ mod controller;
 mod runners;
 
 pub async fn run(mut system: System) -> Result<()> {
-    print(controller::print(&mut system).await, true);
-    print(experiments::print(&mut system).await, true);
-    print(runners::print(&mut system).await, false);
+    print_section(controller::print(&mut system).await, true);
+    print_section(experiments::print(&mut system).await, true);
+    print_section(runners::print(&mut system).await, false);
 
     Ok(())
 }
 
-fn print(result: Result<()>, add_newline: bool) {
+fn print_section(result: Result<()>, add_newline: bool) {
     if let Err(err) = result {
         println!("{}: {}", "Couldn't fetch data".red(), err);
     }
@@ -23,12 +22,4 @@ fn print(result: Result<()>, add_newline: bool) {
     if add_newline {
         println!();
     }
-}
-
-fn table(titles: Row) -> Table {
-    let mut table = Table::new();
-
-    table.set_format(*format::consts::FORMAT_NO_BORDER_LINE_SEPARATOR);
-    table.set_titles(titles);
-    table
 }

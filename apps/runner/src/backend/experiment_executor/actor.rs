@@ -4,7 +4,7 @@ use log::*;
 use lib_protocol::core::PAssignment;
 use lib_sandbox::{Sandbox, SandboxListener};
 
-use crate::backend::{ExperimentExecutorStatus, ExperimentReporter};
+use crate::backend::{ExperimentExecutorStatus, ExperimentJournalist};
 use crate::backend::experiment_executor::ExperimentExecutorRx;
 
 mod execute_scenario;
@@ -15,7 +15,7 @@ pub struct ExperimentExecutorActor {
     rx: ExperimentExecutorRx,
     pub(super) sandbox: Sandbox,
     pub(super) assignment: PAssignment,
-    pub(super) reporter: ExperimentReporter,
+    pub(super) reporter: ExperimentJournalist,
     pub(super) status: ExperimentExecutorStatus,
 }
 
@@ -24,7 +24,7 @@ impl ExperimentExecutorActor {
         rx: ExperimentExecutorRx,
         sandbox: Sandbox,
         assignment: PAssignment,
-        reporter: ExperimentReporter,
+        reporter: ExperimentJournalist,
     ) -> Self {
         Self {
             rx,

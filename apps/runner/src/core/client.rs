@@ -2,7 +2,7 @@ use colored::Colorize;
 use log::*;
 use tonic::transport::Channel;
 
-use lib_protocol::core::{PExperimentId, PReport, PRunnerId};
+use lib_protocol::core::{PExperimentEvent, PExperimentId, PRunnerId};
 use lib_protocol::for_runner::*;
 use lib_protocol::for_runner::client::ForRunnerClient;
 
@@ -27,7 +27,7 @@ impl Client {
     }
 }
 
-/// Runner-oriented impls
+/// Controller-oriented impls
 impl Client {
     pub async fn hello(&mut self) -> Result<PHelloReply> {
         let response = self.client
@@ -65,16 +65,20 @@ impl Client {
     }
 }
 
-/// Experiment-oriented impls
+/// Experiment-event-oriented impls
 impl Client {
-    pub async fn add_experiment_report(
+    pub async fn add_experiment_event(
         &mut self,
         runner_id: PRunnerId,
         experiment_id: PExperimentId,
-        report: PReport,
-    ) -> Result<PAddExperimentReportReply> {
+        experiment_event: PExperimentEvent,
+    ) -> Result<PAddExperimentEventReply> {
         let response = self.client
-            .add_experiment_report(PAddExperimentReportRequest { runner_id, experiment_id, report: Some(report) })
+            .add_experiment_event(PAddExperimentEventRequest {
+                runner_id,
+                experiment_id,
+                experiment_event: Some(experiment_event),
+            })
             .await?;
 
         Ok(response.into_inner())
