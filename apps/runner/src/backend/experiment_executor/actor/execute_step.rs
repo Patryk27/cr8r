@@ -17,7 +17,7 @@ impl ExperimentExecutorActor {
                 }
 
                 Op::Print(PPrint { message }) => {
-                    self.reporter.add_message(message);
+                    self.journalist.add_message(message);
                 }
             }
         }

@@ -1,1 +1,0 @@
-crate::create_ident_type!(LxdDeviceName);

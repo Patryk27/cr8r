@@ -1,8 +1,7 @@
-use closure::*;
 use log::*;
 
 use lib_protocol::core::PAssignment;
-use lib_sandbox::{Sandbox, SandboxListener};
+use lib_sandbox::Sandbox;
 
 use crate::backend::{ExperimentExecutorStatus, ExperimentJournalist};
 use crate::backend::experiment_executor::ExperimentExecutorRx;
@@ -15,7 +14,7 @@ pub struct ExperimentExecutorActor {
     rx: ExperimentExecutorRx,
     pub(super) sandbox: Sandbox,
     pub(super) assignment: PAssignment,
-    pub(super) reporter: ExperimentJournalist,
+    pub(super) journalist: ExperimentJournalist,
     pub(super) status: ExperimentExecutorStatus,
 }
 
@@ -24,13 +23,13 @@ impl ExperimentExecutorActor {
         rx: ExperimentExecutorRx,
         sandbox: Sandbox,
         assignment: PAssignment,
-        reporter: ExperimentJournalist,
+        journalist: ExperimentJournalist,
     ) -> Self {
         Self {
             rx,
             sandbox,
             assignment,
-            reporter,
+            journalist,
             status: ExperimentExecutorStatus::Running,
         }
     }
@@ -40,19 +39,7 @@ impl ExperimentExecutorActor {
         debug!("-> experiment id: {}", self.assignment.experiment_id);
         debug!("-> experiment scenarios: {}", self.assignment.experiment_scenarios.len());
 
-        let reporter = self.reporter.clone();
-
-        self.sandbox.set_listener(SandboxListener {
-            on_command_started: Some(box closure!(clone reporter, |cmd| {
-                reporter.add_message(format!("Executing: {}", cmd));
-            })),
-
-            on_command_printed: Some(box closure!(clone reporter, |line| {
-                reporter.add_process_output(line);
-            })),
-        });
-
-        self.reporter.add_experiment_started();
+        self.journalist.add_experiment_started();
 
         let scenarios = self.assignment
             .experiment_scenarios
@@ -61,7 +48,7 @@ impl ExperimentExecutorActor {
 
         for scenario in scenarios {
             self.process_messages_yield();
-            self.reporter.add_scenario_started();
+            self.journalist.add_scenario_started();
 
             let success = match self.execute_scenario(scenario).await {
                 Ok(()) => {
@@ -69,15 +56,15 @@ impl ExperimentExecutorActor {
                 }
 
                 Err(err) => {
-                    self.reporter.add_message(format!("Scenario failed: {}", err));
+                    self.journalist.add_message(format!("Scenario failed: {}", err));
                     false
                 }
             };
 
-            self.reporter.add_scenario_completed(success);
+            self.journalist.add_scenario_completed(success);
         }
 
-        self.reporter.add_experiment_completed();
+        self.journalist.add_experiment_completed();
         self.status = ExperimentExecutorStatus::Completed;
 
         self.process_messages_loop()

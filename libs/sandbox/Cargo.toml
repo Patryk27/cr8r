@@ -5,8 +5,9 @@ authors = ["Patryk Wychowaniec <wychowaniec.patryk@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+async-trait = "0.1"
 futures-channel-preview = "0.3.0-alpha.19"
 futures-util-preview = "0.3.0-alpha.19"
-lib_sandbox_lxd = { path = "../sandbox_lxd" }
+lib_lxd = { path = "../lxd" }
 snafu = "0.6"
 tokio = "=0.2.0-alpha.6"

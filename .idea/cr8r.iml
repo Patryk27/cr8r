@@ -114,6 +114,7 @@
       <sourceFolder url="file://$MODULE_DIR$/libs/sandbox_lxd/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libs/sandbox_lxd/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/libs/sandbox_lxd/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/lxd/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/apps/client/target" />
       <excludeFolder url="file://$MODULE_DIR$/apps/controller/target" />
       <excludeFolder url="file://$MODULE_DIR$/apps/runner/target" />

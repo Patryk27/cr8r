@@ -1,4 +1,4 @@
-use lib_sandbox_lxd::{LxdClient, LxdResponseEvent, LxdResponseStream, Result as LxdResult};
+use lib_lxd::{LxdClient, LxdResponseEvent, LxdResponseStream, Result as LxdResult};
 
 use crate::{Error, Result, Sandbox};
 

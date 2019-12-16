@@ -13,7 +13,7 @@ pub enum Error {
     #[snafu(display("Command has terminated abruptly, so we couldn't read its output"))]
     CommandTerminatedAbruptly,
 
-    #[snafu(display("`{}` is not a valid identifier - please use only alphanumeric characters", ident))]
+    #[snafu(display("`{}` is not a valid identifier - only alphanumeric characters are allowed", ident))]
     InvalidIdentifier {
         ident: String,
     },

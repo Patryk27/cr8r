@@ -638,6 +638,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "lib_lxd"
+version = "0.1.0"
+dependencies = [
+ "futures-channel-preview 0.3.0-alpha.19 (registry+https://github.com/rust-lang/crates.io-index)",
+ "futures-util-preview 0.3.0-alpha.19 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 1.0.103 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_json 1.0.44 (registry+https://github.com/rust-lang/crates.io-index)",
+ "snafu 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tokio 0.2.0-alpha.6 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "lib_protocol"
 version = "0.1.0"
 dependencies = [
@@ -653,21 +665,10 @@ dependencies = [
 name = "lib_sandbox"
 version = "0.1.0"
 dependencies = [
+ "async-trait 0.1.19 (registry+https://github.com/rust-lang/crates.io-index)",
  "futures-channel-preview 0.3.0-alpha.19 (registry+https://github.com/rust-lang/crates.io-index)",
  "futures-util-preview 0.3.0-alpha.19 (registry+https://github.com/rust-lang/crates.io-index)",
- "lib_sandbox_lxd 0.1.0",
- "snafu 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "tokio 0.2.0-alpha.6 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "lib_sandbox_lxd"
-version = "0.1.0"
-dependencies = [
- "futures-channel-preview 0.3.0-alpha.19 (registry+https://github.com/rust-lang/crates.io-index)",
- "futures-util-preview 0.3.0-alpha.19 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde 1.0.103 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde_json 1.0.44 (registry+https://github.com/rust-lang/crates.io-index)",
+ "lib_lxd 0.1.0",
  "snafu 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tokio 0.2.0-alpha.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

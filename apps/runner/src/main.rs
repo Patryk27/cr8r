@@ -22,7 +22,7 @@ async fn main() -> Result<()> {
         .context(error::CouldntStart)?;
 
     let config = config::load()?;
-    let sandbox_provider = SandboxProvider::new()?;
+    let sandbox_provider = SandboxProvider::new();
 
     let client = Client::connect(config.controller.address)
         .await?;
@@ -36,7 +36,7 @@ async fn main() -> Result<()> {
         client.clone()
     );
 
-    SystemActor::new(sandbox_provider, client)
+    SystemActor::new(config.sandbox, sandbox_provider, client)
         .main()
         .await
 }

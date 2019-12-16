@@ -1,4 +1,7 @@
 use std::fmt;
+use std::str::FromStr;
+
+use crate::Error;
 
 #[derive(Clone, Debug)]
 pub struct LxdImageName(String);
@@ -9,9 +12,13 @@ impl LxdImageName {
     }
 }
 
-impl From<String> for LxdImageName {
-    fn from(value: String) -> Self {
-        Self(value)
+impl FromStr for LxdImageName {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self(
+            s.to_string()
+        ))
     }
 }
 

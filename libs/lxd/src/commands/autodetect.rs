@@ -3,6 +3,7 @@ use std::path::Path;
 use crate::{Error, LxdClient, Result};
 
 impl LxdClient {
+    // @todo this should be `async`
     pub fn autodetect() -> Result<Self> {
         let paths = [
             // LXD installed from Snap:

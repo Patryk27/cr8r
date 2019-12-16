@@ -1,5 +1,5 @@
-use std::convert::TryFrom;
 use std::fmt;
+use std::str::FromStr;
 
 use serde::Deserialize;
 
@@ -14,12 +14,15 @@ impl LxdIdent {
     }
 }
 
-impl TryFrom<String> for LxdIdent {
-    type Error = Error;
+impl FromStr for LxdIdent {
+    type Err = Error;
 
-    fn try_from(value: String) -> Result<Self, Self::Error> {
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         // @todo validate for [a-zA-Z0-9_]+
-        Ok(Self(value))
+
+        Ok(Self(
+            s.to_string()
+        ))
     }
 }
 
@@ -29,12 +32,13 @@ impl fmt::Display for LxdIdent {
     }
 }
 
+
 #[macro_export]
-macro_rules! create_ident_type {
+macro_rules! create_ident {
     ($ty:ident) => {
         use serde::Deserialize;
-        use std::convert::TryFrom;
         use std::fmt;
+        use std::str::FromStr;
 
         use crate::{Error, LxdIdent};
 
@@ -47,11 +51,11 @@ macro_rules! create_ident_type {
             }
         }
 
-        impl TryFrom<String> for $ty {
-            type Error = Error;
+        impl FromStr for $ty {
+            type Err = Error;
 
-            fn try_from(value: String) -> Result<Self, Self::Error> {
-                LxdIdent::try_from(value).map(Self)
+            fn from_str(s: &str) -> Result<Self, Self::Err> {
+                Ok(Self(s.parse()?))
             }
         }
 

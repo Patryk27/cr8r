@@ -1,42 +1,54 @@
+#![feature(box_syntax)]
 #![feature(crate_visibility_modifier)]
 
-use std::sync::Arc;
-
-use lib_sandbox_lxd::{LxdClient, LxdContainerName};
-
 pub use self::{
+    def::*,
+    engine::*,
+    engines::*,
     error::*,
     listener::*,
     mount::*,
     provider::*,
 };
 
-mod commands;
+mod def;
+mod engine;
+mod engines;
 mod error;
 mod listener;
 mod mount;
 mod provider;
 
 pub struct Sandbox {
-    lxd: Arc<LxdClient>,
-    container: LxdContainerName,
-    listener: SandboxListener,
-    mount_idx: usize,
+    engine: Box<dyn SandboxEngine>,
 }
 
 impl Sandbox {
-    pub fn new(lxd: Arc<LxdClient>, container: LxdContainerName) -> Self {
-        Self {
-            lxd,
-            container,
-            listener: SandboxListener::default(),
-            mount_idx: 0,
-        }
+    pub fn new(engine: Box<dyn SandboxEngine>) -> Self {
+        Self { engine }
     }
 
-    pub fn set_listener(&mut self, listener: SandboxListener) {
-        self.listener = listener;
+    pub async fn init(&mut self, listener: Option<SandboxListener>) -> Result<()> {
+        self.engine
+            .init(listener.unwrap_or_default())
+            .await
     }
 
-    // All commands are located inside the `commands` module
+    pub async fn destroy(&mut self) -> Result<()> {
+        self.engine
+            .destroy()
+            .await
+    }
+
+    pub async fn exec(&mut self, cmd: &str) -> Result<()> {
+        self.engine
+            .exec(cmd)
+            .await
+    }
+
+    pub async fn mount(&mut self, mount: SandboxMount) -> Result<()> {
+        self.engine
+            .mount(mount)
+            .await
+    }
 }

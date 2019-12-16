@@ -8,9 +8,9 @@ use lib_protocol::for_runner::client::ForRunnerClient;
 
 use crate::Result;
 
-pub use self::scopes::*;
+pub use self::concerns::*;
 
-mod scopes;
+mod concerns;
 
 #[derive(Clone)]
 pub struct Client {
@@ -21,9 +21,12 @@ impl Client {
     pub async fn connect(address: String) -> Result<Self> {
         info!("Connecting to controller at: {}", address.green());
 
-        Ok(Self {
-            client: ForRunnerClient::connect(address).await?,
-        })
+        let client = ForRunnerClient::connect(address)
+            .await?;
+
+        info!("Connection acquired");
+
+        Ok(Self { client })
     }
 }
 

@@ -1,4 +1,8 @@
+use closure::*;
+use log::*;
+
 use lib_protocol::core::PScenario;
+use lib_sandbox::SandboxListener;
 
 use crate::backend::experiment_executor::{ExecutorResult, ExperimentExecutorActor};
 
@@ -12,17 +16,29 @@ impl ExperimentExecutorActor {
                 .await?;
         };
 
-        self.destroy_sandbox()
-            .await?;
+        if let Err(err) = self.destroy_sandbox().await {
+            error!("{}", err);
+        }
 
         result
     }
 
     async fn launch_sandbox(&mut self, scenario: &PScenario) -> ExecutorResult<()> {
-        self.reporter.add_message(format!("Preparing sandbox (system `{}`, toolchain `{}`)", scenario.system, scenario.toolchain));
+        self.journalist.add_message("Initializing sandbox");
+        let reporter = self.journalist.clone();
+
+        let listener = SandboxListener {
+            on_command_started: Some(box closure!(clone reporter, |cmd| {
+                reporter.add_message(format!("Executing: {}", cmd));
+            })),
+
+            on_command_output: Some(box closure!(clone reporter, |line| {
+                reporter.add_process_output(line);
+            })),
+        };
 
         self.sandbox
-            .initialize(&scenario.system, &scenario.toolchain)
+            .init(Some(listener))
             .await
             .map_err(|err| format!("Couldn't initialize the sandbox: {}", err))
     }
@@ -38,7 +54,7 @@ impl ExperimentExecutorActor {
     }
 
     async fn destroy_sandbox(&mut self) -> ExecutorResult<()> {
-        self.reporter.add_message("Destroying sandbox");
+        self.journalist.add_message("Destroying sandbox");
 
         self.sandbox
             .destroy()

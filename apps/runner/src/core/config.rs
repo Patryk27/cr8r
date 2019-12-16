@@ -6,24 +6,22 @@ use snafu::ResultExt;
 
 use crate::{error, Result, StdResult};
 
+pub use self::{
+    controller::*,
+    runner::*,
+    sandbox::*,
+};
+
+mod controller;
+mod runner;
+mod sandbox;
+
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
-    pub runner: Runner,
-    pub controller: Controller,
-}
-
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct Runner {
-    pub name: String,
-}
-
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct Controller {
-    pub secret: String,
-    pub address: String,
+    pub runner: RunnerConfig,
+    pub controller: ControllerConfig,
+    pub sandbox: SandboxConfig,
 }
 
 pub fn load() -> Result<Config> {

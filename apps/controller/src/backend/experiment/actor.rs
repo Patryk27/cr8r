@@ -5,8 +5,7 @@ use futures_channel::mpsc;
 use futures_util::StreamExt;
 use log::*;
 
-use lib_protocol::core::{PExperimentEvent, PExperimentId, PExperimentReport, PScenario};
-use lib_protocol::core::p_experiment_event::Op;
+use lib_protocol::core::{PExperimentId, PExperimentReport, PScenario};
 
 use crate::backend::experiment::{ExperimentRx, ExperimentStatus};
 

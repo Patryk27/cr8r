@@ -1,6 +1,6 @@
 pub use self::{
     client::*,
-    config::Config,
+    config::*,
     error::{Error, Result, StdResult},
 };
 

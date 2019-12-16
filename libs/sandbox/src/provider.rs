@@ -1,36 +1,27 @@
-use std::convert::TryInto;
-use std::sync::Arc;
+use crate::{Result, Sandbox, SandboxDef, SandboxListener};
 
-use crate::{LxdClient, Result, Sandbox};
-
-pub struct SandboxProvider {
-    lxd: Arc<LxdClient>,
-}
+pub struct SandboxProvider;
 
 impl SandboxProvider {
-    pub fn new() -> Result<Self> {
-        Ok(Self {
-            lxd: Arc::new(LxdClient::autodetect()?),
-        })
+    pub fn new() -> Self {
+        Self
     }
 
-    pub async fn create(&self, name: String) -> Result<Sandbox> {
-        let name = name.try_into()?;
-        let containers = self.lxd.list()?;
+    pub async fn create(&self, def: SandboxDef) -> Result<Sandbox> {
+        use crate::engines::*;
 
-        for container in containers {
-            if &container.name == &name {
-                self.lxd
-                    .delete(&name)?
-                    .wait()
-                    .await?;
-
-                break;
+        let engine = match def {
+            SandboxDef::Lxd { container, image } => {
+                box LxdEngine::create(container, image)
+                    .await? as _
             }
-        }
 
-        Ok(Sandbox::new(
-            self.lxd.clone(), name,
-        ))
+            SandboxDef::Shell { dir } => {
+                box ShellEngine::create(dir)
+                    .await? as _
+            }
+        };
+
+        Ok(Sandbox::new(engine))
     }
 }
