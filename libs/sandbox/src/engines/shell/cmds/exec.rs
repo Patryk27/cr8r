@@ -1,3 +1,5 @@
+use std::process::Command;
+
 use futures_util::StreamExt;
 
 use lib_process::{ProcessEvent, spawn};
@@ -10,12 +12,11 @@ pub async fn exec(engine: &mut ShellEngine, cmd: &str) -> Result<()> {
     }
 
     // @todo this is cheesy
-    let mut rx = spawn("/usr/bin/bash", &[
-        "-c",
-        "--",
-        format!("cd {} && bash -c", engine.dir),
-        cmd,
-    ]);
+    let mut command = Command::new("/usr/bin/bash");
+    command.current_dir(&engine.dir);
+    command.args(&["-c", cmd]);
+
+    let mut rx = spawn(command);
 
     while let Some(event) = rx.next().await {
         match event {

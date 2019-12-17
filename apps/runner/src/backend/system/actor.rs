@@ -69,7 +69,7 @@ impl SystemActor {
                     debug!("Got nothing");
                     debug!("We'll try again in a moment");
 
-                    timer::delay_for(Duration::from_secs(5))
+                    timer::delay_for(Duration::from_secs(2))
                         .await;
                 }
 

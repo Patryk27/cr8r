@@ -3,7 +3,6 @@
 //!
 //! @todo Remove all this after migrating to newer `tonic`
 
-use std::ffi::OsStr;
 use std::io::{BufRead, BufReader};
 use std::process::{Command, ExitStatus, Stdio};
 use std::thread;
@@ -23,14 +22,10 @@ pub enum ProcessEvent {
     },
 }
 
-pub fn spawn(
-    program: impl AsRef<OsStr>,
-    args: impl IntoIterator<Item=impl AsRef<OsStr>>,
-) -> ProcessEventRx {
-    let mut cmd = Command::new(program)
+pub fn spawn(mut cmd: Command) -> ProcessEventRx {
+    let mut cmd = cmd
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
-        .args(args)
         .spawn()
         .unwrap();
 
