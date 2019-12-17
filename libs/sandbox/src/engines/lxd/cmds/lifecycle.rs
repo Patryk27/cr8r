@@ -2,36 +2,83 @@ use std::time::Duration;
 
 use tokio::timer;
 
-use crate::{LxdEngine, Result, SandboxEngine, SandboxListener, SandboxMount};
-use std::env;
+use lib_lxd::{LxdContainerConfig, LxdDeviceDef, LxdListener};
 
-pub async fn init(engine: &mut LxdEngine, listener: SandboxListener) -> Result<()> {
+use crate::{LxdEngine, Result, SandboxListener};
+use crate::engines::lxd::cmds;
+
+pub async fn init(engine: &mut LxdEngine, mut listener: SandboxListener) -> Result<()> {
+    engine.lxd.set_listener(LxdListener {
+        on_output: listener.on_command_output.take(),
+    });
+
     engine.listener = listener;
 
-    unimplemented!()
+    delete_stale_container(engine)
+        .await?;
+
+    launch_container(engine)
+        .await?;
+
+    forward_ssh_agent(engine)
+        .await?;
+
+    wait_for_network(engine)
+        .await?;
+
+    install_toolchain(engine)
+        .await?;
+
+    Ok(())
 }
 
 pub async fn destroy(engine: &mut LxdEngine) -> Result<()> {
-    unimplemented!()
+    engine.lxd
+        .delete(&engine.container)
+        .await?;
+
+    Ok(())
+}
+
+async fn delete_stale_container(engine: &mut LxdEngine) -> Result<()> {
+    let found_stale_container = engine.lxd
+        .list()
+        .await?
+        .into_iter()
+        .any(|container| &container.name == &engine.container);
+
+    if found_stale_container {
+        engine.lxd
+            .delete(&engine.container)
+            .await?;
+    }
+
+    Ok(())
 }
 
 async fn launch_container(engine: &mut LxdEngine) -> Result<()> {
-    self.invoke(|lxd| lxd.launch(&system, &self.container))
-        .await
+    engine.lxd
+        .launch(&engine.image, &engine.container)
+        .await?;
+
+    Ok(())
 }
 
 async fn forward_ssh_agent(engine: &mut LxdEngine) -> Result<()> {
-    // @todo extract to a distinct fn
-    let ssh_sock = env::var("SSH_AUTH_SOCK")
-        .map_err(|_| snafu::NoneError)
-        .context(error::MissingEnvVariable { name: Cow::Borrowed("SSH_AUTH_SOCK") })?;
+    let ssh_sock = cmds::get_host_env("SSH_AUTH_SOCK")?;
 
-    engine.mount(SandboxMount::File {
-        host: ssh_sock,
-        sandbox: "/tmp/ssh-agent".to_string(),
+    engine.lxd.config(&engine.container, LxdContainerConfig::AddDevice {
+        name: format!("{}-ssh-auth-sock", engine.container.as_str())
+            .parse()
+            .unwrap(),
+
+        def: LxdDeviceDef::Disk {
+            source: ssh_sock,
+            path: "/tmp/ssh-agent".to_string(),
+        },
     }).await?;
 
-    engine.add_env("SSH_AUTH_SOCK", "/tmp/ssh-agent".to_string())
+    cmds::set_env(engine, "SSH_AUTH_SOCK", "/tmp/ssh-agent")
         .await
 }
 
@@ -40,24 +87,23 @@ async fn wait_for_network(engine: &mut LxdEngine) -> Result<()> {
     timer::delay_for(Duration::from_millis(1000))
         .await;
 
-    engine.exec("systemctl start network-online.target")
+    cmds::exec(engine, "systemctl start network-online.target")
         .await
 }
 
-async fn install_toolchain(engine: &mut LxdEngine, toolchain: &str) -> Result<()> {
+async fn install_toolchain(engine: &mut LxdEngine) -> Result<()> {
     // LXD's default Ubuntu images do not contain `cc`, so compiling any Cargo program would fail if we didn't pull
     // `cmake`
-    engine.exec("apt update && apt install cmake -y")
+    cmds::exec(engine, "apt update && apt install cmake -y")
         .await?;
 
-    engine.exec(&format!("curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain {} --profile minimal", toolchain))
+    cmds::exec(engine, "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal")
         .await?;
 
-    // We cannot modify `~/.bashrc` or `~/.bash_profile`, because our `self.exec()` ignores it by design
-
-    let path = engine.get_env("PATH").await?;
+    // @todo describe
+    let path = cmds::get_env(engine, "PATH").await?;
     let path = format!("{}:/root/.cargo/bin", path);
 
-    engine.add_env("PATH", path)
+    cmds::set_env(engine, "PATH", &path)
         .await
 }

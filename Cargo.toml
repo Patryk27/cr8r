@@ -6,6 +6,7 @@ members = [
     "libs/actor",
     "libs/log",
     "libs/lxd",
+    "libs/process",
     "libs/protocol",
     "libs/sandbox",
 ]

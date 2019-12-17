@@ -9,28 +9,28 @@ pub type Result<T> = result::Result<T, Error>;
 #[derive(Debug, Snafu)]
 #[snafu(visibility(pub (crate)))]
 pub enum Error {
-    #[snafu(display("The latest command returned a non-zero exit code"))]
+    #[snafu(display("Command returned a non-zero exit code"))]
     CommandFailed,
 
     #[snafu(display("LXD failure: {}", source))]
-    LxdSandboxFailure {
+    LxdError {
         source: LxdEngineError,
     },
 
     #[snafu(display("Shell failure: {}", source))]
-    ShellSandboxFailure {
+    ShellError {
         source: ShellEngineError,
     },
 }
 
 impl From<LxdEngineError> for Error {
     fn from(source: LxdEngineError) -> Self {
-        Error::LxdSandboxFailure { source }
+        Error::LxdError { source }
     }
 }
 
 impl From<ShellEngineError> for Error {
     fn from(source: ShellEngineError) -> Self {
-        Error::ShellSandboxFailure { source }
+        Error::ShellError { source }
     }
 }

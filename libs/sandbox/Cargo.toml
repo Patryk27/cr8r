@@ -9,5 +9,6 @@ async-trait = "0.1"
 futures-channel-preview = "0.3.0-alpha.19"
 futures-util-preview = "0.3.0-alpha.19"
 lib_lxd = { path = "../lxd" }
+lib_process = { path = "../process" }
 snafu = "0.6"
 tokio = "=0.2.0-alpha.6"

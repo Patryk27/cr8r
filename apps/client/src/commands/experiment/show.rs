@@ -17,7 +17,8 @@ pub async fn run(mut system: System, id: &str, show_reports: bool) -> Result<()>
 
         if show_reports {
             if let Err(err) = print_reports(&mut system, &id).await {
-                println!("Couldn't print reports");
+                // @todo this should be a proper error message
+                println!("Couldn't print reports: {}", err);
             }
         }
     } else {

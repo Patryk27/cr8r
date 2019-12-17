@@ -1,4 +1,4 @@
-use crate::{Result, Sandbox, SandboxDef, SandboxListener};
+use crate::{Result, Sandbox, SandboxDef};
 
 pub struct SandboxProvider;
 

@@ -2,10 +2,12 @@ use std::path::PathBuf;
 
 use async_trait::async_trait;
 
-use crate::{Result, SandboxEngine, SandboxListener, SandboxMount};
+use crate::{Result, SandboxEngine, SandboxListener};
 
+// We're exporting only the main struct to avoid exporting snafu-related types
 pub use self::error::ShellEngineError;
 
+mod cmds;
 mod error;
 
 pub struct ShellEngine {
@@ -25,18 +27,17 @@ impl ShellEngine {
 #[async_trait]
 impl SandboxEngine for ShellEngine {
     async fn init(&mut self, listener: SandboxListener) -> Result<()> {
-        unimplemented!()
+        cmds::init(self, listener)
+            .await
     }
 
     async fn destroy(&mut self) -> Result<()> {
-        unimplemented!()
+        cmds::destroy(self)
+            .await
     }
 
     async fn exec(&mut self, cmd: &str) -> Result<()> {
-        unimplemented!()
-    }
-
-    async fn mount(&mut self, mount: SandboxMount) -> Result<()> {
-        unimplemented!()
+        cmds::exec(self, cmd)
+            .await
     }
 }

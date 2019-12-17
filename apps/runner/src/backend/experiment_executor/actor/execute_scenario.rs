@@ -9,7 +9,7 @@ use crate::backend::experiment_executor::{ExecutorResult, ExperimentExecutorActo
 impl ExperimentExecutorActor {
     pub(super) async fn execute_scenario(&mut self, mut scenario: PScenario) -> ExecutorResult<()> {
         let result = try {
-            self.launch_sandbox(&scenario)
+            self.launch_sandbox()
                 .await?;
 
             self.execute_steps(&mut scenario)
@@ -23,12 +23,12 @@ impl ExperimentExecutorActor {
         result
     }
 
-    async fn launch_sandbox(&mut self, scenario: &PScenario) -> ExecutorResult<()> {
+    async fn launch_sandbox(&mut self) -> ExecutorResult<()> {
         self.journalist.add_message("Initializing sandbox");
         let reporter = self.journalist.clone();
 
         let listener = SandboxListener {
-            on_command_started: Some(box closure!(clone reporter, |cmd| {
+            on_command_executed: Some(box closure!(clone reporter, |cmd| {
                 reporter.add_message(format!("Executing: {}", cmd));
             })),
 

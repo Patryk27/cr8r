@@ -6,5 +6,7 @@ controller:
   secret: 'top-secret'
 
 sandbox:
-  type: lxd
-  container-name: 'cr8r-experiment'
+  type: shell
+  dir: /tmp/runner
+#  type: lxd
+#  container-name: 'cr8r-experiment'

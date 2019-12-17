@@ -115,6 +115,10 @@
       <sourceFolder url="file://$MODULE_DIR$/libs/sandbox_lxd/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/libs/sandbox_lxd/benches" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/libs/lxd/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/process/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/process/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/process/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/process/benches" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/apps/client/target" />
       <excludeFolder url="file://$MODULE_DIR$/apps/controller/target" />
       <excludeFolder url="file://$MODULE_DIR$/apps/runner/target" />
@@ -122,6 +126,7 @@
       <excludeFolder url="file://$MODULE_DIR$/libs/log/target" />
       <excludeFolder url="file://$MODULE_DIR$/libs/logger/target" />
       <excludeFolder url="file://$MODULE_DIR$/libs/lxd/target" />
+      <excludeFolder url="file://$MODULE_DIR$/libs/process/target" />
       <excludeFolder url="file://$MODULE_DIR$/libs/proto/target" />
       <excludeFolder url="file://$MODULE_DIR$/libs/protocol/client/target" />
       <excludeFolder url="file://$MODULE_DIR$/libs/protocol/core/target" />

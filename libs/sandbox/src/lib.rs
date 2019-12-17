@@ -7,7 +7,6 @@ pub use self::{
     engines::*,
     error::*,
     listener::*,
-    mount::*,
     provider::*,
 };
 
@@ -16,7 +15,6 @@ mod engine;
 mod engines;
 mod error;
 mod listener;
-mod mount;
 mod provider;
 
 pub struct Sandbox {
@@ -34,21 +32,15 @@ impl Sandbox {
             .await
     }
 
-    pub async fn destroy(&mut self) -> Result<()> {
-        self.engine
-            .destroy()
-            .await
-    }
-
     pub async fn exec(&mut self, cmd: &str) -> Result<()> {
         self.engine
             .exec(cmd)
             .await
     }
 
-    pub async fn mount(&mut self, mount: SandboxMount) -> Result<()> {
+    pub async fn destroy(&mut self) -> Result<()> {
         self.engine
-            .mount(mount)
+            .destroy()
             .await
     }
 }

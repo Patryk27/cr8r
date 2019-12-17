@@ -1,42 +1,32 @@
 use async_trait::async_trait;
 use lib_lxd::{LxdClient, LxdContainerName, LxdImageName};
 
-use crate::{Result, SandboxEngine, SandboxListener, SandboxMount};
+use crate::{Result, SandboxEngine, SandboxListener};
 
-pub use self::error::*;
+// We're exporting only the main struct to avoid exporting snafu-related types
+pub use self::error::LxdEngineError;
 
 mod cmds;
 mod error;
 
 pub struct LxdEngine {
-    client: LxdClient,
+    lxd: LxdClient,
     container: LxdContainerName,
+    image: LxdImageName,
     listener: SandboxListener,
-    mount_idx: usize,
 }
 
 impl LxdEngine {
     pub async fn create(container: LxdContainerName, image: LxdImageName) -> Result<Self> {
-        let client = LxdClient::autodetect()?;
+        let lxd = LxdClient::autodetect()
+            .await?;
 
         Ok(Self {
-            client,
+            lxd,
             container,
+            image,
             listener: SandboxListener::default(),
-            mount_idx: 0,
         })
-    }
-
-    pub fn add_env(&mut self, key: &str, value: &str) -> Result<()> {
-        unimplemented!()
-    }
-
-    pub fn get_env(&mut self, key: &str) -> Result<String> {
-        unimplemented!()
-    }
-
-    fn invoke(&mut self, ) {
-
     }
 }
 
@@ -54,11 +44,6 @@ impl SandboxEngine for LxdEngine {
 
     async fn exec(&mut self, cmd: &str) -> Result<()> {
         cmds::exec(self, cmd)
-            .await
-    }
-
-    async fn mount(&mut self, mount: SandboxMount) -> Result<()> {
-        cmds::mount(self, mount)
             .await
     }
 }
