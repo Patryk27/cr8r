@@ -9,20 +9,20 @@ pub type ExperimentExecutorRx = mpsc::UnboundedReceiver<ExperimentExecutorMsg>;
 
 #[derive(Debug)]
 pub enum ExperimentExecutorMsg {
-    Status {
+    GetStatus {
         tx: oneshot::Sender<ExperimentExecutorStatus>,
     }
 }
 
-mod status;
+mod get_status;
 
 impl ExperimentExecutorMsg {
     pub fn process(self, actor: &mut ExperimentExecutorActor) {
         debug!("Processing message: {:?}", self);
 
         match self {
-            ExperimentExecutorMsg::Status { tx } => {
-                let _ = tx.send(status::process(actor));
+            ExperimentExecutorMsg::GetStatus { tx } => {
+                let _ = tx.send(get_status::get_status(actor));
             }
         }
     }

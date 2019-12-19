@@ -7,9 +7,9 @@ use lib_protocol::core::PExperimentReport;
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
 use crate::backend::Result;
 
-pub fn process(actor: &mut ExperimentActor) -> Result<mpsc::UnboundedReceiver<Arc<PExperimentReport>>> {
+pub fn watch(actor: &mut ExperimentActor) -> Result<mpsc::UnboundedReceiver<Arc<PExperimentReport>>> {
     match actor.status {
-        ExperimentStatus::AwaitingRunner { .. } | ExperimentStatus::Running { .. } | ExperimentStatus::Zombie { .. } => {
+        ExperimentStatus::Idle { .. } | ExperimentStatus::Running { .. } | ExperimentStatus::Zombie { .. } => {
             let (tx, rx) = mpsc::unbounded();
 
             actor.watchers.push(tx);
@@ -19,10 +19,6 @@ pub fn process(actor: &mut ExperimentActor) -> Result<mpsc::UnboundedReceiver<Ar
 
         ExperimentStatus::Completed { .. } => {
             Err("This experiment has been already completed".into())
-        }
-
-        ExperimentStatus::Aborted { .. } => {
-            Err("This experiment has been already aborted".into())
         }
     }
 }

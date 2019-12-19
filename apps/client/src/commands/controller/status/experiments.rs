@@ -1,11 +1,9 @@
-use colored::Colorize;
-
 use lib_protocol::for_client::PFindExperimentsRequest;
 
 use crate::{Result, spinner, System, ui};
 
 pub async fn print(system: &mut System) -> Result<()> {
-    println!("{}", "# Experiments".blue());
+    println!("{}", ui::Header::new("Experiments"));
     println!();
 
     let experiments = spinner! {

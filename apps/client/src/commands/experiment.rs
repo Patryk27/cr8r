@@ -24,10 +24,16 @@ pub enum ExperimentCommand {
     },
 
     Show {
+        id: String,
+
+        #[structopt(short = "d", long = "detailed")]
+        detailed: bool,
+
+        #[structopt(short = "s", long = "show-steps")]
+        show_steps: bool,
+
         #[structopt(short = "r", long = "show-reports")]
         show_reports: bool,
-
-        id: String,
     },
 
     Watch {
@@ -39,19 +45,23 @@ impl ExperimentCommand {
     pub async fn run(self, system: System) -> Result<()> {
         match self {
             ExperimentCommand::Abort { id } => {
-                abort::run(system, id).await
+                abort::abort(system, id)
+                    .await
             }
 
             ExperimentCommand::Launch { watch, cmd } => {
-                cmd.run(system, watch).await
+                cmd.run(system, watch)
+                    .await
             }
 
-            ExperimentCommand::Show { id, show_reports: report } => {
-                show::run(system, &id, report).await
+            ExperimentCommand::Show { id, detailed, show_steps, show_reports } => {
+                show::show(system, &id, detailed || show_steps, detailed || show_reports)
+                    .await
             }
 
             ExperimentCommand::Watch { id } => {
-                watch::run(system, id).await
+                watch::watch(system, id)
+                    .await
             }
         }
     }

@@ -6,7 +6,7 @@ use lib_protocol::core::{PExperimentEvent, PExperimentReport, PRunnerId};
 
 #[derive(PartialEq)]
 pub enum ExperimentStatus {
-    AwaitingRunner {
+    Idle {
         since: DateTime<Utc>,
     },
 
@@ -16,17 +16,13 @@ pub enum ExperimentStatus {
         runner: PRunnerId,
         events: Vec<Arc<PExperimentEvent>>,
         reports: Vec<Arc<PExperimentReport>>,
-        completed_scenarios: u32,
+        completed_steps: u32,
     },
 
     Completed {
         since: DateTime<Utc>,
         reports: Vec<Arc<PExperimentReport>>,
-        success: bool,
-    },
-
-    Aborted {
-        since: DateTime<Utc>,
+        result: Result<(), String>,
     },
 
     Zombie {
@@ -36,7 +32,7 @@ pub enum ExperimentStatus {
 
 impl Default for ExperimentStatus {
     fn default() -> Self {
-        ExperimentStatus::AwaitingRunner {
+        ExperimentStatus::Idle {
             since: Utc::now(),
         }
     }

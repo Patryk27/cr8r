@@ -3,14 +3,14 @@ use std::sync::Arc;
 use chrono::Utc;
 
 use lib_protocol::core::{PExperimentEvent, PExperimentReport, PRunnerId};
-use lib_protocol::core::p_experiment_event::Op;
+use lib_protocol::core::p_experiment_event::*;
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
 use crate::backend::Result;
 
-pub fn process(actor: &mut ExperimentActor, runner: PRunnerId, event: PExperimentEvent) -> Result<()> {
+pub fn add_event(actor: &mut ExperimentActor, runner: PRunnerId, event: PExperimentEvent) -> Result<()> {
     match &mut actor.status {
-        ExperimentStatus::AwaitingRunner { .. } => {
+        ExperimentStatus::Idle { .. } => {
             Err("This experiment has not yet been started".into())
         }
 
@@ -18,7 +18,7 @@ pub fn process(actor: &mut ExperimentActor, runner: PRunnerId, event: PExperimen
             runner: experiment_runner,
             events,
             reports,
-            completed_scenarios,
+            completed_steps,
             ..
         } => {
             if &runner != experiment_runner {
@@ -41,19 +41,11 @@ pub fn process(actor: &mut ExperimentActor, runner: PRunnerId, event: PExperimen
             // completed", we have to adjust this actor's state accordingly
             if let Some(op) = &event.op {
                 match op {
-                    Op::ExperimentCompleted(_) => {
-                        let success = events
-                            .iter()
-                            .filter_map(|event| match event.op.as_ref()? {
-                                Op::ScenarioCompleted(op) => Some(op),
-                                _ => None,
-                            })
-                            .all(|op| op.success);
-
+                    Op::ExperimentSucceeded(_) => {
                         actor.status = ExperimentStatus::Completed {
                             since: Utc::now(),
                             reports: reports.to_vec(),
-                            success,
+                            result: Ok(()),
                         };
 
                         // Since the experiment's done, no more data will be fed to the watchers and so there's no point
@@ -61,9 +53,11 @@ pub fn process(actor: &mut ExperimentActor, runner: PRunnerId, event: PExperimen
                         kill_watchers(actor);
                     }
 
-                    Op::ExperimentAborted(_) => {
-                        actor.status = ExperimentStatus::Aborted {
+                    Op::ExperimentFailed(PExperimentFailed { cause }) => {
+                        actor.status = ExperimentStatus::Completed {
                             since: Utc::now(),
+                            reports: reports.to_vec(),
+                            result: Err(cause.to_string()),
                         };
 
                         // Since the experiment's done, no more data will be fed to the watchers and so there's no point
@@ -71,8 +65,8 @@ pub fn process(actor: &mut ExperimentActor, runner: PRunnerId, event: PExperimen
                         kill_watchers(actor);
                     }
 
-                    Op::ScenarioCompleted(_) => {
-                        *completed_scenarios += 1;
+                    Op::StepSucceeded(_) | Op::StepFailed(_) => {
+                        *completed_steps += 1;
                     }
 
                     _ => (),
@@ -84,10 +78,6 @@ pub fn process(actor: &mut ExperimentActor, runner: PRunnerId, event: PExperimen
 
         ExperimentStatus::Completed { .. } => {
             Err("This experiment has been already completed".into())
-        }
-
-        ExperimentStatus::Aborted { .. } => {
-            Err("This experiment has been aborted".into())
         }
 
         ExperimentStatus::Zombie { .. } => {
@@ -103,12 +93,16 @@ fn event_as_report(event: &PExperimentEvent) -> Option<PExperimentReport> {
     };
 
     let (kind, message) = match event.op.as_ref()? {
-        p_event::Op::Ping(_) => {
+        Op::Ping(_) => {
             return None;
         }
 
-        p_event::Op::CustomMessage(p_event::PCustomMessage { message }) => {
-            (p_report::Kind::CustomMessage, message.as_str())
+        Op::SystemMsg(p_event::PSystemMsg { msg }) => {
+            (p_report::Kind::SystemMsg, msg.as_str())
+        }
+
+        Op::UserMsg(p_event::PUserMsg { msg }) => {
+            (p_report::Kind::UserMsg, msg.as_str())
         }
 
         Op::ProcessOutput(p_event::PProcessOutput { line }) => {
@@ -116,23 +110,19 @@ fn event_as_report(event: &PExperimentEvent) -> Option<PExperimentReport> {
         }
 
         Op::ExperimentStarted(_) => {
-            (p_report::Kind::SystemMessage, "Experiment started")
+            (p_report::Kind::SystemMsg, "Experiment started")
         }
 
-        Op::ExperimentCompleted(_) => {
-            (p_report::Kind::SystemMessage, "Experiment completed")
+        Op::ExperimentSucceeded(_) => {
+            (p_report::Kind::SystemMsg, "Experiment completed (result: success)")
         }
 
-        Op::ExperimentAborted(_) => {
-            (p_report::Kind::SystemMessage, "Experiment aborted")
+        Op::ExperimentFailed(_) => {
+            (p_report::Kind::SystemMsg, "Experiment completed (result: failure)")
         }
 
-        Op::ScenarioStarted(_) => {
-            (p_report::Kind::SystemMessage, "Scenario started")
-        }
-
-        Op::ScenarioCompleted(_) => {
-            (p_report::Kind::SystemMessage, "Scenario completed")
+        Op::StepSucceeded(_) | Op::StepFailed(_) => {
+            return None;
         }
     };
 

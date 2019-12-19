@@ -3,7 +3,12 @@ use lib_protocol::for_client::{PFindExperimentReportsRequest, PFindExperimentsRe
 
 use crate::{Result, spinner, System, ui};
 
-pub async fn run(mut system: System, id: &str, show_reports: bool) -> Result<()> {
+pub async fn show(
+    mut system: System,
+    id: &str,
+    show_steps: bool,
+    show_reports: bool,
+) -> Result<()> {
     let experiments = spinner! {
         system
             .client().await?
@@ -13,7 +18,15 @@ pub async fn run(mut system: System, id: &str, show_reports: bool) -> Result<()>
     };
 
     if let Some(experiment) = experiments.first() {
+        if show_steps || show_reports {
+            println!("{}", ui::Header::new("Experiment"));
+        }
+
         print_experiment(experiment);
+
+        if show_steps {
+            print_steps(experiment);
+        }
 
         if show_reports {
             if let Err(err) = print_reports(&mut system, &id).await {
@@ -29,12 +42,17 @@ pub async fn run(mut system: System, id: &str, show_reports: bool) -> Result<()>
 }
 
 fn print_experiment(experiment: &PExperiment) {
-    // @todo print `# Experiment` header
+    println!("{}", ui::ExperimentDetails::new(experiment));
+}
 
-    println!("{}", ui::Experiment::new(experiment));
+fn print_steps(experiment: &PExperiment) {
+    println!("{}", ui::Header::new("Steps"));
+    println!("{}", ui::ExperimentStepsTable::new(&experiment.steps));
 }
 
 async fn print_reports(system: &mut System, id: &str) -> Result<()> {
+    println!("{}", ui::Header::new("Reports"));
+
     let reports = spinner! {
         system
             .client().await?

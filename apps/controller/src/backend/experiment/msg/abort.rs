@@ -2,21 +2,14 @@ use chrono::Utc;
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
 
-pub fn process(actor: &mut ExperimentActor) {
-    match &mut actor.status {
-        ExperimentStatus::Running { .. } => {
-//            if let Some(watcher) = &mut actor.watcher {
-//                watcher.add_event(Arc::new(PReport {
-//                    created_at: Utc::now().to_rfc3339(),
-//                    op: Some(Op::ExperimentAborted(PExperimentAborted {})),
-//                }));
-//            }
+pub fn abort(actor: &mut ExperimentActor) {
+    if let ExperimentStatus::Running { reports, .. } = &actor.status {
+        // @todo kill watchers
 
-            actor.status = ExperimentStatus::Aborted {
-                since: Utc::now(),
-            };
-        }
-
-        _ => (),
+        actor.status = ExperimentStatus::Completed {
+            since: Utc::now(),
+            reports: reports.to_vec(),
+            result: Err("Experiment has been aborted".into()),
+        };
     }
 }

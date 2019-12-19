@@ -11,27 +11,27 @@ pub type RunnerRx = mpsc::UnboundedReceiver<RunnerMsg>;
 
 #[derive(Debug)]
 pub enum RunnerMsg {
-    AsModel {
+    GetModel {
         tx: oneshot::Sender<PRunner>,
     },
 
     Kill,
 }
 
-mod as_model;
+mod get_model;
 
 impl RunnerMsg {
     pub fn process(self, actor: &mut RunnerActor) -> ActorSpirit {
         debug!("Processing message: {:?}", self);
 
         match self {
-            RunnerMsg::AsModel { tx } => {
-                let _ = tx.send(as_model::process(actor));
-                ActorSpirit::Alive
+            RunnerMsg::GetModel { tx } => {
+                let _ = tx.send(get_model::get_model(actor));
+                ActorSpirit::KeepAlive
             }
 
             RunnerMsg::Kill => {
-                ActorSpirit::Dead
+                ActorSpirit::Kill
             }
         }
     }

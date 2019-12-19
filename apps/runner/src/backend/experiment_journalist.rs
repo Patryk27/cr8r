@@ -29,8 +29,12 @@ impl ExperimentJournalist {
         Self { tx }
     }
 
-    pub fn add_message(&self, message: impl Into<String>) {
-        tell!(self.tx, ExperimentJournalistMsg::AddCustomMessage { message: message.into() });
+    pub fn add_user_msg(&self, msg: impl Into<String>) {
+        tell!(self.tx, ExperimentJournalistMsg::AddUserMsg { msg: msg.into() });
+    }
+
+    pub fn add_system_msg(&self, msg: impl Into<String>) {
+        tell!(self.tx, ExperimentJournalistMsg::AddSystemMsg { msg: msg.into() });
     }
 
     pub fn add_process_output(&self, line: impl Into<String>) {
@@ -41,15 +45,19 @@ impl ExperimentJournalist {
         tell!(self.tx, ExperimentJournalistMsg::AddExperimentStarted);
     }
 
-    pub fn add_experiment_completed(&self) {
-        tell!(self.tx, ExperimentJournalistMsg::AddExperimentCompleted);
+    pub fn add_experiment_succeeded(&self) {
+        tell!(self.tx, ExperimentJournalistMsg::AddExperimentSucceeded);
     }
 
-    pub fn add_scenario_started(&self) {
-        tell!(self.tx, ExperimentJournalistMsg::AddScenarioStarted);
+    pub fn add_experiment_failed(&self, cause: impl Into<String>) {
+        tell!(self.tx, ExperimentJournalistMsg::AddExperimentFailed { cause: cause.into() });
     }
 
-    pub fn add_scenario_completed(&self, success: bool) {
-        tell!(self.tx, ExperimentJournalistMsg::AddScenarioCompleted { success });
+    pub fn add_step_succeeded(&self, id: u32) {
+        tell!(self.tx, ExperimentJournalistMsg::AddStepSucceeded { id });
+    }
+
+    pub fn add_step_failed(&self, id: u32, cause: impl Into<String>) {
+        tell!(self.tx, ExperimentJournalistMsg::AddStepFailed { id, cause: cause.into() });
     }
 }

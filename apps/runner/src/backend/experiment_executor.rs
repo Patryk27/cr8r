@@ -26,19 +26,19 @@ pub struct ExperimentExecutor {
 impl ExperimentExecutor {
     pub fn spawn(sandbox: Sandbox, assignment: PAssignment, client: ExperimentClient) -> Self {
         let (tx, rx) = mpsc::unbounded();
-        let reporter = ExperimentJournalist::spawn(client);
+        let journalist = ExperimentJournalist::spawn(client);
 
         tokio::spawn(ExperimentExecutorActor::new(
             rx,
             sandbox,
             assignment,
-            reporter,
+            journalist,
         ).main());
 
         Self { tx }
     }
 
-    pub async fn status(&self) -> ExperimentExecutorStatus {
-        ask!(self.tx, ExperimentExecutorMsg::Status)
+    pub async fn get_status(&self) -> ExperimentExecutorStatus {
+        ask!(self.tx, ExperimentExecutorMsg::GetStatus)
     }
 }

@@ -2,7 +2,7 @@ use futures_channel::{mpsc, oneshot};
 use log::*;
 
 use lib_protocol::core::{PAssignment, PExperimentId, PRunnerId, PRunnerName};
-use lib_protocol::core::p_experiment_definition::Op as PExperimentDefinitionOp;
+use lib_protocol::core::p_experiment_def::Op as PExperimentDefOp;
 
 use crate::backend::{Experiment, Result, Runner};
 use crate::backend::system::SystemActor;
@@ -26,7 +26,7 @@ pub enum SystemMsg {
     },
 
     LaunchExperiment {
-        experiment: PExperimentDefinitionOp,
+        experiment_def: PExperimentDefOp,
         tx: oneshot::Sender<Result<PExperimentId>>,
     },
 
@@ -54,27 +54,27 @@ impl SystemMsg {
 
         match self {
             SystemMsg::FindExperiment { experiment, tx } => {
-                let _ = tx.send(find_experiment::process(actor, experiment));
+                let _ = tx.send(find_experiment::find_experiment(actor, experiment));
             }
 
             SystemMsg::FindExperiments { tx } => {
-                let _ = tx.send(find_experiments::process(actor));
+                let _ = tx.send(find_experiments::find_experiments(actor));
             }
 
             SystemMsg::FindRunners { tx } => {
-                let _ = tx.send(find_runners::process(actor));
+                let _ = tx.send(find_runners::find_runners(actor));
             }
 
-            SystemMsg::LaunchExperiment { experiment, tx } => {
-                let _ = tx.send(launch_experiment::process(actor, experiment));
+            SystemMsg::LaunchExperiment { experiment_def, tx } => {
+                let _ = tx.send(launch_experiment::launch_experiment(actor, experiment_def));
             }
 
             SystemMsg::RegisterRunner { name, tx } => {
-                let _ = tx.send(register_runner::process(actor, name));
+                let _ = tx.send(register_runner::register_runner(actor, name));
             }
 
             SystemMsg::RequestAssignment { runner, tx } => {
-                let _ = tx.send(request_assignment::process(actor, runner).await);
+                let _ = tx.send(request_assignment::request_assignment(actor, runner).await);
             }
         };
     }

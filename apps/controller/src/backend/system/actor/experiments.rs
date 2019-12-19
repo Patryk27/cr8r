@@ -1,6 +1,6 @@
 use std::collections::{HashMap, VecDeque};
 
-use lib_protocol::core::{PExperimentId, PScenario};
+use lib_protocol::core::{PExperimentId, PExperimentStep};
 
 use crate::backend::{Experiment, Result};
 use crate::id;
@@ -18,12 +18,14 @@ impl Experiments {
         }
     }
 
-    pub fn create(&mut self, scenarios: Vec<PScenario>) -> PExperimentId {
+    pub fn create(&mut self, (system, toolchain, steps): (String, String, Vec<PExperimentStep>)) -> PExperimentId {
         let id = id!();
 
         let experiment = Experiment::spawn(
             id.clone(),
-            scenarios,
+            system,
+            toolchain,
+            steps,
         );
 
         self.experiments.insert(id.clone(), experiment);

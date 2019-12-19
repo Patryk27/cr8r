@@ -1,11 +1,6 @@
 use std::fmt;
 
-use colored::Colorize;
-
-use lib_protocol::core::p_experiment::p_status::*;
 use lib_protocol::core::PExperiment;
-
-use crate::ui;
 
 pub struct ExperimentStatus<'a> {
     experiment: &'a PExperiment,
@@ -19,32 +14,37 @@ impl<'a> ExperimentStatus<'a> {
 
 impl fmt::Display for ExperimentStatus<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use crate::ui;
+        use colored::Colorize;
+        use lib_protocol::core::p_experiment::p_status::*;
+
         let status = try {
             match self.experiment.status.as_ref()?.op.as_ref()? {
-                Op::AwaitingRunner(PAwaitingRunner { since }) => {
-                    let state = "awaiting runner".yellow();
+                Op::Idle(PIdle { since }) => {
+                    let state = "idle / awaiting runner".yellow();
                     let since = ui::DateTime::new(since);
 
                     format!("{} (since {})", state, since)
                 }
 
-                Op::Running(PRunning { since, completed_scenarios, .. }) => {
+                Op::Running(PRunning { since, completed_steps, .. }) => {
                     let state = "running".green();
 
-                    let completed = completed_scenarios
+                    let completed_steps = completed_steps
                         .to_string()
                         .blue();
 
-                    let all = self.experiment.scenario_count
+                    let all_steps = self.experiment.steps
+                        .len()
                         .to_string()
                         .blue();
 
                     let since = ui::DateTime::new(since);
 
-                    format!("{} (completed {} of {} scenario(s), since {})", state, completed, all, since)
+                    format!("{} (completed {} of {} step(s), since {})", state, completed_steps, all_steps, since)
                 }
 
-                Op::Completed(PCompleted { since, success }) => {
+                Op::Completed(PCompleted { since, success, .. }) => {
                     let state = "completed"
                         .blue()
                         .bold();
@@ -62,13 +62,6 @@ impl fmt::Display for ExperimentStatus<'_> {
                     let since = ui::DateTime::new(since);
 
                     format!("{} ({}, since {})", state, success, since)
-                }
-
-                Op::Aborted(PAborted { since }) => {
-                    let state = "aborted".red();
-                    let since = ui::DateTime::new(since);
-
-                    format!("{} (since {})", state, since)
                 }
 
                 Op::Zombie(PZombie { since }) => {

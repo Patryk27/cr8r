@@ -4,13 +4,10 @@ use lib_protocol::core::PExperimentReport;
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
 
-pub fn process(actor: &ExperimentActor) -> Vec<Arc<PExperimentReport>> {
+pub fn get_reports(actor: &ExperimentActor) -> Vec<Arc<PExperimentReport>> {
     match &actor.status {
         ExperimentStatus::Running { reports, .. } | ExperimentStatus::Completed { reports, .. } => {
-            reports
-                .iter()
-                .cloned()
-                .collect()
+            reports.to_vec()
         }
 
         _ => Vec::new(),

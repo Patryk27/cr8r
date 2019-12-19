@@ -45,7 +45,7 @@ async fn delete_stale_container(engine: &mut LxdEngine) -> Result<()> {
         .list()
         .await?
         .into_iter()
-        .any(|container| &container.name == &engine.container);
+        .any(|container| container.name == engine.container);
 
     if found_stale_container {
         engine.lxd

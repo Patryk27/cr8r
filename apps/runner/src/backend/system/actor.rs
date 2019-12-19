@@ -57,10 +57,14 @@ impl SystemActor {
 
             match self.client.request_assignment().await {
                 Ok(Some(assignment)) => {
-                    info!(
-                        "We've been assigned experiment `{}`",
-                        assignment.0.experiment_id.to_string().green(),
-                    );
+                    let id = assignment.0.experiment
+                        .as_ref()
+                        .unwrap()
+                        .id
+                        .to_string()
+                        .green();
+
+                    info!("We've been assigned experiment `{}`", id);
 
                     return assignment;
                 }
@@ -111,8 +115,8 @@ impl SystemActor {
         );
 
         loop {
-            match executor.status().await {
-                ExperimentExecutorStatus::Aborted | ExperimentExecutorStatus::Completed => {
+            match executor.get_status().await {
+                ExperimentExecutorStatus::Completed => {
                     break;
                 }
 

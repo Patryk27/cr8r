@@ -4,8 +4,8 @@ use lib_protocol::for_client::PWatchExperimentRequest;
 
 use crate::{Result, spinner, System, ui};
 
-pub async fn run(mut system: System, id: String) -> Result<()> {
-    println!("Attaching to experiment `{}`", id.blue());
+pub async fn watch(mut system: System, id: String) -> Result<()> {
+    println!("Attaching to experiment `{}`", id.cyan());
 
     let mut reply = spinner! {
         system

@@ -1,3 +1,7 @@
-pub use self::status::*;
+pub use self::{
+    name::*,
+    status::*,
+};
 
+mod name;
 mod status;

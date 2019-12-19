@@ -21,9 +21,7 @@ pub struct Controller {
 
 pub fn load(file: &Path) -> Result<Config> {
     (try {
-        let config = fs::read_to_string(file)?;
-        let config = serde_yaml::from_str(&config)?;
-
-        config
+        let file = fs::read_to_string(file)?;
+        serde_yaml::from_str(&file)?
     }: StdResult<Config>).context(error::CouldntStart)
 }

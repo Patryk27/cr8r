@@ -37,6 +37,6 @@ macro_rules! tell {
 }
 
 pub enum ActorSpirit {
-    Alive,
-    Dead,
+    KeepAlive,
+    Kill,
 }

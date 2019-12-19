@@ -6,8 +6,7 @@ use lib_sandbox::Sandbox;
 use crate::backend::{ExperimentExecutorStatus, ExperimentJournalist};
 use crate::backend::experiment_executor::ExperimentExecutorRx;
 
-mod execute_scenario;
-mod execute_step;
+mod execute_experiment;
 mod process_messages;
 
 pub struct ExperimentExecutorActor {
@@ -36,40 +35,31 @@ impl ExperimentExecutorActor {
 
     pub async fn main(mut self) {
         debug!("Actor started");
-        debug!("-> experiment id: {}", self.assignment.experiment_id);
-        debug!("-> experiment scenarios: {}", self.assignment.experiment_scenarios.len());
 
         self.journalist.add_experiment_started();
 
-        let scenarios = self.assignment
-            .experiment_scenarios
-            .drain(..)
-            .collect(): Vec<_>;
+        // @todo
+        self.process_messages_and_yield();
 
-        for scenario in scenarios {
-            self.process_messages_yield();
-            self.journalist.add_scenario_started();
-
-            let success = match self.execute_scenario(scenario).await {
+        if let Some(experiment) = self.assignment.experiment.take() {
+            match self.execute_experiment(experiment).await {
                 Ok(()) => {
-                    true
+                    self.journalist.add_experiment_succeeded();
                 }
 
                 Err(err) => {
-                    self.journalist.add_message(format!("Scenario failed: {}", err));
-                    false
+                    self.journalist.add_experiment_failed(err);
                 }
             };
-
-            self.journalist.add_scenario_completed(success);
+        } else {
+            self.journalist.add_experiment_failed("No experiment has been provided");
         }
 
-        self.journalist.add_experiment_completed();
         self.status = ExperimentExecutorStatus::Completed;
 
-        self.process_messages_loop()
+        self.process_messages_and_wait()
             .await;
 
-        debug!("Actor orphaned, halting");
+        debug!("Actor finished working, halting");
     }
 }

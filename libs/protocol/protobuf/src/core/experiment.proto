@@ -2,25 +2,24 @@ syntax = "proto3";
 
 package cr8r.core;
 
+import "core/experiment_step.proto";
+
 message PExperiment {
     message PStatus {
-        message PAwaitingRunner {
+        message PIdle {
             string since = 1;
         }
 
         message PRunning {
             string since = 1;
             string last_heartbeat_at = 2;
-            uint32 completed_scenarios = 3;
+            uint32 completed_steps = 3;
         }
 
         message PCompleted {
             string since = 1;
             bool success = 2;
-        }
-
-        message PAborted {
-            string since = 1;
+            string cause = 3;
         }
 
         message PZombie {
@@ -28,31 +27,17 @@ message PExperiment {
         }
 
         oneof op {
-            PAwaitingRunner awaiting_runner = 1;
+            PIdle idle = 1;
             PRunning running = 2;
             PCompleted completed = 3;
-            PAborted aborted = 4;
-            PZombie zombie = 5;
+            PZombie zombie = 4;
         }
     }
 
     string id = 1;
-    uint32 scenario_count = 2;
-    string created_at = 3;
-    PStatus status = 4;
-}
-
-message PExperimentDefinition {
-    message PTrySystem {
-        string system = 1;
-    }
-
-    message PTryToolchain {
-        string toolchain = 1;
-    }
-
-    oneof op {
-        PTrySystem try_system = 1;
-        PTryToolchain try_toolchain = 2;
-    }
+    string system = 2;
+    string toolchain = 3;
+    string created_at = 4;
+    PStatus status = 5;
+    repeated PExperimentStep steps = 6;
 }

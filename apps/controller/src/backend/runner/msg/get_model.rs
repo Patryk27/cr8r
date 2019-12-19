@@ -4,7 +4,7 @@ use lib_protocol::core::PRunner;
 
 use crate::backend::runner::RunnerActor;
 
-pub fn process(actor: &mut RunnerActor) -> PRunner {
+pub fn get_model(actor: &mut RunnerActor) -> PRunner {
     // @todo provide actual status
     let status = Op::Idle(PIdle {
         since: actor.joined_at.to_rfc3339(),

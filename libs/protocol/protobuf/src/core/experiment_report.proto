@@ -4,8 +4,8 @@ package cr8r.core;
 
 message PExperimentReport {
     enum Kind {
-        SYSTEM_MESSAGE = 0;
-        CUSTOM_MESSAGE = 1;
+        SYSTEM_MSG = 0;
+        USER_MSG = 1;
         PROCESS_OUTPUT = 2;
     }
 

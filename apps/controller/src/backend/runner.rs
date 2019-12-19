@@ -34,8 +34,8 @@ impl Runner {
         Self { tx }
     }
 
-    pub async fn as_model(&self) -> PRunner {
-        ask!(self.tx, RunnerMsg::AsModel)
+    pub async fn get_model(&self) -> PRunner {
+        ask!(self.tx, RunnerMsg::GetModel)
     }
 
     pub fn kill(&self) {

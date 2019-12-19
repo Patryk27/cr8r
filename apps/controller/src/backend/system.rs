@@ -2,7 +2,7 @@ use futures_channel::mpsc;
 
 use lib_actor::ask;
 use lib_protocol::core::{PAssignment, PExperimentId, PRunnerId, PRunnerName};
-use lib_protocol::core::p_experiment_definition::Op as PExperimentDefinitionOp;
+use lib_protocol::core::p_experiment_def::Op as PExperimentDefOp;
 
 use crate::backend::{Compiler, Experiment, Result, Runner};
 
@@ -51,8 +51,8 @@ impl System {
         ask!(self.tx, SystemMsg::FindExperiments)
     }
 
-    pub async fn launch_experiment(&self, experiment: PExperimentDefinitionOp) -> Result<PExperimentId> {
-        ask!(self.tx, SystemMsg::LaunchExperiment { experiment })
+    pub async fn launch_experiment(&self, experiment_def: PExperimentDefOp) -> Result<PExperimentId> {
+        ask!(self.tx, SystemMsg::LaunchExperiment { experiment_def })
     }
 }
 

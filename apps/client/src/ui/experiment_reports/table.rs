@@ -14,25 +14,28 @@ impl<'a> ExperimentReportsTable<'a> {
 
 impl fmt::Display for ExperimentReportsTable<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use crate::ui;
-        use prettytable::*;
+        use crate::{table, ui};
+        use colored::Colorize;
+        use prettytable::{cell, row};
 
         if self.reports.is_empty() {
             return write!(f, "There are no reports");
         }
 
-        let mut table = Table::new();
-
-        table.set_format(*format::consts::FORMAT_NO_BORDER_LINE_SEPARATOR);
-
-        table.set_titles(row![
-            "Created at", "Kind", "Message",
-        ]);
+        let mut table = table! {
+            titles: ["Created at", "Kind", "Message"],
+        };
 
         for report in self.reports {
-            let at = ui::DateTime::new(&report.created_at);
+            let created_at = ui::DateTime::new(&report.created_at)
+                .to_string()
+                .dimmed();
 
-            // @todo
+            table.add_row(row![
+                created_at,
+                ui::ExperimentReportKind::new(report),
+                ui::ExperimentReportMessage::new(report),
+            ]);
         }
 
         write!(f, "{}", table)

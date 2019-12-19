@@ -1,11 +1,9 @@
-use colored::Colorize;
-
 use lib_protocol::for_client::PFindRunnersRequest;
 
 use crate::{Result, spinner, System, ui};
 
 pub async fn print(system: &mut System) -> Result<()> {
-    println!("{}", "# Runners".blue());
+    println!("{}", ui::Header::new("Runners"));
     println!();
 
     let runners = spinner! {

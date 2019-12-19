@@ -1,19 +1,14 @@
 use colored::Colorize;
 use structopt::StructOpt;
 
-use lib_protocol::core::p_experiment_definition::*;
-use lib_protocol::core::PExperimentDefinition;
+use lib_protocol::core::p_experiment_def::*;
+use lib_protocol::core::PExperimentDef;
 use lib_protocol::for_client::PLaunchExperimentRequest;
 
 use crate::{Result, spinner, System};
 
 #[derive(Debug, StructOpt)]
 pub enum LaunchExperimentCommand {
-    #[structopt(name = "try-system")]
-    TrySystem {
-        system: String,
-    },
-
     #[structopt(name = "try-toolchain")]
     TryToolchain {
         toolchain: String,
@@ -22,11 +17,7 @@ pub enum LaunchExperimentCommand {
 
 impl LaunchExperimentCommand {
     pub async fn run(self, system: System, watch: bool) -> Result<()> {
-        run(system, watch, match self {
-            LaunchExperimentCommand::TrySystem { system } => {
-                Op::TrySystem(PTrySystem { system })
-            }
-
+        launch_experiment(system, watch, match self {
             LaunchExperimentCommand::TryToolchain { toolchain } => {
                 Op::TryToolchain(PTryToolchain { toolchain })
             }
@@ -34,15 +25,19 @@ impl LaunchExperimentCommand {
     }
 }
 
-async fn run(mut system: System, watch: bool, experiment: Op) -> Result<()> {
-    let experiment = Some(PExperimentDefinition {
+async fn launch_experiment(
+    mut system: System,
+    watch: bool,
+    experiment: Op,
+) -> Result<()> {
+    let experiment_def = Some(PExperimentDef {
         op: Some(experiment),
     });
 
     let reply = spinner! {
         system
             .client().await?
-            .launch_experiment(PLaunchExperimentRequest { experiment }).await?
+            .launch_experiment(PLaunchExperimentRequest { experiment_def }).await?
             .into_inner()
     };
 
@@ -51,7 +46,8 @@ async fn run(mut system: System, watch: bool, experiment: Op) -> Result<()> {
     println!();
 
     if watch {
-        super::watch::run(system, reply.id).await?;
+        super::watch::watch(system, reply.id)
+            .await?;
     } else {
         println!("You can see status of your experiment using:");
         println!("$ {}", format!("cr8r experiment status {}", reply.id).blue());

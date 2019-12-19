@@ -55,7 +55,7 @@ impl SessionClient {
             let client = ExperimentClient::new(
                 self.client.clone(),
                 self.runner.clone(),
-                assignment.experiment_id.clone(),
+                assignment.experiment.as_ref().unwrap().id.clone(),
             );
 
             Ok(Some((assignment, client)))

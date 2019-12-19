@@ -7,8 +7,12 @@ message PExperimentEvent {
         //
     }
 
-    message PCustomMessage {
-        string message = 1;
+    message PSystemMsg {
+        string msg = 1;
+    }
+
+    message PUserMsg {
+        string msg = 1;
     }
 
     message PProcessOutput {
@@ -19,20 +23,21 @@ message PExperimentEvent {
         //
     }
 
-    message PExperimentCompleted {
+    message PExperimentSucceeded {
         //
     }
 
-    message PExperimentAborted {
-        //
+    message PExperimentFailed {
+        string cause = 1;
     }
 
-    message PScenarioStarted {
-        //
+    message PStepSucceeded {
+        uint32 id = 1;
     }
 
-    message PScenarioCompleted {
-        bool success = 1;
+    message PStepFailed {
+        uint32 id = 1;
+        string cause = 2;
     }
 
     string created_at = 1;
@@ -40,15 +45,15 @@ message PExperimentEvent {
     oneof op {
         PPing ping = 100;
 
-        PCustomMessage custom_message = 200;
+        PSystemMsg system_msg = 200;
+        PUserMsg user_msg = 201;
+        PProcessOutput process_output = 202;
 
-        PProcessOutput process_output = 300;
+        PExperimentStarted experiment_started = 300;
+        PExperimentSucceeded experiment_succeeded = 301;
+        PExperimentFailed experiment_failed = 302;
 
-        PExperimentStarted experiment_started = 400;
-        PExperimentCompleted experiment_completed = 401;
-        PExperimentAborted experiment_aborted = 402;
-
-        PScenarioStarted scenario_started = 500;
-        PScenarioCompleted scenario_completed = 501;
+        PStepSucceeded step_succeeded = 400;
+        PStepFailed step_failed = 401;
     }
 }

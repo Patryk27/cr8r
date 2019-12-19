@@ -3,9 +3,7 @@ syntax = "proto3";
 package cr8r.core;
 
 import "core/experiment.proto";
-import "core/scenario.proto";
 
 message PAssignment {
-    string experiment_id = 1;
-    repeated PScenario experiment_scenarios = 2;
+    PExperiment experiment = 1;
 }

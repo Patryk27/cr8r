@@ -5,8 +5,12 @@ pub type ExperimentJournalistRx = mpsc::UnboundedReceiver<ExperimentJournalistMs
 
 #[derive(Debug)]
 pub enum ExperimentJournalistMsg {
-    AddCustomMessage {
-        message: String,
+    AddSystemMsg {
+        msg: String,
+    },
+
+    AddUserMsg {
+        msg: String,
     },
 
     AddProcessOutput {
@@ -15,11 +19,18 @@ pub enum ExperimentJournalistMsg {
 
     AddExperimentStarted,
 
-    AddExperimentCompleted,
+    AddExperimentSucceeded,
 
-    AddScenarioStarted,
+    AddExperimentFailed {
+        cause: String,
+    },
 
-    AddScenarioCompleted {
-        success: bool,
+    AddStepSucceeded {
+        id: u32,
+    },
+
+    AddStepFailed {
+        id: u32,
+        cause: String,
     },
 }

@@ -2,7 +2,7 @@ use futures_util::StreamExt;
 use tokio::sync::mpsc;
 use tonic::{Code, Request, Response, Status};
 
-use lib_protocol::core::{PExperimentDefinition, PExperimentReport};
+use lib_protocol::core::{PExperimentDef, PExperimentReport};
 use lib_protocol::for_client::*;
 use lib_protocol::for_client::server::ForClient;
 
@@ -33,8 +33,11 @@ impl ForClient for ForClientService {
 
     async fn find_experiments(
         &self,
-        _: Request<PFindExperimentsRequest>,
+        request: Request<PFindExperimentsRequest>,
     ) -> Result<Response<PFindExperimentsReply>, Status> {
+        // @todo filtering should happen inside `system`, not here
+        let request = request.into_inner();
+
         let mut experiments = Vec::new();
 
         for experiment in self.system.find_experiments().await {
@@ -42,7 +45,15 @@ impl ForClient for ForClientService {
                 .get_model()
                 .await;
 
-            experiments.push(experiment);
+            let mut matches = true;
+
+            if !request.filter_id.is_empty() {
+                matches = experiment.id == request.filter_id;
+            }
+
+            if matches {
+                experiments.push(experiment);
+            }
         }
 
         Ok(Response::new(PFindExperimentsReply { experiments }))
@@ -54,9 +65,9 @@ impl ForClient for ForClientService {
     ) -> Result<Response<PLaunchExperimentReply>, Status> {
         let request = request.into_inner();
 
-        if let Some(PExperimentDefinition { op: Some(experiment) }) = request.experiment {
+        if let Some(PExperimentDef { op: Some(experiment_def) }) = request.experiment_def {
             let id = self.system
-                .launch_experiment(experiment)
+                .launch_experiment(experiment_def)
                 .await?;
 
             Ok(Response::new(PLaunchExperimentReply { id }))
@@ -81,7 +92,6 @@ impl ForClient for ForClientService {
 
         tokio::spawn(async move {
             while let Some(report) = report_rx.next().await {
-                // @todo can we avoid this clone somehow?
                 let report = (&*report).to_owned();
 
                 if tx.send(Ok(report)).await.is_err() {
@@ -93,6 +103,22 @@ impl ForClient for ForClientService {
         Ok(Response::new(rx))
     }
 
+    async fn find_experiment_reports(
+        &self,
+        request: Request<PFindExperimentReportsRequest>,
+    ) -> Result<Response<PFindExperimentReportsReply>, Status> {
+        let request = request.into_inner();
+
+        let reports = self.system
+            .find_experiment(request.filter_experiment_id).await?
+            .get_reports().await
+            .into_iter()
+            .map(|report| (&*report).to_owned())
+            .collect();
+
+        Ok(Response::new(PFindExperimentReportsReply { reports }))
+    }
+
     async fn find_runners(
         &self,
         _: Request<PFindRunnersRequest>,
@@ -101,7 +127,7 @@ impl ForClient for ForClientService {
 
         for runner in self.system.find_runners().await {
             let runner = runner
-                .as_model()
+                .get_model()
                 .await;
 
             runners.push(runner);

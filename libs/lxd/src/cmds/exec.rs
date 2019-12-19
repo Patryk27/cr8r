@@ -8,7 +8,7 @@ pub async fn exec(lxd: &LxdClient, container: &LxdContainerName, args: &[&str]) 
     ];
 
     for arg in args {
-        invoke_args.push(arg.to_string());
+        invoke_args.push((*arg).to_string());
     }
 
     cmds::invoke(lxd, &invoke_args)

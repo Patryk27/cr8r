@@ -5,7 +5,7 @@ use lib_protocol::core::{PRunnerId, PRunnerName};
 use crate::backend::Result;
 use crate::backend::system::SystemActor;
 
-pub fn process(actor: &mut SystemActor, name: PRunnerName) -> Result<PRunnerId> {
+pub fn register_runner(actor: &mut SystemActor, name: PRunnerName) -> Result<PRunnerId> {
     if let Some(id) = actor.runners.name_to_id(&name).map(ToOwned::to_owned) {
         warn!("A new runner tries to join under a name that's already taken: {}", name);
 

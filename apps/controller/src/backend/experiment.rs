@@ -3,7 +3,7 @@ use std::sync::Arc;
 use futures_channel::mpsc;
 
 use lib_actor::{ask, tell};
-use lib_protocol::core::{PAssignment, PExperiment, PExperimentEvent, PExperimentId, PExperimentReport, PRunnerId, PScenario};
+use lib_protocol::core::{PAssignment, PExperiment, PExperimentEvent, PExperimentId, PExperimentReport, PExperimentStep, PRunnerId};
 
 use crate::backend::Result;
 
@@ -23,13 +23,20 @@ pub struct Experiment {
 }
 
 impl Experiment {
-    pub fn spawn(id: PExperimentId, scenarios: Vec<PScenario>) -> Self {
+    pub fn spawn(
+        id: PExperimentId,
+        system: String,
+        toolchain: String,
+        steps: Vec<PExperimentStep>,
+    ) -> Self {
         let (tx, rx) = mpsc::unbounded();
 
         tokio::spawn(ExperimentActor::new(
             rx,
             id,
-            scenarios,
+            system,
+            toolchain,
+            steps,
         ).main());
 
         Self { tx }

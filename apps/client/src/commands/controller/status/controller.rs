@@ -4,10 +4,10 @@ use colored::Colorize;
 
 use lib_protocol::for_client::PHelloRequest;
 
-use crate::{Result, spinner, System};
+use crate::{Result, spinner, System, ui};
 
 pub async fn print(system: &mut System) -> Result<()> {
-    println!("{}", "# Controller".blue());
+    println!("{}", ui::Header::new("Controller"));
     println!();
 
     println!(
@@ -22,9 +22,11 @@ pub async fn print(system: &mut System) -> Result<()> {
             .into_inner()
     };
 
+    // @todo extract it to a separate component
+
     println!(
         "Version: {}",
-        format!("{}", status.version).green(),
+        status.version.to_string().green(),
     );
 
     println!(

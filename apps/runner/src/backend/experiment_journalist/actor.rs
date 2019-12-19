@@ -34,29 +34,40 @@ impl ExperimentJournalistActor {
     }
 
     fn msg_to_report(msg: ExperimentJournalistMsg) -> Op {
+        use ExperimentJournalistMsg::*;
+        use Op::*;
+
         match msg {
-            ExperimentJournalistMsg::AddCustomMessage { message } => {
-                Op::CustomMessage(PCustomMessage { message })
+            AddSystemMsg { msg } => {
+                SystemMsg(PSystemMsg { msg })
             }
 
-            ExperimentJournalistMsg::AddProcessOutput { line } => {
-                Op::ProcessOutput(PProcessOutput { line })
+            AddUserMsg { msg } => {
+                UserMsg(PUserMsg { msg })
             }
 
-            ExperimentJournalistMsg::AddExperimentStarted => {
-                Op::ExperimentStarted(PExperimentStarted {})
+            AddProcessOutput { line } => {
+                ProcessOutput(PProcessOutput { line })
             }
 
-            ExperimentJournalistMsg::AddExperimentCompleted => {
-                Op::ExperimentCompleted(PExperimentCompleted {})
+            AddExperimentStarted => {
+                ExperimentStarted(PExperimentStarted {})
             }
 
-            ExperimentJournalistMsg::AddScenarioStarted => {
-                Op::ScenarioStarted(PScenarioStarted {})
+            AddExperimentSucceeded => {
+                ExperimentSucceeded(PExperimentSucceeded {})
             }
 
-            ExperimentJournalistMsg::AddScenarioCompleted { success } => {
-                Op::ScenarioCompleted(PScenarioCompleted { success })
+            AddExperimentFailed { cause } => {
+                ExperimentFailed(PExperimentFailed { cause })
+            }
+
+            AddStepSucceeded { id } => {
+                StepSucceeded(PStepSucceeded { id })
+            }
+
+            AddStepFailed { id, cause } => {
+                StepFailed(PStepFailed { id, cause })
             }
         }
     }

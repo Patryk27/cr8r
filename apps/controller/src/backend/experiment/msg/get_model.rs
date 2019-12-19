@@ -4,32 +4,33 @@ use lib_protocol::core::PExperiment;
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
 
-pub fn process(actor: &mut ExperimentActor) -> PExperiment {
+pub fn get_model(actor: &mut ExperimentActor) -> PExperiment {
     let status = match &actor.status {
-        ExperimentStatus::AwaitingRunner { since } => {
-            Op::AwaitingRunner(PAwaitingRunner {
+        ExperimentStatus::Idle { since } => {
+            Op::Idle(PIdle {
                 since: since.to_rfc3339(),
             })
         }
 
-        ExperimentStatus::Running { since, last_heartbeat_at, completed_scenarios, .. } => {
+        ExperimentStatus::Running { since, last_heartbeat_at, completed_steps, .. } => {
             Op::Running(PRunning {
                 since: since.to_rfc3339(),
                 last_heartbeat_at: last_heartbeat_at.to_rfc3339(),
-                completed_scenarios: *completed_scenarios,
+                completed_steps: *completed_steps,
             })
         }
 
-        ExperimentStatus::Completed { since, success, .. } => {
+        ExperimentStatus::Completed { since, result, .. } => {
+            let cause = result
+                .as_ref()
+                .err()
+                .map(ToOwned::to_owned)
+                .unwrap_or_default();
+
             Op::Completed(PCompleted {
                 since: since.to_rfc3339(),
-                success: *success,
-            })
-        }
-
-        ExperimentStatus::Aborted { since } => {
-            Op::Aborted(PAborted {
-                since: since.to_rfc3339(),
+                success: result.is_ok(),
+                cause,
             })
         }
 
@@ -41,9 +42,11 @@ pub fn process(actor: &mut ExperimentActor) -> PExperiment {
     };
 
     PExperiment {
-        id: actor.experiment.clone(),
+        id: actor.id.clone(),
+        system: actor.system.clone(),
+        toolchain: actor.toolchain.clone(),
+        steps: actor.steps.clone(),
         created_at: actor.created_at.to_rfc3339(),
-        scenario_count: actor.scenarios.len() as u32,
 
         status: Some(PStatus {
             op: Some(status),

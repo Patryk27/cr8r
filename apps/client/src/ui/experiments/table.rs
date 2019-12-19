@@ -14,31 +14,22 @@ impl<'a> ExperimentsTable<'a> {
 
 impl fmt::Display for ExperimentsTable<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use crate::ui;
-        use colored::*;
-        use prettytable::*;
+        use crate::{table, ui};
+        use prettytable::{cell, row};
 
         if self.experiments.is_empty() {
             return write!(f, "There are no experiments");
         }
 
-        let mut table = Table::new();
-
-        table.set_format(*format::consts::FORMAT_NO_BORDER_LINE_SEPARATOR);
-
-        table.set_titles(row![
-            "Id", "Status", "Created at",
-        ]);
+        let mut table = table! {
+            titles: ["Id", "Status", "Created at"],
+        };
 
         for experiment in self.experiments {
-            let id = experiment.id.bright_cyan();
-            let status = ui::ExperimentStatus::new(experiment);
-            let created_at = ui::DateTime::new(&experiment.created_at);
-
             table.add_row(row![
-                id,
-                status,
-                created_at,
+                ui::ExperimentId::new(experiment),
+                ui::ExperimentStatus::new(experiment),
+                ui::DateTime::new(&experiment.created_at),
             ]);
         }
 

@@ -31,7 +31,8 @@ impl SystemActor {
         debug!("Actor started");
 
         while let Some(msg) = self.rx.next().await {
-            msg.process(&mut self).await;
+            msg.process(&mut self)
+                .await;
         }
 
         debug!("Actor orphaned, halting");

@@ -76,13 +76,11 @@ impl Client {
         experiment_id: PExperimentId,
         experiment_event: PExperimentEvent,
     ) -> Result<PAddExperimentEventReply> {
-        let response = self.client
-            .add_experiment_event(PAddExperimentEventRequest {
-                runner_id,
-                experiment_id,
-                experiment_event: Some(experiment_event),
-            })
-            .await?;
+        let response = self.client.add_experiment_event(PAddExperimentEventRequest {
+            runner_id,
+            experiment_id,
+            experiment_event: Some(experiment_event),
+        }).await?;
 
         Ok(response.into_inner())
     }

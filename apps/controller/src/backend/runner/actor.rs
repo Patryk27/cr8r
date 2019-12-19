@@ -38,11 +38,11 @@ impl RunnerActor {
 
         while let Some(msg) = self.rx.next().await {
             match msg.process(&mut self) {
-                ActorSpirit::Alive => {
+                ActorSpirit::KeepAlive => {
                     //
                 }
 
-                ActorSpirit::Dead => {
+                ActorSpirit::Kill => {
                     debug!("Actor killed");
                     return self.on_killed();
                 }
@@ -53,12 +53,8 @@ impl RunnerActor {
     }
 
     fn on_killed(self) {
-        match &self.status {
-            RunnerStatus::Working { experiment, .. } => {
-                experiment.abort();
-            }
-
-            _ => (),
+        if let RunnerStatus::Working { experiment, .. } = self.status {
+            experiment.abort();
         }
     }
 }
