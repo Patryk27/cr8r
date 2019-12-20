@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use log::*;
-use tokio::timer;
+use tokio::time;
 
 use crate::core::SessionClient;
 
@@ -23,7 +23,7 @@ impl SystemHeartbeaterActor {
                 error!("We'll try again in a moment");
             }
 
-            timer::delay_for(Duration::from_secs(60)).await;
+            time::delay_for(Duration::from_secs(60)).await;
         }
     }
 }

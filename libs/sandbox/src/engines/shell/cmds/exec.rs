@@ -1,6 +1,5 @@
-use std::process::Command;
-
-use futures_util::StreamExt;
+use tokio::process::Command;
+use tokio::stream::StreamExt;
 
 use lib_process::{ProcessEvent, spawn};
 
@@ -16,10 +15,16 @@ pub async fn exec(engine: &mut ShellEngine, cmd: &str) -> Result<()> {
     command.current_dir(&engine.dir);
     command.args(&["-c", cmd]);
 
-    let mut rx = spawn(command);
+    let mut events = spawn(command);
 
-    while let Some(event) = rx.next().await {
+    while let Some(event) = events.next().await {
         match event {
+            ProcessEvent::Crashed { .. } => {
+                // @todo do something with `err`
+
+                return Err(Error::CommandFailed);
+            }
+
             ProcessEvent::Exited { status } => {
                 return if status.success() {
                     Ok(())

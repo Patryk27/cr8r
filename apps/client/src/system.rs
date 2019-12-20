@@ -1,6 +1,6 @@
 use tonic::transport::Channel;
 
-use lib_protocol::for_client::client::ForClientClient;
+use lib_protocol::for_client::for_client_client::ForClientClient;
 
 use crate::{Config, Result};
 

@@ -1,4 +1,4 @@
-use futures_channel::mpsc;
+use tokio::sync::mpsc;
 
 use lib_actor::ask;
 use lib_protocol::core::{PAssignment, PExperimentId, PRunnerId, PRunnerName};
@@ -21,7 +21,7 @@ pub struct System {
 
 impl System {
     pub fn spawn(compiler: Compiler) -> Self {
-        let (tx, rx) = mpsc::unbounded();
+        let (tx, rx) = mpsc::unbounded_channel();
         let system = Self { tx };
 
         tokio::spawn(SystemActor::new(

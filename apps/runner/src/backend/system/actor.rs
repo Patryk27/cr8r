@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use colored::Colorize;
 use log::*;
-use tokio::timer;
+use tokio::time;
 
 use lib_protocol::core::PAssignment;
 use lib_sandbox::{SandboxDef, SandboxProvider};
@@ -73,7 +73,7 @@ impl SystemActor {
                     debug!("Got nothing");
                     debug!("We'll try again in a moment");
 
-                    timer::delay_for(Duration::from_secs(2))
+                    time::delay_for(Duration::from_secs(2))
                         .await;
                 }
 
@@ -81,7 +81,7 @@ impl SystemActor {
                     error!("Couldn't ask controller for an assignment: {:?}", err);
                     error!("We'll try again in a moment");
 
-                    timer::delay_for(Duration::from_secs(60))
+                    time::delay_for(Duration::from_secs(60))
                         .await;
                 }
             }
@@ -121,7 +121,7 @@ impl SystemActor {
                 }
 
                 ExperimentExecutorStatus::Running => {
-                    timer::delay_for(Duration::from_secs(1))
+                    time::delay_for(Duration::from_secs(1))
                         .await;
                 }
             }

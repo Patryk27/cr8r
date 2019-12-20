@@ -2,6 +2,7 @@ use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
     tonic_build::configure()
+        .format(true)
         .out_dir("protobuf/build")
         .compile(&[
             "protobuf/src/for_client.proto",

@@ -1,4 +1,4 @@
-use futures_channel::mpsc;
+use tokio::sync::mpsc;
 
 use lib_actor::ask;
 use lib_protocol::core::PAssignment;
@@ -25,7 +25,7 @@ pub struct ExperimentExecutor {
 
 impl ExperimentExecutor {
     pub fn spawn(sandbox: Sandbox, assignment: PAssignment, client: ExperimentClient) -> Self {
-        let (tx, rx) = mpsc::unbounded();
+        let (tx, rx) = mpsc::unbounded_channel();
         let journalist = ExperimentJournalist::spawn(client);
 
         tokio::spawn(ExperimentExecutorActor::new(

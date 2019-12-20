@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use futures_channel::mpsc;
+use tokio::sync::mpsc;
 
 use lib_actor::{ask, tell};
 use lib_protocol::core::{PAssignment, PExperiment, PExperimentEvent, PExperimentId, PExperimentReport, PExperimentStep, PRunnerId};
@@ -29,7 +29,7 @@ impl Experiment {
         toolchain: String,
         steps: Vec<PExperimentStep>,
     ) -> Self {
-        let (tx, rx) = mpsc::unbounded();
+        let (tx, rx) = mpsc::unbounded_channel();
 
         tokio::spawn(ExperimentActor::new(
             rx,

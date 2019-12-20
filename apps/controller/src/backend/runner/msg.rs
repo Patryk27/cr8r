@@ -1,5 +1,5 @@
-use futures_channel::{mpsc, oneshot};
 use log::*;
+use tokio::sync::{mpsc, oneshot};
 
 use lib_actor::ActorSpirit;
 use lib_protocol::core::PRunner;

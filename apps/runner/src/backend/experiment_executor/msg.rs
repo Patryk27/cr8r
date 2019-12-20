@@ -1,5 +1,5 @@
-use futures_channel::{mpsc, oneshot};
 use log::*;
+use tokio::sync::{mpsc, oneshot};
 
 use crate::backend::experiment_executor::ExperimentExecutorActor;
 use crate::backend::ExperimentExecutorStatus;

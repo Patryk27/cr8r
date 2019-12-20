@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use tokio::timer;
+use tokio::time;
 
 use lib_lxd::{LxdContainerConfig, LxdDeviceDef, LxdListener};
 
@@ -84,7 +84,7 @@ async fn forward_ssh_agent(engine: &mut LxdEngine) -> Result<()> {
 
 async fn wait_for_network(engine: &mut LxdEngine) -> Result<()> {
     // Wait a bit before systemd gets initialized; otherwise we won't be able to invoke `systemctl`
-    timer::delay_for(Duration::from_millis(1000))
+    time::delay_for(Duration::from_millis(1000))
         .await;
 
     cmds::exec(engine, "systemctl start network-online.target")

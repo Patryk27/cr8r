@@ -31,7 +31,7 @@ pub fn add_event(actor: &mut ExperimentActor, runner: PRunnerId, event: PExperim
 
             if let Some(report) = event_as_report(&event).map(Arc::new) {
                 for watcher in &actor.watchers {
-                    let _ = watcher.unbounded_send(Arc::clone(&report));
+                    let _ = watcher.send(Arc::clone(&report));
                 }
 
                 reports.push(report);

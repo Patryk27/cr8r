@@ -8,8 +8,6 @@ edition = "2018"
 bimap = "0.4"
 chrono = "0.4"
 colored = "1.9"
-futures-channel-preview = "0.3.0-alpha.19"
-futures-util-preview = "0.3.0-alpha.19"
 lib_actor = { path = "../../libs/actor" }
 lib_log = { path = "../../libs/log" }
 lib_protocol = { path = "../../libs/protocol" }
@@ -17,6 +15,6 @@ log = "0.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.8"
 snafu = "0.6"
-tokio = "=0.2.0-alpha.6"
-tonic = "0.1.0-alpha.6"
+tokio = { version = "0.2", features = ["full"] }
+tonic = "0.1.0-beta.1"
 uuid = { version = "0.8", features = ["v4"] }

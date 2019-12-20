@@ -1,10 +1,10 @@
-use futures_util::StreamExt;
+use tokio::stream::StreamExt;
 use tokio::sync::mpsc;
 use tonic::{Code, Request, Response, Status};
 
 use lib_protocol::core::{PExperimentDef, PExperimentReport};
 use lib_protocol::for_client::*;
-use lib_protocol::for_client::server::ForClient;
+use lib_protocol::for_client::for_client_server::ForClient;
 
 use crate::backend::System;
 

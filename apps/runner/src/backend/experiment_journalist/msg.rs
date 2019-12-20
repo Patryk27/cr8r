@@ -1,4 +1,4 @@
-use futures_channel::mpsc;
+use tokio::sync::mpsc;
 
 pub type ExperimentJournalistTx = mpsc::UnboundedSender<ExperimentJournalistMsg>;
 pub type ExperimentJournalistRx = mpsc::UnboundedReceiver<ExperimentJournalistMsg>;

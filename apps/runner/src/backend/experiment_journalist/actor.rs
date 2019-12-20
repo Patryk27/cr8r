@@ -1,5 +1,5 @@
-use futures_util::StreamExt;
 use log::*;
+use tokio::stream::StreamExt;
 
 use lib_protocol::core::p_experiment_event::*;
 

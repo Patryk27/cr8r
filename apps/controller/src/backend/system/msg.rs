@@ -1,5 +1,5 @@
-use futures_channel::{mpsc, oneshot};
 use log::*;
+use tokio::sync::{mpsc, oneshot};
 
 use lib_protocol::core::{PAssignment, PExperimentId, PRunnerId, PRunnerName};
 use lib_protocol::core::p_experiment_def::Op as PExperimentDefOp;

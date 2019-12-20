@@ -1,4 +1,4 @@
-use futures_channel::mpsc;
+use tokio::sync::mpsc;
 
 use lib_actor::{ask, tell};
 use lib_protocol::core::{PRunner, PRunnerId, PRunnerName};
@@ -22,7 +22,7 @@ pub struct Runner {
 
 impl Runner {
     pub fn spawn(system: System, id: PRunnerId, name: PRunnerName) -> Self {
-        let (tx, rx) = mpsc::unbounded();
+        let (tx, rx) = mpsc::unbounded_channel();
 
         tokio::spawn(RunnerActor::new(
             rx,

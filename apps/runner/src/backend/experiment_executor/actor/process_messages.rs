@@ -1,11 +1,11 @@
-use futures_util::StreamExt;
+use tokio::stream::StreamExt;
 
 use crate::backend::experiment_executor::ExperimentExecutorActor;
 
 impl ExperimentExecutorActor {
     /// Processes all pending actor messages and then yields control back to the caller.
     pub(super) fn process_messages_and_yield(&mut self) {
-        while let Ok(Some(msg)) = self.rx.try_next() {
+        while let Ok(msg) = self.rx.try_recv() {
             msg.process(self);
         }
     }

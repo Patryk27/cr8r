@@ -1,5 +1,5 @@
-use futures_util::StreamExt;
 use log::*;
+use tokio::stream::StreamExt;
 
 use crate::backend::{Compiler, System};
 use crate::backend::system::SystemRx;

@@ -4,8 +4,8 @@ use colored::Colorize;
 use log::*;
 use tonic::transport::Server;
 
-use lib_protocol::for_client::server::ForClientServer;
-use lib_protocol::for_runner::server::ForRunnerServer;
+use lib_protocol::for_client::for_client_server::ForClientServer;
+use lib_protocol::for_runner::for_runner_server::ForRunnerServer;
 
 use crate::backend::System;
 use crate::core::Result;

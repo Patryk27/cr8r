@@ -1,18 +1,17 @@
-//! We're totally dependent on `tonic`, which is pinned onto `tokio` `0.2.0-alpha.6`, which hasn't been implemented yet
-//! any async process-related facilities, so we have to roll our own ones.
-//!
-//! @todo Remove all this after migrating to newer `tonic`
+use std::io;
+use std::process::{ExitStatus, Stdio};
 
-use std::io::{BufRead, BufReader};
-use std::process::{Command, ExitStatus, Stdio};
-use std::thread;
-
-use futures_channel::mpsc;
-
-pub type ProcessEventTx = mpsc::UnboundedSender<ProcessEvent>;
-pub type ProcessEventRx = mpsc::UnboundedReceiver<ProcessEvent>;
+use tokio::io::AsyncRead;
+use tokio::process::{Child, Command};
+use tokio::stream::{Stream, StreamExt};
+use tokio::sync::mpsc;
+use tokio_util::codec::{FramedRead, LinesCodec};
 
 pub enum ProcessEvent {
+    Crashed {
+        err: io::Error,
+    },
+
     Exited {
         status: ExitStatus,
     },
@@ -22,49 +21,50 @@ pub enum ProcessEvent {
     },
 }
 
-pub fn spawn(mut cmd: Command) -> ProcessEventRx {
-    let mut cmd = cmd
+pub fn spawn(mut cmd: Command) -> impl Stream<Item=ProcessEvent> {
+    let mut child = cmd
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()
-        .unwrap();
+        .unwrap(); // @todo
 
-    let stdout = cmd.stdout
-        .take()
-        .map(BufReader::new);
+    let (tx, rx) = mpsc::unbounded_channel();
 
-    let stderr = cmd.stderr
-        .take()
-        .map(BufReader::new);
-
-    let (tx, rx) = mpsc::unbounded();
-    let tx2 = tx.clone();
-
-    if let Some(stdout) = stdout {
-        thread::spawn(move || {
-            for line in stdout.lines() {
-                if let Ok(line) = line {
-                    let _ = tx.unbounded_send(ProcessEvent::Printed { line });
-                }
-            }
-
-            let status = cmd
-                .wait()
-                .unwrap();
-
-            let _ = tx.unbounded_send(ProcessEvent::Exited { status });
-        });
+    if let Some(stdout) = child.stdout().take() {
+        spawn_streamer(tx.clone(), stdout);
     }
 
-    if let Some(stderr) = stderr {
-        thread::spawn(move || {
-            for line in stderr.lines() {
-                if let Ok(line) = line {
-                    let _ = tx2.unbounded_send(ProcessEvent::Printed { line });
-                }
-            }
-        });
+    if let Some(stderr) = child.stderr().take() {
+        spawn_streamer(tx.clone(), stderr);
     }
+
+    spawn_watcher(tx, child);
 
     rx
+}
+
+fn spawn_streamer(tx: mpsc::UnboundedSender<ProcessEvent>, stream: impl AsyncRead + Unpin + Send + 'static) {
+    let mut stream = FramedRead::new(stream, LinesCodec::new());
+
+    tokio::spawn(async move {
+        while let Some(line) = stream.next().await {
+            if let Ok(line) = line {
+                let _ = tx.send(ProcessEvent::Printed { line });
+            }
+        }
+    });
+}
+
+fn spawn_watcher(tx: mpsc::UnboundedSender<ProcessEvent>, child: Child) {
+    tokio::spawn(async move {
+        match child.await {
+            Ok(status) => {
+                let _ = tx.send(ProcessEvent::Exited { status });
+            }
+
+            Err(err) => {
+                let _ = tx.send(ProcessEvent::Crashed { err });
+            }
+        }
+    });
 }

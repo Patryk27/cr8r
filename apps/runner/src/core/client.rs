@@ -4,7 +4,7 @@ use tonic::transport::Channel;
 
 use lib_protocol::core::{PExperimentEvent, PExperimentId, PRunnerId};
 use lib_protocol::for_runner::*;
-use lib_protocol::for_runner::client::ForRunnerClient;
+use lib_protocol::for_runner::for_runner_client::ForRunnerClient;
 
 use crate::Result;
 

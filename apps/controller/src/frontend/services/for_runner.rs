@@ -1,7 +1,7 @@
 use tonic::{Code, Request, Response, Status};
 
 use lib_protocol::for_runner::*;
-use lib_protocol::for_runner::server::ForRunner;
+use lib_protocol::for_runner::for_runner_server::ForRunner;
 
 use crate::backend::System;
 

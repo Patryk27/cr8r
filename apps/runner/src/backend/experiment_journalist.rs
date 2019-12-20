@@ -1,4 +1,4 @@
-use futures_channel::mpsc;
+use tokio::sync::mpsc;
 
 use lib_actor::tell;
 
@@ -19,7 +19,7 @@ pub struct ExperimentJournalist {
 
 impl ExperimentJournalist {
     pub fn spawn(client: ExperimentClient) -> Self {
-        let (tx, rx) = mpsc::unbounded();
+        let (tx, rx) = mpsc::unbounded_channel();
 
         tokio::spawn(ExperimentJournalistActor::new(
             rx,

@@ -1,6 +1,5 @@
-use std::process::Command;
-
-use futures_util::StreamExt;
+use tokio::process::Command;
+use tokio::stream::StreamExt;
 
 use lib_process::{ProcessEvent, spawn};
 
@@ -10,11 +9,17 @@ pub async fn invoke(lxd: &LxdClient, args: &[String]) -> Result<String> {
     let mut cmd = Command::new(&lxd.path);
     cmd.args(args);
 
-    let mut rx = spawn(cmd);
+    let mut events = spawn(cmd);
     let mut output = String::new();
 
-    while let Some(event) = rx.next().await {
+    while let Some(event) = events.next().await {
         match event {
+            ProcessEvent::Crashed { .. } => {
+                // @todo do something with `err`
+
+                return Err(Error::CommandFailed);
+            }
+
             ProcessEvent::Exited { status } => {
                 return if status.success() {
                     Ok(output)
