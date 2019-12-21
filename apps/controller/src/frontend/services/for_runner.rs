@@ -1,7 +1,7 @@
-use tonic::{Code, Request, Response, Status};
+use tonic::{Request, Response, Status};
 
-use lib_protocol::for_runner::*;
-use lib_protocol::for_runner::for_runner_server::ForRunner;
+use lib_interop::protocol::for_runner::*;
+use lib_interop::protocol::for_runner::for_runner_server::ForRunner;
 
 use crate::backend::System;
 
@@ -15,6 +15,11 @@ impl ForRunnerService {
     }
 }
 
+mod add_experiment_event;
+mod get_assignment;
+mod hello;
+mod register;
+
 // @todo validate runner's secret key
 #[tonic::async_trait]
 impl ForRunner for ForRunnerService {
@@ -22,51 +27,38 @@ impl ForRunner for ForRunnerService {
         &self,
         _: Request<PHelloRequest>,
     ) -> Result<Response<PHelloReply>, Status> {
-        Ok(Response::new(PHelloReply {
-            version: "0.1.0".into(),
-        }))
+        Ok(Response::new(
+            hello::hello()
+        ))
     }
 
     async fn register(
         &self,
         request: Request<PRegisterRequest>,
     ) -> Result<Response<PRegisterReply>, Status> {
-        let request = request.into_inner();
-
-        let id = self.system
-            .register_runner(request.name)
-            .await?;
-
-        Ok(Response::new(PRegisterReply { id }))
+        register::register(&self.system, request.into_inner())
+            .await
+            .map(Response::new)
+            .map_err(Status::internal)
     }
 
-    async fn request_assignment(
+    async fn get_assignment(
         &self,
-        request: Request<PRequestAssignmentRequest>,
-    ) -> Result<Response<PRequestAssignmentReply>, Status> {
-        let request = request.into_inner();
-
-        let assignment = self.system
-            .request_assignment(request.runner_id)
-            .await?;
-
-        Ok(Response::new(PRequestAssignmentReply { assignment }))
+        request: Request<PGetAssignmentRequest>,
+    ) -> Result<Response<PGetAssignmentReply>, Status> {
+        get_assignment::get_assignment(&self.system, request.into_inner())
+            .await
+            .map(Response::new)
+            .map_err(Status::internal)
     }
 
     async fn add_experiment_event(
         &self,
         request: Request<PAddExperimentEventRequest>,
     ) -> Result<Response<PAddExperimentEventReply>, Status> {
-        let request = request.into_inner();
-
-        if let Some(event) = request.experiment_event {
-            self.system
-                .find_experiment(request.experiment_id).await?
-                .add_event(request.runner_id, event).await?;
-
-            Ok(Response::new(PAddExperimentEventReply::default()))
-        } else {
-            Err(Status::new(Code::Internal, "No event has been provided"))
-        }
+        add_experiment_event::add_experiment_event(&self.system, request.into_inner())
+            .await
+            .map(Response::new)
+            .map_err(Status::internal)
     }
 }

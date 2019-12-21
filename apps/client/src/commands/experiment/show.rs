@@ -1,5 +1,5 @@
-use lib_protocol::core::PExperiment;
-use lib_protocol::for_client::{PFindExperimentReportsRequest, PFindExperimentsRequest};
+use lib_interop::protocol::core::PExperiment;
+use lib_interop::protocol::for_client::{PFindExperimentReportsRequest, PFindExperimentsRequest};
 
 use crate::{Result, spinner, System, ui};
 

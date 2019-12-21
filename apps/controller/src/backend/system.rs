@@ -1,8 +1,7 @@
 use tokio::sync::mpsc;
 
 use lib_actor::ask;
-use lib_protocol::core::{PAssignment, PExperimentId, PRunnerId, PRunnerName};
-use lib_protocol::core::p_experiment_def::Op as PExperimentDefOp;
+use lib_interop::contract::{CAssignment, CExperimentDef, CExperimentId, CRunnerId, CRunnerName};
 
 use crate::backend::{Compiler, Experiment, Result, Runner};
 
@@ -20,7 +19,7 @@ pub struct System {
 }
 
 impl System {
-    pub fn spawn(compiler: Compiler) -> Self {
+    pub fn new(compiler: Compiler) -> Self {
         let (tx, rx) = mpsc::unbounded_channel();
         let system = Self { tx };
 
@@ -34,35 +33,35 @@ impl System {
     }
 }
 
-/// Assignment-oriented impls
+/// Runner-oriented impls
 impl System {
-    pub async fn request_assignment(&self, runner: PRunnerId) -> Result<Option<PAssignment>> {
-        ask!(self.tx, SystemMsg::RequestAssignment { runner })
+    pub async fn create_runner(&self, name: CRunnerName) -> Result<CRunnerId> {
+        ask!(self.tx, SystemMsg::CreateRunner { name })
+    }
+
+    pub async fn find_runners(&self) -> Vec<Runner> {
+        ask!(self.tx, SystemMsg::FindRunners)
     }
 }
 
 /// Experiment-oriented impls
 impl System {
-    pub async fn find_experiment(&self, experiment: PExperimentId) -> Result<Experiment> {
-        ask!(self.tx, SystemMsg::FindExperiment { experiment })
+    pub async fn create_experiment(&self, def: CExperimentDef) -> Result<CExperimentId> {
+        ask!(self.tx, SystemMsg::CreateExperiment { def })
+    }
+
+    pub async fn find_experiment(&self, id: CExperimentId) -> Result<Experiment> {
+        ask!(self.tx, SystemMsg::FindExperiment { id })
     }
 
     pub async fn find_experiments(&self) -> Vec<Experiment> {
         ask!(self.tx, SystemMsg::FindExperiments)
     }
-
-    pub async fn launch_experiment(&self, experiment_def: PExperimentDefOp) -> Result<PExperimentId> {
-        ask!(self.tx, SystemMsg::LaunchExperiment { experiment_def })
-    }
 }
 
-/// Runner-oriented impls
+/// Assignment-oriented impls
 impl System {
-    pub async fn find_runners(&self) -> Vec<Runner> {
-        ask!(self.tx, SystemMsg::FindRunners)
-    }
-
-    pub async fn register_runner(&self, name: PRunnerName) -> Result<PRunnerId> {
-        ask!(self.tx, SystemMsg::RegisterRunner { name })
+    pub async fn get_assignment(&self, runner_id: CRunnerId) -> Result<Option<CAssignment>> {
+        ask!(self.tx, SystemMsg::GetAssignment { runner_id })
     }
 }

@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use colored::Colorize;
 
-use lib_protocol::for_client::PHelloRequest;
+use lib_interop::protocol::for_client::PHelloRequest;
 
 use crate::{Result, spinner, System, ui};
 

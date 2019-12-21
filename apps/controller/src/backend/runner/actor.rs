@@ -3,7 +3,7 @@ use log::*;
 use tokio::stream::StreamExt;
 
 use lib_actor::ActorSpirit;
-use lib_protocol::core::{PRunnerId, PRunnerName};
+use lib_interop::contract::{CRunnerId, CRunnerName};
 
 use crate::backend::runner::{RunnerRx, RunnerStatus};
 use crate::backend::System;
@@ -11,15 +11,15 @@ use crate::backend::System;
 pub struct RunnerActor {
     rx: RunnerRx,
     pub(super) system: System,
-    pub(super) id: PRunnerId,
-    pub(super) name: PRunnerName,
+    pub(super) id: CRunnerId,
+    pub(super) name: CRunnerName,
     pub(super) joined_at: DateTime<Utc>,
     pub(super) last_heartbeat_at: DateTime<Utc>,
     pub(super) status: RunnerStatus,
 }
 
 impl RunnerActor {
-    pub fn new(rx: RunnerRx, system: System, id: PRunnerId, name: PRunnerName) -> Self {
+    pub fn new(rx: RunnerRx, system: System, id: CRunnerId, name: CRunnerName) -> Self {
         Self {
             rx,
             system,

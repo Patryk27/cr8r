@@ -18,7 +18,7 @@ pub struct ExperimentJournalist {
 }
 
 impl ExperimentJournalist {
-    pub fn spawn(client: ExperimentClient) -> Self {
+    pub fn new(client: ExperimentClient) -> Self {
         let (tx, rx) = mpsc::unbounded_channel();
 
         tokio::spawn(ExperimentJournalistActor::new(

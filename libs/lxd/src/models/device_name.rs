@@ -1,1 +1,3 @@
-crate::create_ident!(LxdDeviceName);
+crate::create_identifier_model! {
+    LxdDeviceName
+}

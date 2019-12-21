@@ -2,15 +2,14 @@ use std::collections::HashMap;
 
 use bimap::BiMap;
 
-use lib_protocol::core::{PRunnerId, PRunnerName};
+use lib_interop::contract::{CRunnerId, CRunnerName};
 
 use crate::backend::{Result, Runner, System};
-use crate::id;
 
 pub struct Runners {
     system: System,
-    index: BiMap<PRunnerId, PRunnerName>,
-    runners: HashMap<PRunnerId, Runner>,
+    index: BiMap<CRunnerId, CRunnerName>,
+    runners: HashMap<CRunnerId, Runner>,
 }
 
 impl Runners {
@@ -22,14 +21,14 @@ impl Runners {
         }
     }
 
-    pub fn create(&mut self, name: PRunnerName) -> Result<PRunnerId> {
+    pub fn create(&mut self, name: CRunnerName) -> Result<CRunnerId> {
         if self.index.contains_right(&name) {
             return Err("Runner with such name has been already registered".into());
         }
 
-        let id = id!();
+        let id = CRunnerId::new();
 
-        let runner = Runner::spawn(
+        let runner = Runner::new(
             self.system.clone(),
             id.clone(),
             name.clone(),
@@ -41,12 +40,12 @@ impl Runners {
         Ok(id)
     }
 
-    pub fn remove(&mut self, id: &PRunnerId) {
+    pub fn remove(&mut self, id: &CRunnerId) {
         self.index.remove_by_left(id);
         self.runners.remove(id);
     }
 
-    pub fn get(&self, id: &PRunnerId) -> Option<&Runner> {
+    pub fn get(&self, id: &CRunnerId) -> Option<&Runner> {
         self.runners.get(id)
     }
 
@@ -56,14 +55,14 @@ impl Runners {
             .collect()
     }
 
-    pub fn name_to_id(&self, name: &PRunnerName) -> Option<&PRunnerId> {
+    pub fn name_to_id(&self, name: &CRunnerName) -> Option<&CRunnerId> {
         self.index.get_by_right(name)
     }
 
-    pub fn validate(&self, id: &PRunnerId) -> Result<()> {
+    pub fn validate(&self, id: &CRunnerId) -> Result<()> {
         self.index
             .get_by_left(id)
             .map(|_| ())
-            .ok_or_else(|| "No such runner exists".into())
+            .ok_or("No such runner exists".into())
     }
 }

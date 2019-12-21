@@ -15,9 +15,9 @@ pub enum Error {
 }
 
 impl From<std::net::AddrParseError> for Error {
-    fn from(err: std::net::AddrParseError) -> Self {
+    fn from(source: std::net::AddrParseError) -> Self {
         Error::CouldntStart {
-            source: box err,
+            source: box source,
         }
     }
 }

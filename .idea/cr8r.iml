@@ -94,7 +94,7 @@
       <sourceFolder url="file://$MODULE_DIR$/libs/protocol/runner/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libs/protocol/runner/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/libs/protocol/runner/benches" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/libs/protocol/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/interop/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libs/proto/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libs/proto/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/libs/proto/benches" isTestSource="true" />
@@ -119,10 +119,24 @@
       <sourceFolder url="file://$MODULE_DIR$/libs/process/examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/libs/process/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/libs/process/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/compiler/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/compiler/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/compiler/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/compiler/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/crumbs/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/crumbs/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/crumbs/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/crumbs/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/interop/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/interop/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/libs/interop/benches" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/apps/client/target" />
       <excludeFolder url="file://$MODULE_DIR$/apps/controller/target" />
       <excludeFolder url="file://$MODULE_DIR$/apps/runner/target" />
       <excludeFolder url="file://$MODULE_DIR$/libs/actor/target" />
+      <excludeFolder url="file://$MODULE_DIR$/libs/compiler/target" />
+      <excludeFolder url="file://$MODULE_DIR$/libs/crumbs/target" />
+      <excludeFolder url="file://$MODULE_DIR$/libs/interop/target" />
       <excludeFolder url="file://$MODULE_DIR$/libs/log/target" />
       <excludeFolder url="file://$MODULE_DIR$/libs/logger/target" />
       <excludeFolder url="file://$MODULE_DIR$/libs/lxd/target" />

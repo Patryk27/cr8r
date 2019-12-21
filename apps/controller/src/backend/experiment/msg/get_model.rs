@@ -1,55 +1,41 @@
-use lib_protocol::core::p_experiment::p_status::*;
-use lib_protocol::core::p_experiment::PStatus;
-use lib_protocol::core::PExperiment;
+use lib_interop::contract::{CExperiment, CExperimentStatus};
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
 
-pub fn get_model(actor: &mut ExperimentActor) -> PExperiment {
+pub fn get_model(actor: &mut ExperimentActor) -> CExperiment {
     let status = match &actor.status {
         ExperimentStatus::Idle { since } => {
-            Op::Idle(PIdle {
-                since: since.to_rfc3339(),
-            })
+            CExperimentStatus::Idle {
+                since: since.to_owned(),
+            }
         }
 
         ExperimentStatus::Running { since, last_heartbeat_at, completed_steps, .. } => {
-            Op::Running(PRunning {
-                since: since.to_rfc3339(),
-                last_heartbeat_at: last_heartbeat_at.to_rfc3339(),
+            CExperimentStatus::Running {
+                since: since.to_owned(),
+                last_heartbeat_at: last_heartbeat_at.to_owned(),
                 completed_steps: *completed_steps,
-            })
+            }
         }
 
         ExperimentStatus::Completed { since, result, .. } => {
-            let cause = result
-                .as_ref()
-                .err()
-                .map(ToOwned::to_owned)
-                .unwrap_or_default();
-
-            Op::Completed(PCompleted {
-                since: since.to_rfc3339(),
-                success: result.is_ok(),
-                cause,
-            })
+            CExperimentStatus::Completed {
+                since: since.to_owned(),
+                result: result.to_owned(),
+            }
         }
 
         ExperimentStatus::Zombie { since, .. } => {
-            Op::Zombie(PZombie {
-                since: since.to_rfc3339(),
-            })
+            CExperimentStatus::Zombie {
+                since: since.to_owned(),
+            }
         }
     };
 
-    PExperiment {
-        id: actor.id.clone(),
-        system: actor.system.clone(),
-        toolchain: actor.toolchain.clone(),
-        steps: actor.steps.clone(),
-        created_at: actor.created_at.to_rfc3339(),
-
-        status: Some(PStatus {
-            op: Some(status),
-        }),
+    CExperiment {
+        id: actor.id.to_owned(),
+        program: actor.program.to_owned(),
+        created_at: actor.created_at.to_owned(),
+        status,
     }
 }

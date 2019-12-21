@@ -1,7 +1,7 @@
 use tokio::sync::mpsc;
 
 use lib_actor::{ask, tell};
-use lib_protocol::core::{PRunner, PRunnerId, PRunnerName};
+use lib_interop::contract::{CRunner, CRunnerId, CRunnerName};
 
 use crate::backend::System;
 
@@ -21,7 +21,7 @@ pub struct Runner {
 }
 
 impl Runner {
-    pub fn spawn(system: System, id: PRunnerId, name: PRunnerName) -> Self {
+    pub fn new(system: System, id: CRunnerId, name: CRunnerName) -> Self {
         let (tx, rx) = mpsc::unbounded_channel();
 
         tokio::spawn(RunnerActor::new(
@@ -34,7 +34,7 @@ impl Runner {
         Self { tx }
     }
 
-    pub async fn get_model(&self) -> PRunner {
+    pub async fn get_model(&self) -> CRunner {
         ask!(self.tx, RunnerMsg::GetModel)
     }
 

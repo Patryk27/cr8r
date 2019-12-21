@@ -4,7 +4,7 @@ use colored::Colorize;
 use log::*;
 use tokio::time;
 
-use lib_protocol::core::PAssignment;
+use lib_interop::protocol::core::PAssignment;
 use lib_sandbox::{SandboxDef, SandboxProvider};
 
 use crate::backend::{ExperimentExecutor, ExperimentExecutorStatus};
@@ -110,7 +110,7 @@ impl SystemActor {
             .create(sandbox_def)
             .await?;
 
-        let executor = ExperimentExecutor::spawn(
+        let executor = ExperimentExecutor::new(
             sandbox, assignment, client,
         );
 

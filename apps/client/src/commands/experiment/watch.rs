@@ -1,6 +1,6 @@
 use colored::Colorize;
 
-use lib_protocol::for_client::PWatchExperimentRequest;
+use lib_interop::protocol::for_client::PWatchExperimentRequest;
 
 use crate::{Result, spinner, System, ui};
 

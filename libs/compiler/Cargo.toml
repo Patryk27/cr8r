@@ -1,0 +1,9 @@
+[package]
+name = "lib_compiler"
+version = "0.1.0"
+authors = ["Patryk Wychowaniec <wychowaniec.patryk@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+lib_interop = { path = "../interop" }
+snafu = "0.6"

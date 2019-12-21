@@ -1,6 +1,7 @@
 #![feature(box_syntax)]
 #![feature(decl_macro)]
 #![feature(try_blocks)]
+#![feature(type_alias_impl_trait)]
 #![feature(type_ascription)]
 
 use std::path::PathBuf;
@@ -22,7 +23,7 @@ async fn main() -> core::Result<()> {
 
     let system = backend::start(
         config.ecosystem,
-    );
+    ).unwrap(); // @todo
 
     frontend::start(
         config.controller.listen, system,

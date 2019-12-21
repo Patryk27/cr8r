@@ -34,8 +34,8 @@ impl fmt::Display for LxdIdent {
 
 
 #[macro_export]
-macro_rules! create_ident {
-    ($ty:ident) => {
+macro_rules! create_identifier_model {
+    ($name:ident) => {
         use serde::Deserialize;
         use std::fmt;
         use std::str::FromStr;
@@ -43,15 +43,15 @@ macro_rules! create_ident {
         use crate::{Error, LxdIdent};
 
         #[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
-        pub struct $ty(LxdIdent);
+        pub struct $name(LxdIdent);
 
-        impl $ty {
+        impl $name {
             pub fn as_str(&self) -> &str {
                 self.0.as_str()
             }
         }
 
-        impl FromStr for $ty {
+        impl FromStr for $name {
             type Err = Error;
 
             fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -59,7 +59,7 @@ macro_rules! create_ident {
             }
         }
 
-        impl fmt::Display for $ty {
+        impl fmt::Display for $name {
             fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
                 write!(f, "{}", self.0)
             }

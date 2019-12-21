@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package cr8r.for_runner;
+
+import "core/assignment.proto";
+
+message PGetAssignmentRequest {
+    string runner_id = 1;
+}
+
+message PGetAssignmentReply {
+    core.PAssignment assignment = 1;
+}

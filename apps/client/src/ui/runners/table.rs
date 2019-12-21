@@ -1,6 +1,6 @@
 use std::fmt;
 
-use lib_protocol::core::PRunner;
+use lib_interop::protocol::core::PRunner;
 
 pub struct RunnersTable<'a> {
     runners: &'a [PRunner],

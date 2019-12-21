@@ -1,6 +1,6 @@
 use std::fmt;
 
-use lib_protocol::core::PExperimentStep;
+use lib_interop::protocol::core::PExperimentStep;
 
 pub struct ExperimentStepsTable<'a> {
     steps: &'a [PExperimentStep],

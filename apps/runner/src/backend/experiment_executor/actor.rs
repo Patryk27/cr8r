@@ -1,6 +1,6 @@
 use log::*;
 
-use lib_protocol::core::PAssignment;
+use lib_interop::protocol::core::PAssignment;
 use lib_sandbox::Sandbox;
 
 use crate::backend::{ExperimentExecutorStatus, ExperimentJournalist};

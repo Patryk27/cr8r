@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package cr8r.core;
+
+message PExperimentDef {
+    message PTryPatchCrate {
+        string name = 1;
+        string attachment_id = 2;
+    }
+
+    message PTryToolchain {
+        string toolchain = 1;
+    }
+
+    oneof op {
+        PTryPatchCrate try_patch_crate = 1;
+        PTryToolchain try_toolchain = 2;
+    }
+}

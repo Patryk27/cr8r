@@ -1,6 +1,6 @@
 use std::fmt;
 
-use lib_protocol::core::PExperimentStep;
+use lib_interop::protocol::core::PExperimentStep;
 
 pub struct InlineExperimentStep<'a> {
     step: &'a PExperimentStep,
@@ -15,7 +15,7 @@ impl<'a> InlineExperimentStep<'a> {
 impl fmt::Display for InlineExperimentStep<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use colored::Colorize;
-        use lib_protocol::core::p_experiment_step::{Op::*, *};
+        use lib_interop::protocol::core::p_experiment_step::{Op::*, *};
 
         let str = self.step.op.as_ref().map(|op| match op {
             Exec(PExec { cmd }) => {

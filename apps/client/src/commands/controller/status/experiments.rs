@@ -1,4 +1,4 @@
-use lib_protocol::for_client::PFindExperimentsRequest;
+use lib_interop::protocol::for_client::PFindExperimentsRequest;
 
 use crate::{Result, spinner, System, ui};
 

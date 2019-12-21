@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package cr8r.for_client;
+
+import "core/experiment_report.proto";
+
+import "for_client/hello.proto";
+import "for_client/attachment/create.proto";
+import "for_client/experiment/abort.proto";
+import "for_client/experiment/create.proto";
+import "for_client/experiment/find.proto";
+import "for_client/experiment/watch.proto";
+import "for_client/experiment_reports/find.proto";
+import "for_client/runner/find.proto";
+
+service ForClient {
+    rpc Hello (PHelloRequest) returns (PHelloReply);
+
+    // Attachment-oriented methods
+    rpc CreateAttachment (stream PCreateAttachmentRequest) returns (PCreateAttachmentReply);
+
+    // Experiment-oriented methods
+    rpc CreateExperiment (PCreateExperimentRequest) returns (PCreateExperimentReply);
+    rpc AbortExperiment (PAbortExperimentRequest) returns (PAbortExperimentReply);
+    rpc WatchExperiment (PWatchExperimentRequest) returns (stream core.PExperimentReport);
+    rpc FindExperiments (PFindExperimentsRequest) returns (PFindExperimentsReply);
+
+    // Experiment-report-oriented methods
+    rpc FindExperimentReports (PFindExperimentReportsRequest) returns (PFindExperimentReportsReply);
+
+    // Runner-oriented methods
+    rpc FindRunners (PFindRunnersRequest) returns (PFindRunnersReply);
+}

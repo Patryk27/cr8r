@@ -3,7 +3,7 @@ use std::sync::Arc;
 use log::*;
 use tokio::sync::{mpsc, oneshot};
 
-use lib_protocol::core::{PAssignment, PExperiment, PExperimentEvent, PExperimentReport, PRunnerId};
+use lib_interop::contract::{CAssignment, CExperiment, CExperimentEvent, CExperimentReport, CRunnerId};
 
 use crate::backend::experiment::ExperimentActor;
 use crate::backend::Result;
@@ -16,26 +16,26 @@ pub enum ExperimentMsg {
     Abort,
 
     AddEvent {
-        runner: PRunnerId,
-        event: PExperimentEvent,
+        runner_id: CRunnerId,
+        event: CExperimentEvent,
         tx: oneshot::Sender<Result<()>>,
     },
 
     GetModel {
-        tx: oneshot::Sender<PExperiment>,
+        tx: oneshot::Sender<CExperiment>,
     },
 
     GetReports {
-        tx: oneshot::Sender<Vec<Arc<PExperimentReport>>>,
+        tx: oneshot::Sender<Vec<Arc<CExperimentReport>>>,
     },
 
     Start {
-        runner: PRunnerId,
-        tx: oneshot::Sender<Result<PAssignment>>,
+        runner_id: CRunnerId,
+        tx: oneshot::Sender<Result<CAssignment>>,
     },
 
     Watch {
-        tx: oneshot::Sender<Result<mpsc::UnboundedReceiver<Arc<PExperimentReport>>>>,
+        tx: oneshot::Sender<Result<mpsc::UnboundedReceiver<Arc<CExperimentReport>>>>,
     },
 }
 
@@ -55,7 +55,7 @@ impl ExperimentMsg {
                 abort::abort(actor);
             }
 
-            ExperimentMsg::AddEvent { runner, event, tx } => {
+            ExperimentMsg::AddEvent { runner_id: runner, event, tx } => {
                 let _ = tx.send(add_event::add_event(actor, runner, event));
             }
 
@@ -67,7 +67,7 @@ impl ExperimentMsg {
                 let _ = tx.send(get_reports::get_reports(actor));
             }
 
-            ExperimentMsg::Start { runner, tx } => {
+            ExperimentMsg::Start { runner_id: runner, tx } => {
                 let _ = tx.send(start::start(actor, runner));
             }
 

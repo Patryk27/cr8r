@@ -4,9 +4,10 @@ members = [
     "apps/controller",
     "apps/runner",
     "libs/actor",
+    "libs/compiler",
+    "libs/interop",
     "libs/log",
     "libs/lxd",
     "libs/process",
-    "libs/protocol",
     "libs/sandbox",
 ]

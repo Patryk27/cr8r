@@ -32,7 +32,7 @@ async fn main() -> Result<()> {
 
     info!("{}", "🚀 We are ready to accept commands".green());
 
-    SystemHeartbeater::spawn(
+    SystemHeartbeater::new(
         client.clone()
     );
 

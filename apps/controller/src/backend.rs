@@ -14,17 +14,9 @@ mod experiment;
 mod runner;
 mod system;
 
-pub fn start(ecosystem: Ecosystem) -> System {
-    let compiler = Compiler::new(ecosystem);
+pub fn start(ecosystem: Ecosystem) -> Result<System> {
+    let compiler = Compiler::new(ecosystem).unwrap(); // @todo
+    let system = System::new(compiler);
 
-    System::spawn(compiler)
-}
-
-#[macro_export]
-macro_rules! id {
-    () => {
-        uuid::Uuid::new_v4()
-            .to_hyphenated()
-            .to_string()
-    }
+    Ok(system)
 }

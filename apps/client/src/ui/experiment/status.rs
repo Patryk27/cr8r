@@ -1,6 +1,6 @@
 use std::fmt;
 
-use lib_protocol::core::PExperiment;
+use lib_interop::protocol::core::PExperiment;
 
 pub struct ExperimentStatus<'a> {
     experiment: &'a PExperiment,
@@ -16,7 +16,7 @@ impl fmt::Display for ExperimentStatus<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use crate::ui;
         use colored::Colorize;
-        use lib_protocol::core::p_experiment::p_status::*;
+        use lib_interop::protocol::core::p_experiment::p_status::*;
 
         let status = try {
             match self.experiment.status.as_ref()?.op.as_ref()? {

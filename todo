@@ -1,0 +1,2 @@
+- ujednolicić nazwy związane z konfiguracją (wszystkie mają mieć sufiks `Config` albo być wydzielone do osobnego modułu)
+- ujednolicić msg vs message

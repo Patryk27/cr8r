@@ -1,7 +1,7 @@
 use log::*;
 use tokio::stream::StreamExt;
 
-use lib_protocol::core::p_experiment_event::*;
+use lib_interop::protocol::core::p_experiment_event::*;
 
 use crate::backend::experiment_journalist::{ExperimentJournalistMsg, ExperimentJournalistRx};
 use crate::core::ExperimentClient;

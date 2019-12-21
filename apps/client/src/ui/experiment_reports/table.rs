@@ -1,6 +1,6 @@
 use std::fmt;
 
-use lib_protocol::core::PExperimentReport;
+use lib_interop::protocol::core::PExperimentReport;
 
 pub struct ExperimentReportsTable<'a> {
     reports: &'a [PExperimentReport],

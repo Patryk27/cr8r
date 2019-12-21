@@ -2,12 +2,10 @@ use std::collections::HashMap;
 
 use serde::Deserialize;
 
-pub type Flora = HashMap<ProviderName, Provider>;
-pub type ProviderName = String;
+pub type Flora = HashMap<String, Provider>;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-#[serde(tag = "provides")]
 pub struct Provider {
     pub setup: Vec<String>,
 }

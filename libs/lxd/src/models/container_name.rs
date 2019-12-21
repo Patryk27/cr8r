@@ -1,1 +1,3 @@
-crate::create_ident!(LxdContainerName);
+crate::create_identifier_model! {
+    LxdContainerName
+}

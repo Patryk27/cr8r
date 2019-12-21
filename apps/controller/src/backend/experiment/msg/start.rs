@@ -1,11 +1,11 @@
 use chrono::Utc;
 
-use lib_protocol::core::{PAssignment, PRunnerId};
+use lib_interop::contract::{CAssignment, CRunnerId};
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
 use crate::backend::Result;
 
-pub fn start(actor: &mut ExperimentActor, runner: PRunnerId) -> Result<PAssignment> {
+pub fn start(actor: &mut ExperimentActor, runner: CRunnerId) -> Result<CAssignment> {
     match &actor.status {
         ExperimentStatus::Idle { .. } => {
             actor.status = ExperimentStatus::Running {
@@ -17,10 +17,8 @@ pub fn start(actor: &mut ExperimentActor, runner: PRunnerId) -> Result<PAssignme
                 completed_steps: 0,
             };
 
-            let experiment = super::get_model::get_model(actor);
-
-            Ok(PAssignment {
-                experiment: Some(experiment),
+            Ok(CAssignment {
+                experiment: super::get_model::get_model(actor),
             })
         }
 

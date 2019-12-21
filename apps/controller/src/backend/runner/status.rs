@@ -1,6 +1,6 @@
 use chrono::{DateTime, Utc};
 
-use lib_protocol::core::PExperimentId;
+use lib_interop::protocol::core::PExperimentId;
 
 use crate::backend::Experiment;
 

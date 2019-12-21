@@ -1,70 +1,47 @@
-use lib_protocol::core::p_experiment_def::Op as PExperimentDefOp;
-use lib_protocol::core::p_experiment_step::{self, Op as PExperimentStepOp};
-use lib_protocol::core::PExperimentStep;
+use lib_interop::contract::{CExperimentDef, CProgram};
 
 use crate::backend::Result;
 use crate::core::Ecosystem;
 
 pub struct Compiler {
-    ecosystem: Ecosystem,
-}
-
-macro_rules! add_step {
-    ($steps:expr, exec($command:expr)) => {
-        $steps.push(PExperimentStep {
-            op: Some(PExperimentStepOp::Exec(p_experiment_step::PExec {
-                cmd: $command.into(),
-            })),
-        });
-    };
-
-    ($steps:expr, log_system_msg($message:expr)) => {
-        $steps.push(PExperimentStep {
-            op: Some(PExperimentStepOp::LogSystemMsg(p_experiment_step::PLogSystemMsg {
-                msg: $message.into(),
-            })),
-        });
-    };
+    compiler: lib_compiler::Compiler,
 }
 
 impl Compiler {
-    pub fn new(ecosystem: Ecosystem) -> Self {
-        Self { ecosystem }
+    pub fn new(ecosystem: Ecosystem) -> Result<Self> {
+        let mut compiler = lib_compiler::Compiler::builder();
+
+        compiler.defaults(lib_compiler::Defaults {
+            system: ecosystem.environment.default_system,
+            toolchain: ecosystem.environment.default_toolchain,
+        });
+
+        for (provider_name, provider) in ecosystem.flora {
+            let setup = provider.setup
+                .into_iter()
+                .map(lib_compiler::Command::new)
+                .collect();
+
+            let provider = lib_compiler::Provider::new(setup);
+
+            compiler.add_provider(provider_name, provider)?;
+        }
+
+        for (project_name, project) in ecosystem.fauna {
+            let project = lib_compiler::Project::new(
+                project.repository,
+                project.requirements,
+            );
+
+            compiler.add_project(project_name, project)?;
+        }
+
+        Ok(Self {
+            compiler: compiler.build()?,
+        })
     }
 
-    pub fn compile(&self, experiment_def: &PExperimentDefOp) -> Result<(String, String, Vec<PExperimentStep>)> {
-        let system = self.ecosystem.environment.default_system.clone();
-        let mut toolchain = self.ecosystem.environment.default_toolchain.clone();
-
-        match experiment_def {
-            PExperimentDefOp::TryToolchain(experiment) => {
-                toolchain = experiment.toolchain.clone();
-            }
-        }
-
-        let mut steps = Vec::new();
-
-        for (project_name, project) in &self.ecosystem.fauna {
-            for requirement in &project.requirements {
-                let provider = &self.ecosystem.flora[requirement];
-
-                add_step! { steps, log_system_msg(format!("Setting up requirement: {}", requirement)) }
-
-                for cmd in &provider.setup {
-                    add_step! { steps, exec(cmd) }
-                }
-            }
-
-            add_step! { steps, log_system_msg(format!("Cloning `{}`", project_name)) }
-            add_step! { steps, exec(format!("git clone {} project", project.repository)) }
-
-            add_step! { steps, log_system_msg(format!("Starting tests for `{}`", project_name)) }
-            add_step! { steps, exec("cd project && cargo test") }
-
-            add_step! { steps, log_system_msg(format!("Starting build for `{}`", project_name)) }
-            add_step! { steps, exec("cd project && cargo build") }
-        }
-
-        Ok((system, toolchain, steps))
+    pub fn compile(&self, def: &CExperimentDef) -> CProgram {
+        self.compiler.compile(def)
     }
 }

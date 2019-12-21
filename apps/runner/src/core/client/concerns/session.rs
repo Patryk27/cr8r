@@ -1,6 +1,6 @@
 use log::*;
 
-use lib_protocol::core::{PAssignment, PRunnerId, PRunnerName};
+use lib_interop::protocol::core::{PAssignment, PRunnerId, PRunnerName};
 
 use crate::{Client, Result};
 use crate::core::ExperimentClient;
@@ -28,14 +28,11 @@ impl SessionClient {
         // Register us
         debug!("Registering");
 
-        let runner = client.register(runner_name, controller_secret).await?.id;
+        let runner = client.register(runner_name).await?.id;
 
         debug!("... ok, we've been registered as: {}", runner);
 
-        Ok(Self {
-            client,
-            runner,
-        })
+        Ok(Self { client, runner })
     }
 
     pub async fn ping(&mut self) -> Result<()> {
@@ -48,7 +45,7 @@ impl SessionClient {
 
     pub async fn request_assignment(&mut self) -> Result<Option<(PAssignment, ExperimentClient)>> {
         let reply = self.client
-            .request_assignment(self.runner.clone())
+            .get_assignment(self.runner.clone())
             .await?;
 
         if let Some(assignment) = reply.assignment {

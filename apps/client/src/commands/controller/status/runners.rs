@@ -1,4 +1,4 @@
-use lib_protocol::for_client::PFindRunnersRequest;
+use lib_interop::protocol::for_client::PFindRunnersRequest;
 
 use crate::{Result, spinner, System, ui};
 

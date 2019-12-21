@@ -1,8 +1,8 @@
 use closure::*;
 use log::*;
 
-use lib_protocol::core::{PExperiment, PExperimentStep};
-use lib_protocol::core::p_experiment_step::*;
+use lib_interop::protocol::core::{PExperiment, PExperimentStep};
+use lib_interop::protocol::core::p_experiment_step::*;
 use lib_sandbox::SandboxListener;
 
 use crate::backend::experiment_executor::{ExecutorResult, ExperimentExecutorActor};

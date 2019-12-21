@@ -7,7 +7,7 @@ mod actor;
 pub struct SystemHeartbeater;
 
 impl SystemHeartbeater {
-    pub fn spawn(client: SessionClient) {
+    pub fn new(client: SessionClient) {
         tokio::spawn(SystemHeartbeaterActor::new(
             client,
         ).main());

@@ -2,13 +2,12 @@ use std::sync::Arc;
 
 use chrono::Utc;
 
-use lib_protocol::core::{PExperimentEvent, PExperimentReport, PRunnerId};
-use lib_protocol::core::p_experiment_event::*;
+use lib_interop::contract::{CExperimentEvent, CRunnerId};
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
 use crate::backend::Result;
 
-pub fn add_event(actor: &mut ExperimentActor, runner: PRunnerId, event: PExperimentEvent) -> Result<()> {
+pub fn add_event(actor: &mut ExperimentActor, runner: CRunnerId, event: CExperimentEvent) -> Result<()> {
     match &mut actor.status {
         ExperimentStatus::Idle { .. } => {
             Err("This experiment has not yet been started".into())
@@ -29,49 +28,49 @@ pub fn add_event(actor: &mut ExperimentActor, runner: PRunnerId, event: PExperim
 
             events.push(Arc::clone(&event));
 
-            if let Some(report) = event_as_report(&event).map(Arc::new) {
-                for watcher in &actor.watchers {
-                    let _ = watcher.send(Arc::clone(&report));
-                }
-
-                reports.push(report);
-            }
+//            if let Some(report) = event_as_report(&event).map(Arc::new) {
+//                for watcher in &actor.watchers {
+//                    let _ = watcher.send(Arc::clone(&report));
+//                }
+//
+//                reports.push(report);
+//            }
 
             // There are a few events that convey somewhat special meaning - for instance when we receive "experiment
             // completed", we have to adjust this actor's state accordingly
-            if let Some(op) = &event.op {
-                match op {
-                    Op::ExperimentSucceeded(_) => {
-                        actor.status = ExperimentStatus::Completed {
-                            since: Utc::now(),
-                            reports: reports.to_vec(),
-                            result: Ok(()),
-                        };
-
-                        // Since the experiment's done, no more data will be fed to the watchers and so there's no point
-                        // in keeping them alive
-                        kill_watchers(actor);
-                    }
-
-                    Op::ExperimentFailed(PExperimentFailed { cause }) => {
-                        actor.status = ExperimentStatus::Completed {
-                            since: Utc::now(),
-                            reports: reports.to_vec(),
-                            result: Err(cause.to_string()),
-                        };
-
-                        // Since the experiment's done, no more data will be fed to the watchers and so there's no point
-                        // in keeping them alive
-                        kill_watchers(actor);
-                    }
-
-                    Op::StepSucceeded(_) | Op::StepFailed(_) => {
-                        *completed_steps += 1;
-                    }
-
-                    _ => (),
-                }
-            }
+//            if let Some(op) = &event.op {
+//                match op {
+//                    Op::ExperimentSucceeded(_) => {
+//                        actor.status = ExperimentStatus::Completed {
+//                            since: Utc::now(),
+//                            reports: reports.to_vec(),
+//                            result: Ok(()),
+//                        };
+//
+//                        // Since the experiment's done, no more data will be fed to the watchers and so there's no point
+//                        // in keeping them alive
+//                        kill_watchers(actor);
+//                    }
+//
+//                    Op::ExperimentFailed(PExperimentFailed { cause }) => {
+//                        actor.status = ExperimentStatus::Completed {
+//                            since: Utc::now(),
+//                            reports: reports.to_vec(),
+//                            result: Err(cause.to_string()),
+//                        };
+//
+//                        // Since the experiment's done, no more data will be fed to the watchers and so there's no point
+//                        // in keeping them alive
+//                        kill_watchers(actor);
+//                    }
+//
+//                    Op::StepSucceeded(_) | Op::StepFailed(_) => {
+//                        *completed_steps += 1;
+//                    }
+//
+//                    _ => (),
+//                }
+//            }
 
             Ok(())
         }
@@ -86,52 +85,52 @@ pub fn add_event(actor: &mut ExperimentActor, runner: PRunnerId, event: PExperim
     }
 }
 
-fn event_as_report(event: &PExperimentEvent) -> Option<PExperimentReport> {
-    use lib_protocol::core::{
-        p_experiment_event as p_event,
-        p_experiment_report as p_report,
-    };
-
-    let (kind, message) = match event.op.as_ref()? {
-        Op::Ping(_) => {
-            return None;
-        }
-
-        Op::SystemMsg(p_event::PSystemMsg { msg }) => {
-            (p_report::Kind::SystemMsg, msg.as_str())
-        }
-
-        Op::UserMsg(p_event::PUserMsg { msg }) => {
-            (p_report::Kind::UserMsg, msg.as_str())
-        }
-
-        Op::ProcessOutput(p_event::PProcessOutput { line }) => {
-            (p_report::Kind::ProcessOutput, line.as_str())
-        }
-
-        Op::ExperimentStarted(_) => {
-            (p_report::Kind::SystemMsg, "Experiment started")
-        }
-
-        Op::ExperimentSucceeded(_) => {
-            (p_report::Kind::SystemMsg, "Experiment completed (result: success)")
-        }
-
-        Op::ExperimentFailed(_) => {
-            (p_report::Kind::SystemMsg, "Experiment completed (result: failure)")
-        }
-
-        Op::StepSucceeded(_) | Op::StepFailed(_) => {
-            return None;
-        }
-    };
-
-    Some(PExperimentReport {
-        created_at: event.created_at.clone(),
-        kind: kind as _,
-        message: message.to_owned(),
-    })
-}
+//fn event_as_report(event: &PExperimentEvent) -> Option<PExperimentReport> {
+//    use lib_interop::protocol::core::{
+//        p_experiment_event as p_event,
+//        p_experiment_report as p_report,
+//    };
+//
+//    let (kind, message) = match event.op.as_ref()? {
+//        Op::Ping(_) => {
+//            return None;
+//        }
+//
+//        Op::SystemMsg(p_event::PSystemMsg { msg }) => {
+//            (p_report::Kind::SystemMsg, msg.as_str())
+//        }
+//
+//        Op::UserMsg(p_event::PUserMsg { msg }) => {
+//            (p_report::Kind::UserMsg, msg.as_str())
+//        }
+//
+//        Op::ProcessOutput(p_event::PProcessOutput { line }) => {
+//            (p_report::Kind::ProcessOutput, line.as_str())
+//        }
+//
+//        Op::ExperimentStarted(_) => {
+//            (p_report::Kind::SystemMsg, "Experiment started")
+//        }
+//
+//        Op::ExperimentSucceeded(_) => {
+//            (p_report::Kind::SystemMsg, "Experiment completed (result: success)")
+//        }
+//
+//        Op::ExperimentFailed(_) => {
+//            (p_report::Kind::SystemMsg, "Experiment completed (result: failure)")
+//        }
+//
+//        Op::StepSucceeded(_) | Op::StepFailed(_) => {
+//            return None;
+//        }
+//    };
+//
+//    Some(PExperimentReport {
+//        created_at: event.created_at.clone(),
+//        kind: kind as _,
+//        message: message.to_owned(),
+//    })
+//}
 
 fn kill_watchers(actor: &mut ExperimentActor) {
     actor.watchers.clear();

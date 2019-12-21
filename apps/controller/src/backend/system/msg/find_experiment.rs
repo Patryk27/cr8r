@@ -1,8 +1,8 @@
-use lib_protocol::core::PExperimentId;
+use lib_interop::contract::CExperimentId;
 
 use crate::backend::{Experiment, Result};
 use crate::backend::system::SystemActor;
 
-pub fn find_experiment(actor: &mut SystemActor, experiment: PExperimentId) -> Result<Experiment> {
-    actor.experiments.get(&experiment)
+pub fn find_experiment(actor: &mut SystemActor, id: CExperimentId) -> Result<Experiment> {
+    actor.experiments.get(&id)
 }

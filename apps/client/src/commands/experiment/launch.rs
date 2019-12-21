@@ -1,9 +1,9 @@
 use colored::Colorize;
 use structopt::StructOpt;
 
-use lib_protocol::core::p_experiment_def::*;
-use lib_protocol::core::PExperimentDef;
-use lib_protocol::for_client::PLaunchExperimentRequest;
+use lib_interop::protocol::core::p_experiment_def::*;
+use lib_interop::protocol::core::PExperimentDef;
+use lib_interop::protocol::for_client::PCreateExperimentRequest;
 
 use crate::{Result, spinner, System};
 
@@ -37,7 +37,7 @@ async fn launch_experiment(
     let reply = spinner! {
         system
             .client().await?
-            .launch_experiment(PLaunchExperimentRequest { experiment_def }).await?
+            .create_experiment(PCreateExperimentRequest { experiment_def }).await?
             .into_inner()
     };
 

@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package cr8r.for_client;
+
+message PCreateAttachmentRequest {
+    message Create {
+        string name = 1;
+        uint64 size = 2;
+    }
+
+    message UploadChunk {
+        bytes data = 1;
+    }
+
+    message Finalize {
+        //
+    }
+
+    oneof op {
+        Create create = 1;
+        UploadChunk upload_chunk = 2;
+        Finalize finalize = 3;
+    }
+}
+
+message PCreateAttachmentReply {
+    string id = 1;
+}
