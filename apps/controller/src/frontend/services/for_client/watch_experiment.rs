@@ -4,7 +4,7 @@ use tokio::stream::{Stream, StreamExt};
 use tokio::sync::mpsc;
 use tonic::Status;
 
-use lib_interop::protocol::core::PExperimentReport;
+use lib_interop::protocol::core::PReport;
 use lib_interop::protocol::for_client::PWatchExperimentRequest;
 
 use crate::backend::{Result, System};
@@ -12,7 +12,7 @@ use crate::backend::{Result, System};
 pub async fn watch_experiment(
     system: &System,
     request: PWatchExperimentRequest,
-) -> Result<impl Stream<Item=result::Result<PExperimentReport, Status>>> {
+) -> Result<impl Stream<Item=result::Result<PReport, Status>>> {
     let mut report_rx = system
         .find_experiment(request.id.into()).await?
         .watch().await?;

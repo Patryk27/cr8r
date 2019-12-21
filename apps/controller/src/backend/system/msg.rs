@@ -54,8 +54,8 @@ mod find_experiments;
 mod get_assignment;
 
 impl SystemMsg {
-    pub async fn process(self, actor: &mut SystemActor) {
-        debug!("Processing message: {:?}", self);
+    pub async fn handle(self, actor: &mut SystemActor) {
+        debug!("Handle message: {:?}", self);
 
         match self {
             SystemMsg::CreateRunner { name, tx } => {

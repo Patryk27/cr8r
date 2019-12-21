@@ -2,7 +2,7 @@ use colored::Colorize;
 use log::*;
 use tonic::transport::Channel;
 
-use lib_interop::protocol::core::{PExperimentEvent, PExperimentId, PRunnerId};
+use lib_interop::protocol::core::{PEvent, PExperimentId, PRunnerId};
 use lib_interop::protocol::for_runner::*;
 use lib_interop::protocol::for_runner::for_runner_client::ForRunnerClient;
 
@@ -68,18 +68,18 @@ impl Client {
     }
 }
 
-/// Experiment-event-oriented impls
+/// Event-oriented impls
 impl Client {
-    pub async fn add_experiment_event(
+    pub async fn add_event(
         &mut self,
         runner_id: PRunnerId,
         experiment_id: PExperimentId,
-        experiment_event: PExperimentEvent,
-    ) -> Result<PAddExperimentEventReply> {
-        let response = self.client.add_experiment_event(PAddExperimentEventRequest {
+        event: PEvent,
+    ) -> Result<PAddEventReply> {
+        let response = self.client.add_event(PAddEventRequest {
             runner_id,
             experiment_id,
-            experiment_event: Some(experiment_event),
+            event: Some(event),
         }).await?;
 
         Ok(response.into_inner())

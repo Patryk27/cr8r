@@ -1,11 +1,11 @@
 pub use self::{
-    experiment_executor::{ExperimentExecutor, ExperimentExecutorStatus},
-    experiment_journalist::ExperimentJournalist,
+    executor::{Executor, ExecutorStatus},
+    journalist::Journalist,
     system::SystemActor,
     system_heartbeater::SystemHeartbeater,
 };
 
-mod experiment_executor;
-mod experiment_journalist;
+mod executor;
+mod journalist;
 mod system;
 mod system_heartbeater;

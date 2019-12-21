@@ -1,2 +1,5 @@
 - ujednolicić nazwy związane z konfiguracją (wszystkie mają mieć sufiks `Config` albo być wydzielone do osobnego modułu)
 - ujednolicić msg vs message
+- step -> opcode
+- ujednolicić ubsługę enumów w matchach (czasem jest tam `use enum::*;`, czasem nie)
+- usunąć funkcję `new()` z wszystkich aktorów - jest to niepotrzebny, zduplikowany kod

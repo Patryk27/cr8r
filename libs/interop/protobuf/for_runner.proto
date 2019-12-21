@@ -6,7 +6,7 @@ import "for_runner/hello.proto";
 import "for_runner/ping.proto";
 import "for_runner/register.proto";
 import "for_runner/assignment/get.proto";
-import "for_runner/experiment_event/add.proto";
+import "for_runner/event/add.proto";
 
 service ForRunner {
     rpc Hello (PHelloRequest) returns (PHelloReply);
@@ -16,6 +16,6 @@ service ForRunner {
     // Assignment-oriented methods
     rpc GetAssignment (PGetAssignmentRequest) returns (PGetAssignmentReply);
 
-    // Experiment-event-oriented methods
-    rpc AddExperimentEvent (PAddExperimentEventRequest) returns (PAddExperimentEventReply);
+    // Event-oriented methods
+    rpc AddEvent (PAddEventRequest) returns (PAddEventReply);
 }

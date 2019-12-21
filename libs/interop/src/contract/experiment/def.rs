@@ -20,26 +20,20 @@ impl TryFrom<PExperimentDef> for CExperimentDef {
     type Error = Error;
 
     fn try_from(def: PExperimentDef) -> Result<Self> {
-        use crate::protocol::core::p_experiment_def::{*, Op::*};
+        use crate::protocol::core::p_experiment_def::*;
 
-        Ok(match def.op {
-            Some(TryPatchCrate(PTryPatchCrate { name, attachment_id })) => {
+        let op = def.op.ok_or_else(|| Error::Missing { name: "op" })?;
+
+        Ok(match op {
+            Op::TryPatchCrate(PTryPatchCrate { name, attachment_id }) => {
                 CExperimentDef::TryPatchCrate {
                     name,
                     attachment_id: attachment_id.into(),
                 }
             }
 
-            Some(TryToolchain(PTryToolchain { toolchain })) => {
-                CExperimentDef::TryToolchain {
-                    toolchain,
-                }
-            }
-
-            None => {
-                return Err(Error::MissingField {
-                    name: "op",
-                });
+            Op::TryToolchain(PTryToolchain { toolchain }) => {
+                CExperimentDef::TryToolchain { toolchain }
             }
         })
     }

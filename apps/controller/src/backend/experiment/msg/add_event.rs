@@ -2,12 +2,12 @@ use std::sync::Arc;
 
 use chrono::Utc;
 
-use lib_interop::contract::{CExperimentEvent, CRunnerId};
+use lib_interop::contract::{CEvent, CRunnerId};
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
 use crate::backend::Result;
 
-pub fn add_event(actor: &mut ExperimentActor, runner: CRunnerId, event: CExperimentEvent) -> Result<()> {
+pub fn add_event(actor: &mut ExperimentActor, runner: CRunnerId, event: CEvent) -> Result<()> {
     match &mut actor.status {
         ExperimentStatus::Idle { .. } => {
             Err("This experiment has not yet been started".into())

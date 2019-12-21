@@ -3,9 +3,9 @@ syntax = "proto3";
 package cr8r.core;
 
 import "core/assignment.proto";
+import "core/event.proto";
 import "core/experiment.proto";
 import "core/experiment_def.proto";
-import "core/experiment_event.proto";
-import "core/experiment_report.proto";
-import "core/experiment_step.proto";
+import "core/program.proto";
+import "core/report.proto";
 import "core/runner.proto";

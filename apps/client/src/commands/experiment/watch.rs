@@ -18,7 +18,7 @@ pub async fn watch(mut system: System, id: String) -> Result<()> {
     println!();
 
     while let Some(report) = spinner! { reply.message().await? } {
-        let report = ui::InlineExperimentReport::new(&report)
+        let report = ui::InlineReport::new(&report)
             .to_string();
 
         if !report.is_empty() {

@@ -21,8 +21,8 @@ pub enum RunnerMsg {
 mod get_model;
 
 impl RunnerMsg {
-    pub fn process(self, actor: &mut RunnerActor) -> ActorSpirit {
-        debug!("Processing message: {:?}", self);
+    pub fn handle(self, actor: &mut RunnerActor) -> ActorSpirit {
+        debug!("Handling message: {:?}", self);
 
         match self {
             RunnerMsg::GetModel { tx } => {

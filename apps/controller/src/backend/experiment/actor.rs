@@ -5,7 +5,7 @@ use log::*;
 use tokio::stream::StreamExt;
 use tokio::sync::mpsc;
 
-use lib_interop::contract::{CExperimentId, CExperimentReport, CProgram};
+use lib_interop::contract::{CExperimentId, CProgram, CReport};
 
 use crate::backend::experiment::{ExperimentRx, ExperimentStatus};
 
@@ -14,7 +14,7 @@ pub struct ExperimentActor {
     pub(super) id: CExperimentId,
     pub(super) program: CProgram,
     pub(super) created_at: DateTime<Utc>,
-    pub(super) watchers: Vec<mpsc::UnboundedSender<Arc<CExperimentReport>>>,
+    pub(super) watchers: Vec<mpsc::UnboundedSender<Arc<CReport>>>,
     pub(super) status: ExperimentStatus,
 }
 
@@ -36,7 +36,7 @@ impl ExperimentActor {
 
         while let Some(msg) = self.rx.next().await {
             self.perform_triage();
-            msg.process(&mut self);
+            msg.handle(&mut self);
         }
 
         debug!("Actor orphaned, halting");

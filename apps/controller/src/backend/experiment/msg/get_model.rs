@@ -34,7 +34,6 @@ pub fn get_model(actor: &mut ExperimentActor) -> CExperiment {
 
     CExperiment {
         id: actor.id.to_owned(),
-        program: actor.program.to_owned(),
         created_at: actor.created_at.to_owned(),
         status,
     }

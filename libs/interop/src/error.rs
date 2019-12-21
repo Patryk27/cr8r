@@ -8,7 +8,13 @@ pub type Result<T> = result::Result<T, Error>;
 #[snafu(visibility(pub (crate)))]
 pub enum Error {
     #[snafu(display("Field `{}` is missing", name))]
-    MissingField {
+    Missing {
         name: &'static str,
-    }
+    },
+
+    #[snafu(display("Field `{}` contains invalid datetime: {}", name, source))]
+    InvalidDateTime {
+        name: &'static str,
+        source: chrono::ParseError,
+    },
 }

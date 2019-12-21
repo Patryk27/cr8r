@@ -3,7 +3,7 @@ use std::sync::Arc;
 use tokio::sync::mpsc;
 
 use lib_actor::{ask, tell};
-use lib_interop::contract::{CAssignment, CExperiment, CExperimentEvent, CExperimentId, CExperimentReport, CProgram, CRunnerId};
+use lib_interop::contract::{CAssignment, CEvent, CExperiment, CExperimentId, CProgram, CReport, CRunnerId};
 
 use crate::backend::Result;
 
@@ -40,7 +40,7 @@ impl Experiment {
         tell!(self.tx, ExperimentMsg::Abort);
     }
 
-    pub async fn add_event(&self, runner_id: CRunnerId, event: CExperimentEvent) -> Result<()> {
+    pub async fn add_event(&self, runner_id: CRunnerId, event: CEvent) -> Result<()> {
         ask!(self.tx, ExperimentMsg::AddEvent { runner_id, event })
     }
 
@@ -48,7 +48,7 @@ impl Experiment {
         ask!(self.tx, ExperimentMsg::GetModel)
     }
 
-    pub async fn get_reports(&self) -> Vec<Arc<CExperimentReport>> {
+    pub async fn get_reports(&self) -> Vec<Arc<CReport>> {
         ask!(self.tx, ExperimentMsg::GetReports)
     }
 
@@ -56,7 +56,7 @@ impl Experiment {
         ask!(self.tx, ExperimentMsg::Start { runner_id })
     }
 
-    pub async fn watch(&self) -> Result<mpsc::UnboundedReceiver<Arc<CExperimentReport>>> {
+    pub async fn watch(&self) -> Result<mpsc::UnboundedReceiver<Arc<CReport>>> {
         ask!(self.tx, ExperimentMsg::Watch)
     }
 }

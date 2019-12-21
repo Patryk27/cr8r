@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package cr8r.for_client;
+
+import "core/report.proto";
+
+message PFindReportsRequest {
+    string experiment_id = 1;
+}
+
+message PFindReportsReply {
+    repeated core.PReport reports = 1;
+}

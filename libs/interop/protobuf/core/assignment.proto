@@ -3,7 +3,9 @@ syntax = "proto3";
 package cr8r.core;
 
 import "core/experiment.proto";
+import "core/program.proto";
 
 message PAssignment {
     PExperiment experiment = 1;
+    PProgram program = 2;
 }

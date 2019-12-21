@@ -3,7 +3,7 @@ use std::sync::Arc;
 use log::*;
 use tokio::sync::{mpsc, oneshot};
 
-use lib_interop::contract::{CAssignment, CExperiment, CExperimentEvent, CExperimentReport, CRunnerId};
+use lib_interop::contract::{CAssignment, CEvent, CExperiment, CReport, CRunnerId};
 
 use crate::backend::experiment::ExperimentActor;
 use crate::backend::Result;
@@ -17,7 +17,7 @@ pub enum ExperimentMsg {
 
     AddEvent {
         runner_id: CRunnerId,
-        event: CExperimentEvent,
+        event: CEvent,
         tx: oneshot::Sender<Result<()>>,
     },
 
@@ -26,7 +26,7 @@ pub enum ExperimentMsg {
     },
 
     GetReports {
-        tx: oneshot::Sender<Vec<Arc<CExperimentReport>>>,
+        tx: oneshot::Sender<Vec<Arc<CReport>>>,
     },
 
     Start {
@@ -35,7 +35,7 @@ pub enum ExperimentMsg {
     },
 
     Watch {
-        tx: oneshot::Sender<Result<mpsc::UnboundedReceiver<Arc<CExperimentReport>>>>,
+        tx: oneshot::Sender<Result<mpsc::UnboundedReceiver<Arc<CReport>>>>,
     },
 }
 
@@ -47,8 +47,8 @@ mod start;
 mod watch;
 
 impl ExperimentMsg {
-    pub fn process(self, actor: &mut ExperimentActor) {
-        debug!("Processing message: {:?}", self);
+    pub fn handle(self, actor: &mut ExperimentActor) {
+        debug!("Handling message: {:?}", self);
 
         match self {
             ExperimentMsg::Abort => {

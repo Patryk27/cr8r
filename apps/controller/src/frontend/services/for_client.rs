@@ -1,7 +1,7 @@
 use tokio::stream::{Stream, StreamExt};
 use tonic::{Request, Response, Status};
 
-use lib_interop::protocol::core::PExperimentReport;
+use lib_interop::protocol::core::PReport;
 use lib_interop::protocol::for_client::*;
 use lib_interop::protocol::for_client::for_client_server::ForClient;
 
@@ -18,7 +18,7 @@ impl ForClientService {
 }
 
 mod create_experiment;
-mod find_experiment_reports;
+mod find_reports;
 mod find_experiments;
 mod find_runners;
 mod hello;
@@ -46,7 +46,7 @@ impl ForClient for ForClientService {
             .map_err(Status::internal)
     }
 
-    type WatchExperimentStream = impl Stream<Item=Result<PExperimentReport, Status>>;
+    type WatchExperimentStream = impl Stream<Item=Result<PReport, Status>>;
 
     async fn watch_experiment(
         &self,
@@ -68,11 +68,11 @@ impl ForClient for ForClientService {
         Ok(Response::new(reply))
     }
 
-    async fn find_experiment_reports(
+    async fn find_reports(
         &self,
-        request: Request<PFindExperimentReportsRequest>,
-    ) -> Result<Response<PFindExperimentReportsReply>, Status> {
-        find_experiment_reports::find_experiment_reports(&self.system, request.into_inner())
+        request: Request<PFindReportsRequest>,
+    ) -> Result<Response<PFindReportsReply>, Status> {
+        find_reports::find_reports(&self.system, request.into_inner())
             .await
             .map(Response::new)
             .map_err(Status::internal)

@@ -37,7 +37,7 @@ impl RunnerActor {
         debug!("-> name: {}", self.name);
 
         while let Some(msg) = self.rx.next().await {
-            match msg.process(&mut self) {
+            match msg.handle(&mut self) {
                 ActorSpirit::KeepAlive => {
                     //
                 }

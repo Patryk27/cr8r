@@ -1,13 +1,14 @@
+use std::convert::TryInto;
 use std::time::Duration;
 
 use colored::Colorize;
 use log::*;
 use tokio::time;
 
-use lib_interop::protocol::core::PAssignment;
+use lib_interop::contract::CAssignment;
 use lib_sandbox::{SandboxDef, SandboxProvider};
 
-use crate::backend::{ExperimentExecutor, ExperimentExecutorStatus};
+use crate::backend::{Executor, ExecutorStatus};
 use crate::core::{ExperimentClient, Result, SandboxConfig, SessionClient};
 
 pub struct SystemActor {
@@ -51,22 +52,19 @@ impl SystemActor {
         }
     }
 
-    async fn poll_for_assignment(&mut self) -> (PAssignment, ExperimentClient) {
+    async fn poll_for_assignment(&mut self) -> (CAssignment, ExperimentClient) {
         loop {
             debug!("Polling controller for an assignment");
 
             match self.client.request_assignment().await {
-                Ok(Some(assignment)) => {
-                    let id = assignment.0.experiment
-                        .as_ref()
-                        .unwrap()
-                        .id
-                        .to_string()
-                        .green();
+                Ok(Some((assignment, client))) => {
+                    let assignment = assignment
+                        .try_into()
+                        .unwrap(): CAssignment;
 
-                    info!("We've been assigned experiment `{}`", id);
+                    info!("We've been assigned experiment `{}`", assignment.experiment.id);
 
-                    return assignment;
+                    return (assignment, client);
                 }
 
                 Ok(None) => {
@@ -88,7 +86,7 @@ impl SystemActor {
         }
     }
 
-    async fn conduct_experiment(&mut self, assignment: PAssignment, client: ExperimentClient) -> Result<()> {
+    async fn conduct_experiment(&mut self, assignment: CAssignment, client: ExperimentClient) -> Result<()> {
         debug!("Conducting experiment");
 
         let sandbox_def = match &self.sandbox_config {
@@ -110,17 +108,17 @@ impl SystemActor {
             .create(sandbox_def)
             .await?;
 
-        let executor = ExperimentExecutor::new(
+        let executor = Executor::new(
             sandbox, assignment, client,
         );
 
         loop {
             match executor.get_status().await {
-                ExperimentExecutorStatus::Completed => {
+                ExecutorStatus::Completed => {
                     break;
                 }
 
-                ExperimentExecutorStatus::Running => {
+                ExecutorStatus::Running => {
                     time::delay_for(Duration::from_secs(1))
                         .await;
                 }

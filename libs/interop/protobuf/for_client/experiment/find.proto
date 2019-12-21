@@ -5,7 +5,7 @@ package cr8r.for_client;
 import "core/experiment.proto";
 
 message PFindExperimentsRequest {
-    string filter_id = 1;
+    string id = 1;
 }
 
 message PFindExperimentsReply {

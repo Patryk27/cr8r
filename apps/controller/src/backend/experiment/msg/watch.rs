@@ -2,12 +2,12 @@ use std::sync::Arc;
 
 use tokio::sync::mpsc;
 
-use lib_interop::contract::CExperimentReport;
+use lib_interop::contract::CReport;
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
 use crate::backend::Result;
 
-pub fn watch(actor: &mut ExperimentActor) -> Result<mpsc::UnboundedReceiver<Arc<CExperimentReport>>> {
+pub fn watch(actor: &mut ExperimentActor) -> Result<mpsc::UnboundedReceiver<Arc<CReport>>> {
     match actor.status {
         ExperimentStatus::Idle { .. } | ExperimentStatus::Running { .. } | ExperimentStatus::Zombie { .. } => {
             let (tx, rx) = mpsc::unbounded_channel();

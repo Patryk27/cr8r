@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package cr8r.core;
 
-import "core/experiment_step.proto";
-
 message PExperiment {
     message PStatus {
         message PIdle {
@@ -35,9 +33,6 @@ message PExperiment {
     }
 
     string id = 1;
-    string system = 2;
-    string toolchain = 3;
-    string created_at = 4;
-    PStatus status = 5;
-    repeated PExperimentStep steps = 6;
+    string created_at = 2;
+    PStatus status = 3;
 }

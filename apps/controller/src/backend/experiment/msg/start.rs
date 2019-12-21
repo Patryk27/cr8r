@@ -19,6 +19,7 @@ pub fn start(actor: &mut ExperimentActor, runner: CRunnerId) -> Result<CAssignme
 
             Ok(CAssignment {
                 experiment: super::get_model::get_model(actor),
+                program: actor.program.clone(),
             })
         }
 

@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use chrono::{DateTime, Utc};
 
-use lib_interop::contract::{CExperimentEvent, CExperimentReport, CRunnerId};
+use lib_interop::contract::{CEvent, CReport, CRunnerId};
 
 #[derive(PartialEq)]
 pub enum ExperimentStatus {
@@ -14,14 +14,14 @@ pub enum ExperimentStatus {
         since: DateTime<Utc>,
         last_heartbeat_at: DateTime<Utc>,
         runner: CRunnerId,
-        events: Vec<Arc<CExperimentEvent>>,
-        reports: Vec<Arc<CExperimentReport>>,
+        events: Vec<Arc<CEvent>>,
+        reports: Vec<Arc<CReport>>,
         completed_steps: u32,
     },
 
     Completed {
         since: DateTime<Utc>,
-        reports: Vec<Arc<CExperimentReport>>,
+        reports: Vec<Arc<CReport>>,
         result: Result<(), String>,
     },
 

@@ -34,10 +34,12 @@ impl fmt::Display for ExperimentStatus<'_> {
                         .to_string()
                         .blue();
 
-                    let all_steps = self.experiment.steps
-                        .len()
-                        .to_string()
-                        .blue();
+                    let all_steps = 0; // @todo
+
+//                    let all_steps = self.experiment.steps
+//                        .len()
+//                        .to_string()
+//                        .blue();
 
                     let since = ui::DateTime::new(since);
 

@@ -15,7 +15,7 @@ impl ForRunnerService {
     }
 }
 
-mod add_experiment_event;
+mod add_event;
 mod get_assignment;
 mod hello;
 mod register;
@@ -52,11 +52,11 @@ impl ForRunner for ForRunnerService {
             .map_err(Status::internal)
     }
 
-    async fn add_experiment_event(
+    async fn add_event(
         &self,
-        request: Request<PAddExperimentEventRequest>,
-    ) -> Result<Response<PAddExperimentEventReply>, Status> {
-        add_experiment_event::add_experiment_event(&self.system, request.into_inner())
+        request: Request<PAddEventRequest>,
+    ) -> Result<Response<PAddEventReply>, Status> {
+        add_event::add_event(&self.system, request.into_inner())
             .await
             .map(Response::new)
             .map_err(Status::internal)
