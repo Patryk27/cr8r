@@ -14,7 +14,7 @@ pub fn start(actor: &mut ExperimentActor, runner: CRunnerId) -> Result<CAssignme
                 runner,
                 events: Vec::new(),
                 reports: Vec::new(),
-                completed_steps: 0,
+                completed_ops: 0,
             };
 
             Ok(CAssignment {

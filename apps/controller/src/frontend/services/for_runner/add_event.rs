@@ -18,7 +18,8 @@ pub async fn add_event(
     system
         .find_experiment(experiment_id)
         .await?
-        .add_event(runner_id, event).await?;
+        .add_event(runner_id, event)
+        .await?;
 
     Ok(Default::default())
 }

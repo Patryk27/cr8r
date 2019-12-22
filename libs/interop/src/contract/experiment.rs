@@ -1,9 +1,8 @@
 use std::convert::{TryFrom, TryInto};
 
 use chrono::{DateTime, Utc};
-use snafu::ResultExt;
 
-use crate::{error, Error, Result};
+use crate::{Error, parse, Result};
 use crate::protocol::core::PExperiment;
 
 pub use self::{
@@ -26,17 +25,11 @@ pub struct CExperiment {
 impl TryFrom<PExperiment> for CExperiment {
     type Error = Error;
 
-    fn try_from(experiment: PExperiment) -> Result<Self> {
+    fn try_from(PExperiment { id, created_at, status }: PExperiment) -> Result<Self> {
         Ok(Self {
-            id: experiment.id.into(),
-
-            created_at: DateTime::parse_from_rfc3339(&experiment.created_at)
-                .context(error::InvalidDateTime { name: "created_at" })?
-                .with_timezone(&Utc),
-
-            status: experiment.status
-                .ok_or_else(|| Error::Missing { name: "status" })?
-                .try_into()?,
+            id: parse!(id as _),
+            created_at: parse!(created_at as DateTime),
+            status: parse!(status? as _?),
         })
     }
 }

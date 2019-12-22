@@ -1,5 +1,3 @@
-use chrono::Utc;
-
 use lib_interop::protocol::core::{PEvent, PExperimentId, PRunnerId};
 
 use crate::core::{Client, Result};

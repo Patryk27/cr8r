@@ -11,14 +11,14 @@ mod cmds;
 mod error;
 
 pub struct ShellEngine {
-    dir: PathBuf,
+    root: PathBuf,
     listener: SandboxListener,
 }
 
 impl ShellEngine {
-    pub async fn create(dir: PathBuf) -> Result<Self> {
+    pub async fn create(root: PathBuf) -> Result<Self> {
         Ok(Self {
-            dir,
+            root,
             listener: SandboxListener::default(),
         })
     }

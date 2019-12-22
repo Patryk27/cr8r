@@ -10,11 +10,11 @@ pub fn get_model(actor: &mut ExperimentActor) -> CExperiment {
             }
         }
 
-        ExperimentStatus::Running { since, last_heartbeat_at, completed_steps, .. } => {
+        ExperimentStatus::Running { since, last_heartbeat_at, completed_ops, .. } => {
             CExperimentStatus::Running {
                 since: since.to_owned(),
                 last_heartbeat_at: last_heartbeat_at.to_owned(),
-                completed_steps: *completed_steps,
+                completed_ops: *completed_ops,
             }
         }
 

@@ -11,7 +11,7 @@ impl Provider {
         Self { setup }
     }
 
-    pub fn setup(&self) -> &Vec<Command> {
+    pub fn setup(&self) -> &[Command] {
         &self.setup
     }
 }

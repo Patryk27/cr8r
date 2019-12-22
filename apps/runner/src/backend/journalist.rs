@@ -1,7 +1,8 @@
+use chrono::Utc;
 use tokio::sync::mpsc;
 
 use lib_actor::tell;
-use lib_interop::contract::CEvent;
+use lib_interop::contract::{CEvent, CEventType};
 
 use crate::core::ExperimentClient;
 
@@ -30,7 +31,12 @@ impl Journalist {
         Self { tx }
     }
 
-    pub fn add_event(&self, event: CEvent) {
+    pub fn add_event(&self, ty: CEventType) {
+        let event = CEvent {
+            at: Utc::now(),
+            ty,
+        };
+
         tell!(self.tx, JournalistMsg::AddEvent { event });
     }
 }

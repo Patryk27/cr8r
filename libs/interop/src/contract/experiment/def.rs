@@ -22,7 +22,7 @@ impl TryFrom<PExperimentDef> for CExperimentDef {
     fn try_from(def: PExperimentDef) -> Result<Self> {
         use crate::protocol::core::p_experiment_def::*;
 
-        let op = def.op.ok_or_else(|| Error::Missing { name: "op" })?;
+        let op = def.op.ok_or_else(|| Error::Missing { field: "op" })?;
 
         Ok(match op {
             Op::TryPatchCrate(PTryPatchCrate { name, attachment_id }) => {

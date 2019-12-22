@@ -1,6 +1,6 @@
 #[macro_export]
 macro_rules! create_identifier_model {
-    ($name:ident: uuid) => {
+    ($name:ident: Uuid) => {
         crate::create_identifier_model! {
             @gen $name
         }
@@ -15,7 +15,7 @@ macro_rules! create_identifier_model {
         }
     };
 
-    ($name:ident: string) => {
+    ($name:ident: String) => {
         crate::create_identifier_model! {
             @gen $name
         }
@@ -51,4 +51,57 @@ macro_rules! create_identifier_model {
             }
         }
     };
+}
+
+#[macro_export]
+macro_rules! parse {
+    ($field:ident? $($tt:tt)*) => {{
+        use crate::error::Error;
+
+        let $field = $field.ok_or_else(|| Error::Missing { field: stringify!($field) })?;
+
+        parse!($field $($tt)*)
+    }};
+
+    // Having `parse!(x)` as a no-op is useful, because thanks to this we can re-use rule above to have zero-cost
+    // `parse!(x?)`
+    ($field:ident) => {
+        $field
+    };
+
+    ($field:ident as _) => {
+        $field.into()
+    };
+
+    ($field:ident as _?) => {
+        $field.try_into()?
+    };
+
+    ($field:ident as [_]) => {
+        $field
+            .into_iter()
+            .map(Into::into)
+            .collect()
+    };
+
+    ($field:ident as [_?]) => {{
+        use std::convert::TryInto;
+
+        let items = $field
+            .into_iter()
+            .map(TryInto::try_into)
+            .collect(): Result<Vec<_>>;
+
+        items?
+    }};
+
+    ($field:ident as DateTime) => {{
+        use crate::error;
+        use chrono::{DateTime, Utc};
+        use snafu::ResultExt;
+
+        DateTime::parse_from_rfc3339(&$field)
+            .context(error::InvalidDateTime { field: stringify!($field) })?
+            .with_timezone(&Utc)
+    }};
 }

@@ -11,6 +11,6 @@ pub enum SandboxConfig {
     },
 
     Shell {
-        dir: String,
+        root: String,
     },
 }

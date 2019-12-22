@@ -1,4 +1,4 @@
-use tokio::stream::{Stream, StreamExt};
+use tokio::stream::Stream;
 use tonic::{Request, Response, Status};
 
 use lib_interop::protocol::core::PReport;

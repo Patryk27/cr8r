@@ -35,7 +35,7 @@ impl Experiment {
         Self { tx }
     }
 
-    // @todo there should be something like `PExperimentAbortReason`
+    // @todo there should be something like `CExperimentAbortReason`
     pub fn abort(&self) {
         tell!(self.tx, ExperimentMsg::Abort);
     }

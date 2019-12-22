@@ -16,8 +16,8 @@ impl SandboxProvider {
                     .await? as _
             }
 
-            SandboxDef::Shell { dir } => {
-                box ShellEngine::create(dir)
+            SandboxDef::Shell { root } => {
+                box ShellEngine::create(root)
                     .await? as _
             }
         };

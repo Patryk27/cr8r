@@ -27,6 +27,6 @@ pub async fn autodetect() -> Result<LxdClient> {
         }
     }
 
-    Err(Error::LxdNotFound)
+    Err(Error::ClientNotFound)
 }
 

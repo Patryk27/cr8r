@@ -11,7 +11,7 @@ message PExperiment {
         message PRunning {
             string since = 1;
             string last_heartbeat_at = 2;
-            uint32 completed_steps = 3;
+            uint32 completed_ops = 3;
         }
 
         message PCompleted {

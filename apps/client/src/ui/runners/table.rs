@@ -22,7 +22,7 @@ impl fmt::Display for RunnersTable<'_> {
         }
 
         let mut table = table! {
-            titles: ["Name", "Status", "Joined at", "Last heartbeat at"],
+            titles: ["▲ Name", "Status", "Joined at", "Last heartbeat at"],
         };
 
         for runner in self.runners {

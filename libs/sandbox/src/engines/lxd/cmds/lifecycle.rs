@@ -26,7 +26,7 @@ pub async fn init(engine: &mut LxdEngine, mut listener: SandboxListener) -> Resu
     wait_for_network(engine)
         .await?;
 
-    install_toolchain(engine)
+    install_rustup(engine)
         .await?;
 
     Ok(())
@@ -91,7 +91,7 @@ async fn wait_for_network(engine: &mut LxdEngine) -> Result<()> {
         .await
 }
 
-async fn install_toolchain(engine: &mut LxdEngine) -> Result<()> {
+async fn install_rustup(engine: &mut LxdEngine) -> Result<()> {
     // LXD's default Ubuntu images do not contain `cc`, so compiling any Cargo program would fail if we didn't pull
     // `cmake`
     cmds::exec(engine, "apt update && apt install cmake -y")

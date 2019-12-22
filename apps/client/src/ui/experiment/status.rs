@@ -27,10 +27,10 @@ impl fmt::Display for ExperimentStatus<'_> {
                     format!("{} (since {})", state, since)
                 }
 
-                Op::Running(PRunning { since, completed_steps, .. }) => {
+                Op::Running(PRunning { since, completed_ops, .. }) => {
                     let state = "running".green();
 
-                    let completed_steps = completed_steps
+                    let completed_ops = completed_ops
                         .to_string()
                         .blue();
 
@@ -43,7 +43,7 @@ impl fmt::Display for ExperimentStatus<'_> {
 
                     let since = ui::DateTime::new(since);
 
-                    format!("{} (completed {} of {} step(s), since {})", state, completed_steps, all_steps, since)
+                    format!("{} (completed {} of {} step(s), since {})", state, completed_ops, all_steps, since)
                 }
 
                 Op::Completed(PCompleted { since, success, .. }) => {

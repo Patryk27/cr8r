@@ -1,6 +1,6 @@
 use std::convert::{TryFrom, TryInto};
 
-use crate::{Error, Result};
+use crate::{Error, parse, Result};
 use crate::contract::{CExperiment, CProgram};
 use crate::protocol::core::PAssignment;
 
@@ -13,15 +13,10 @@ pub struct CAssignment {
 impl TryFrom<PAssignment> for CAssignment {
     type Error = Error;
 
-    fn try_from(assignment: PAssignment) -> Result<Self> {
+    fn try_from(PAssignment { experiment, program }: PAssignment) -> Result<Self> {
         Ok(Self {
-            experiment: assignment.experiment
-                .ok_or_else(|| Error::Missing { name: "experiment" })?
-                .try_into()?,
-
-            program: assignment.program
-                .ok_or_else(|| Error::Missing { name: "program" })?
-                .try_into()?,
+            experiment: parse!(experiment? as _?),
+            program: parse!(program? as _?),
         })
     }
 }

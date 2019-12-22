@@ -7,6 +7,6 @@ controller:
 
 sandbox:
   type: shell
-  dir: /tmp/runner
+  root: /tmp/runner
 #  type: lxd
 #  container-name: 'cr8r-experiment'

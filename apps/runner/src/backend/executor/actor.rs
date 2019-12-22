@@ -1,7 +1,7 @@
 use closure::*;
 use log::*;
 
-use lib_interop::contract::{CAssignment, CEvent, CProgramOpcode};
+use lib_interop::contract::{CAssignment, CEventType, CProgramOpcode};
 use lib_sandbox::{Sandbox, SandboxListener};
 
 use crate::backend::{ExecutorStatus, Journalist};
@@ -36,7 +36,7 @@ impl ExperimentExecutorActor {
     pub async fn main(mut self) {
         debug!("Actor started");
 
-        self.journalist.add_event(CEvent::ExperimentStarted);
+        self.journalist.add_event(CEventType::ExperimentStarted);
 
         // @todo
         self.process_messages_and_yield();
@@ -56,11 +56,13 @@ impl ExperimentExecutorActor {
 
                 match self.execute_opcode(opcode).await {
                     Ok(()) => {
-                        self.journalist.add_event(CEvent::OpcodeSucceeded);
+                        self.journalist.add_event(CEventType::OpcodeSucceeded {
+                            id: opcode_id,
+                        });
                     }
 
                     Err(err) => {
-                        self.journalist.add_event(CEvent::OpcodeFailed {
+                        self.journalist.add_event(CEventType::OpcodeFailed {
                             id: opcode_id,
                             cause: err.to_string(),
                         });
@@ -77,11 +79,11 @@ impl ExperimentExecutorActor {
 
         match experiment_result {
             Ok(()) => {
-                self.journalist.add_event(CEvent::ExperimentSucceeded);
+                self.journalist.add_event(CEventType::ExperimentSucceeded);
             }
 
             Err(err) => {
-                self.journalist.add_event(CEvent::ExperimentFailed {
+                self.journalist.add_event(CEventType::ExperimentFailed {
                     cause: err.to_string(),
                 });
             }
@@ -96,7 +98,7 @@ impl ExperimentExecutorActor {
     }
 
     async fn init_sandbox(&mut self) -> ExecutorResult<()> {
-        self.journalist.add_event(CEvent::SystemMsg {
+        self.journalist.add_event(CEventType::SystemMsg {
             msg: "Initializing sandbox".to_string(),
         });
 
@@ -104,13 +106,13 @@ impl ExperimentExecutorActor {
 
         let listener = SandboxListener {
             on_command_executed: Some(box closure!(clone journalist, |cmd| {
-                journalist.add_event(CEvent::UserMsg {
+                journalist.add_event(CEventType::UserMsg {
                     msg: format!("Executing: {}", cmd),
                 });
             })),
 
             on_command_output: Some(box closure!(clone journalist, |line| {
-                journalist.add_event(CEvent::ProcessOutput { line });
+                journalist.add_event(CEventType::ProcessOutput { line });
             })),
         };
 
@@ -125,11 +127,11 @@ impl ExperimentExecutorActor {
 
         match opcode {
             CProgramOpcode::LogSystemMsg { msg } => {
-                self.journalist.add_event(CEvent::SystemMsg { msg });
+                self.journalist.add_event(CEventType::SystemMsg { msg });
             }
 
             CProgramOpcode::LogUserMsg { msg } => {
-                self.journalist.add_event(CEvent::UserMsg { msg });
+                self.journalist.add_event(CEventType::UserMsg { msg });
             }
 
             CProgramOpcode::Exec { cmd } => {
@@ -148,7 +150,7 @@ impl ExperimentExecutorActor {
     }
 
     async fn destroy_sandbox(&mut self) -> ExecutorResult<()> {
-        self.journalist.add_event(CEvent::SystemMsg {
+        self.journalist.add_event(CEventType::SystemMsg {
             msg: "Destroying sandbox".to_string(),
         });
 

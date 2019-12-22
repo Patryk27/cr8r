@@ -10,6 +10,6 @@ pub enum SandboxDef {
     },
 
     Shell {
-        dir: PathBuf,
+        root: PathBuf,
     },
 }

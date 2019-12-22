@@ -1,43 +1,29 @@
-use tokio::process::Command;
-use tokio::stream::StreamExt;
+use snafu::ResultExt;
 
-use lib_process::{ProcessEvent, spawn};
+use lib_process::Process;
 
-use crate::{Error, LxdClient, Result};
+use crate::{Error, error, LxdClient, Result};
 
 pub async fn invoke(lxd: &LxdClient, args: &[String]) -> Result<String> {
-    let mut cmd = Command::new(&lxd.path);
-    cmd.args(args);
-
-    let mut events = spawn(cmd);
     let mut output = String::new();
 
-    while let Some(event) = events.next().await {
-        match event {
-            ProcessEvent::Crashed { .. } => {
-                // @todo do something with `err`
+    let status = Process::new(&lxd.path)
+        .args(args)
+        .listener(box |line| {
+            output.push_str(&line);
+            output.push('\n');
 
-                return Err(Error::CommandFailed);
+            if let Some(handler) = &lxd.listener.on_output {
+                handler(line);
             }
+        })
+        .spawn()
+        .await
+        .context(error::CommandNotStarted)?;
 
-            ProcessEvent::Exited { status } => {
-                return if status.success() {
-                    Ok(output)
-                } else {
-                    Err(Error::CommandFailed)
-                };
-            }
-
-            ProcessEvent::Printed { line } => {
-                output.push_str(&line);
-                output.push('\n');
-
-                if let Some(handler) = &lxd.listener.on_output {
-                    handler(line);
-                }
-            }
-        }
+    if status.success() {
+        Ok(output)
+    } else {
+        Err(Error::CommandFailed)
     }
-
-    Err(Error::CommandTerminatedAbruptly)
 }

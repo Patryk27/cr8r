@@ -1,7 +1,6 @@
 use std::convert::TryInto;
 use std::time::Duration;
 
-use colored::Colorize;
 use log::*;
 use tokio::time;
 
@@ -97,9 +96,9 @@ impl SystemActor {
                 }
             }
 
-            SandboxConfig::Shell { dir } => {
+            SandboxConfig::Shell { root } => {
                 SandboxDef::Shell {
-                    dir: dir.into()
+                    root: root.into()
                 }
             }
         };

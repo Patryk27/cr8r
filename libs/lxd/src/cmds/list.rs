@@ -8,8 +8,8 @@ pub async fn list(lxd: &LxdClient) -> Result<Vec<LxdContainer>> {
         "--format=json".to_string(),
     ]).await?;
 
-    let containers: Vec<LxdContainer> = serde_json::from_str(&output)
-        .context(error::LxdReturnedGarbage)?;
+    let containers = serde_json::from_str(&output)
+        .context(error::ClientReturnedGarbage)?;
 
     Ok(containers)
 }

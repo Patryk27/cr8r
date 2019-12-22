@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use chrono::Utc;
 
-use lib_interop::contract::{CEvent, CRunnerId};
+use lib_interop::contract::{CEvent, CEventType, CReport, CRunnerId};
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
 use crate::backend::Result;
@@ -17,7 +17,7 @@ pub fn add_event(actor: &mut ExperimentActor, runner: CRunnerId, event: CEvent) 
             runner: experiment_runner,
             events,
             reports,
-            completed_steps,
+            completed_ops,
             ..
         } => {
             if &runner != experiment_runner {
@@ -28,49 +28,41 @@ pub fn add_event(actor: &mut ExperimentActor, runner: CRunnerId, event: CEvent) 
 
             events.push(Arc::clone(&event));
 
-//            if let Some(report) = event_as_report(&event).map(Arc::new) {
-//                for watcher in &actor.watchers {
-//                    let _ = watcher.send(Arc::clone(&report));
-//                }
-//
-//                reports.push(report);
-//            }
+            if let Some(report) = event_as_report(&event).map(Arc::new) {
+                for watcher in &actor.watchers {
+                    let _ = watcher.send(Arc::clone(&report));
+                }
 
-            // There are a few events that convey somewhat special meaning - for instance when we receive "experiment
-            // completed", we have to adjust this actor's state accordingly
-//            if let Some(op) = &event.op {
-//                match op {
-//                    Op::ExperimentSucceeded(_) => {
-//                        actor.status = ExperimentStatus::Completed {
-//                            since: Utc::now(),
-//                            reports: reports.to_vec(),
-//                            result: Ok(()),
-//                        };
-//
-//                        // Since the experiment's done, no more data will be fed to the watchers and so there's no point
-//                        // in keeping them alive
-//                        kill_watchers(actor);
-//                    }
-//
-//                    Op::ExperimentFailed(PExperimentFailed { cause }) => {
-//                        actor.status = ExperimentStatus::Completed {
-//                            since: Utc::now(),
-//                            reports: reports.to_vec(),
-//                            result: Err(cause.to_string()),
-//                        };
-//
-//                        // Since the experiment's done, no more data will be fed to the watchers and so there's no point
-//                        // in keeping them alive
-//                        kill_watchers(actor);
-//                    }
-//
-//                    Op::StepSucceeded(_) | Op::StepFailed(_) => {
-//                        *completed_steps += 1;
-//                    }
-//
-//                    _ => (),
-//                }
-//            }
+                reports.push(report);
+            }
+
+            match &event.ty {
+                CEventType::ExperimentSucceeded => {
+                    actor.status = ExperimentStatus::Completed {
+                        since: Utc::now(),
+                        reports: reports.to_vec(),
+                        result: Ok(()),
+                    };
+
+                    kill_watchers(actor);
+                }
+
+                CEventType::ExperimentFailed { cause } => {
+                    actor.status = ExperimentStatus::Completed {
+                        since: Utc::now(),
+                        reports: reports.to_vec(),
+                        result: Err(cause.to_string()),
+                    };
+
+                    kill_watchers(actor);
+                }
+
+                CEventType::OpcodeSucceeded { .. } | CEventType::OpcodeFailed { .. } => {
+                    *completed_ops += 1;
+                }
+
+                _ => (),
+            }
 
             Ok(())
         }
@@ -85,52 +77,37 @@ pub fn add_event(actor: &mut ExperimentActor, runner: CRunnerId, event: CEvent) 
     }
 }
 
-//fn event_as_report(event: &PExperimentEvent) -> Option<PExperimentReport> {
-//    use lib_interop::protocol::core::{
-//        p_experiment_event as p_event,
-//        p_experiment_report as p_report,
-//    };
-//
-//    let (kind, message) = match event.op.as_ref()? {
-//        Op::Ping(_) => {
-//            return None;
-//        }
-//
-//        Op::SystemMsg(p_event::PSystemMsg { msg }) => {
-//            (p_report::Kind::SystemMsg, msg.as_str())
-//        }
-//
-//        Op::UserMsg(p_event::PUserMsg { msg }) => {
-//            (p_report::Kind::UserMsg, msg.as_str())
-//        }
-//
-//        Op::ProcessOutput(p_event::PProcessOutput { line }) => {
-//            (p_report::Kind::ProcessOutput, line.as_str())
-//        }
-//
-//        Op::ExperimentStarted(_) => {
-//            (p_report::Kind::SystemMsg, "Experiment started")
-//        }
-//
-//        Op::ExperimentSucceeded(_) => {
-//            (p_report::Kind::SystemMsg, "Experiment completed (result: success)")
-//        }
-//
-//        Op::ExperimentFailed(_) => {
-//            (p_report::Kind::SystemMsg, "Experiment completed (result: failure)")
-//        }
-//
-//        Op::StepSucceeded(_) | Op::StepFailed(_) => {
-//            return None;
-//        }
-//    };
-//
-//    Some(PExperimentReport {
-//        created_at: event.created_at.clone(),
-//        kind: kind as _,
-//        message: message.to_owned(),
-//    })
-//}
+fn event_as_report(event: &CEvent) -> Option<CReport> {
+    Some(match &event.ty {
+        CEventType::SystemMsg { msg } => {
+            CReport::system_msg(event.at, msg)
+        }
+
+        CEventType::UserMsg { msg } => {
+            CReport::user_msg(event.at, msg)
+        }
+
+        CEventType::ProcessOutput { line } => {
+            CReport::process_output(event.at, line)
+        }
+
+        CEventType::ExperimentStarted => {
+            CReport::system_msg(event.at, "Experiment started")
+        }
+
+        CEventType::ExperimentSucceeded => {
+            CReport::system_msg(event.at, "Experiment completed successfully")
+        }
+
+        CEventType::ExperimentFailed { cause } => {
+            CReport::system_msg(event.at, format!("Experiment completed with failure: {}", cause))
+        }
+
+        _ => {
+            return None;
+        }
+    })
+}
 
 fn kill_watchers(actor: &mut ExperimentActor) {
     actor.watchers.clear();

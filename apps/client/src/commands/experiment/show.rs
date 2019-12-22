@@ -19,13 +19,13 @@ pub async fn show(
 
     if let Some(experiment) = experiments.first() {
         if show_opcodes || show_reports {
-            println!("{}", ui::Header::new("Experiment"));
+            print!("{}", ui::Header::new("Experiment"));
         }
 
         print_experiment(experiment);
 
         if show_opcodes {
-            unimplemented!()
+//            unimplemented!() @todo
         }
 
         if show_reports {
@@ -42,7 +42,7 @@ pub async fn show(
 }
 
 fn print_experiment(experiment: &PExperiment) {
-    println!("{}", ui::ExperimentDetails::new(experiment));
+    print!("{}", ui::ExperimentDetails::new(experiment));
 }
 
 //fn print_opcodes(experiment: &PExperiment) {
@@ -51,7 +51,7 @@ fn print_experiment(experiment: &PExperiment) {
 //}
 
 async fn print_reports(system: &mut System, id: &str) -> Result<()> {
-    println!("{}", ui::Header::new("Reports"));
+    print!("{}", ui::Header::new("Reports"));
 
     let reports = spinner! {
         system
@@ -61,7 +61,7 @@ async fn print_reports(system: &mut System, id: &str) -> Result<()> {
             .reports
     };
 
-    println!("{}", ui::ReportsTable::new(&reports));
+    print!("{}", ui::ReportsTable::new(&reports));
 
     Ok(())
 }

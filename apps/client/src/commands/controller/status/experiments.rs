@@ -4,7 +4,6 @@ use crate::{Result, spinner, System, ui};
 
 pub async fn print(system: &mut System) -> Result<()> {
     println!("{}", ui::Header::new("Experiments"));
-    println!();
 
     let experiments = spinner! {
         system
@@ -14,7 +13,7 @@ pub async fn print(system: &mut System) -> Result<()> {
             .experiments
     };
 
-    println!("{}", ui::ExperimentsTable::new(&experiments));
+    print!("{}", ui::ExperimentsTable::new(&experiments));
 
     Ok(())
 }

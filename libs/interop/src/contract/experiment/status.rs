@@ -2,9 +2,8 @@ use std::convert::TryFrom;
 use std::result;
 
 use chrono::{DateTime, Utc};
-use snafu::ResultExt;
 
-use crate::{Error, error, Result};
+use crate::{Error, parse, Result};
 use crate::protocol::core::p_experiment::PStatus;
 
 #[derive(Clone, Debug)]
@@ -16,7 +15,7 @@ pub enum CExperimentStatus {
     Running {
         since: DateTime<Utc>,
         last_heartbeat_at: DateTime<Utc>,
-        completed_steps: u32,
+        completed_ops: u32,
     },
 
     Completed {
@@ -32,22 +31,41 @@ pub enum CExperimentStatus {
 impl TryFrom<PStatus> for CExperimentStatus {
     type Error = Error;
 
-    fn try_from(status: PStatus) -> Result<Self> {
+    fn try_from(PStatus { op }: PStatus) -> Result<Self> {
         use crate::protocol::core::p_experiment::p_status::*;
 
-        let op = status.op.ok_or_else(|| Error::Missing { name: "op" })?;
-
-        Ok(match op {
+        Ok(match parse!(op?) {
             Op::Idle(PIdle { since }) => {
                 CExperimentStatus::Idle {
-                    since: DateTime::parse_from_rfc3339(&since)
-                        .context(error::InvalidDateTime { name: "since" })?
-                        .with_timezone(&Utc),
+                    since: parse!(since as DateTime),
                 }
             }
 
-            _ => {
-                unimplemented!()
+            Op::Running(PRunning { since, last_heartbeat_at, completed_ops }) => {
+                CExperimentStatus::Running {
+                    since: parse!(since as DateTime),
+                    last_heartbeat_at: parse!(last_heartbeat_at as DateTime),
+                    completed_ops,
+                }
+            }
+
+            Op::Completed(PCompleted { since, success, cause }) => {
+                let result = if success {
+                    Ok(())
+                } else {
+                    Err(cause)
+                };
+
+                CExperimentStatus::Completed {
+                    since: parse!(since as DateTime),
+                    result,
+                }
+            }
+
+            Op::Zombie(PZombie { since }) => {
+                CExperimentStatus::Zombie {
+                    since: parse!(since as DateTime),
+                }
             }
         })
     }
@@ -64,11 +82,11 @@ impl Into<PStatus> for CExperimentStatus {
                 })
             }
 
-            CExperimentStatus::Running { since, last_heartbeat_at, completed_steps } => {
+            CExperimentStatus::Running { since, last_heartbeat_at, completed_ops } => {
                 Op::Running(PRunning {
                     since: since.to_rfc3339(),
                     last_heartbeat_at: last_heartbeat_at.to_rfc3339(),
-                    completed_steps,
+                    completed_ops,
                 })
             }
 

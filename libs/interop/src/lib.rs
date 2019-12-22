@@ -1,3 +1,5 @@
+#![feature(type_ascription)]
+
 pub use self::error::*;
 
 mod error;

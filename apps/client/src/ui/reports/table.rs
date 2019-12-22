@@ -23,7 +23,7 @@ impl fmt::Display for ReportsTable<'_> {
         }
 
         let mut table = table! {
-            titles: ["Created at", "Kind", "Message"],
+            titles: ["▲ Created at", "Kind", "Message"],
         };
 
         for report in self.reports {

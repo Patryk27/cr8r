@@ -8,7 +8,6 @@ use crate::{Result, spinner, System, ui};
 
 pub async fn print(system: &mut System) -> Result<()> {
     println!("{}", ui::Header::new("Controller"));
-    println!();
 
     println!(
         "Address: {}",

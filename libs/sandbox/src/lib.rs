@@ -1,5 +1,7 @@
 #![feature(box_syntax)]
 #![feature(crate_visibility_modifier)]
+#![feature(try_blocks)]
+#![feature(type_ascription)]
 
 pub use self::{
     def::*,

@@ -1,6 +1,6 @@
 use std::convert::TryFrom;
 
-use crate::{Error, Result};
+use crate::{Error, parse, Result};
 use crate::protocol::core::PProgram;
 
 pub use self::opcode::*;
@@ -17,22 +17,23 @@ pub struct CProgram {
 impl TryFrom<PProgram> for CProgram {
     type Error = Error;
 
-    fn try_from(program: PProgram) -> Result<Self> {
-        unimplemented!()
+    fn try_from(PProgram { system, toolchain, opcodes }: PProgram) -> Result<Self> {
+        Ok(Self {
+            system,
+            toolchain,
+            opcodes: parse!(opcodes as [_?]),
+        })
     }
 }
 
 impl Into<PProgram> for CProgram {
     fn into(self) -> PProgram {
-        let opcodes = self.opcodes
-            .into_iter()
-            .map(Into::into)
-            .collect();
+        let opcodes = self.opcodes;
 
         PProgram {
             system: self.system,
             toolchain: self.toolchain,
-            opcodes,
+            opcodes: parse!(opcodes as [_]),
         }
     }
 }

@@ -1,9 +1,13 @@
 pub struct Command {
-    cmd: String,
+    inner: String,
 }
 
 impl Command {
-    pub fn new(cmd: String) -> Self {
-        Self { cmd }
+    pub fn new(inner: String) -> Self {
+        Self { inner }
+    }
+
+    pub fn inner(&self) -> &str {
+        &self.inner
     }
 }

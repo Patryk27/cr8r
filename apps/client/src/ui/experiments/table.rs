@@ -22,7 +22,7 @@ impl fmt::Display for ExperimentsTable<'_> {
         }
 
         let mut table = table! {
-            titles: ["Id", "Status", "Created at"],
+            titles: ["Id", "Status", "▼ Created at"],
         };
 
         for experiment in self.experiments {
