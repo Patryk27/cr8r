@@ -1,10 +1,10 @@
 use tokio::stream::StreamExt;
 
-use crate::backend::executor::ExperimentExecutorActor;
+use crate::backend::executor::ExecutorActor;
 
-impl ExperimentExecutorActor {
+impl ExecutorActor {
     /// Processes all pending actor messages and then yields control back to the caller.
-    pub(super) fn process_messages_and_yield(&mut self) {
+    pub(super) async fn process_messages_and_yield(&mut self) {
         while let Ok(msg) = self.rx.try_recv() {
             msg.handle(self);
         }

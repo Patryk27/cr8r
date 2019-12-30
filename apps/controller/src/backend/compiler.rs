@@ -1,4 +1,4 @@
-use lib_interop::contract::{CExperimentDef, CProgram};
+use lib_interop::contract::{CExperimentDefinition, CJob};
 
 use crate::backend::Result;
 use crate::core::Ecosystem;
@@ -41,7 +41,7 @@ impl Compiler {
         })
     }
 
-    pub fn compile(&self, def: &CExperimentDef) -> CProgram {
+    pub fn compile(&self, def: &CExperimentDefinition) -> Vec<CJob> {
         self.compiler.compile(def)
     }
 }

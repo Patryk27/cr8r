@@ -1,43 +1,50 @@
 use colored::Colorize;
 use structopt::StructOpt;
 
-use lib_interop::protocol::core::p_experiment_def::*;
-use lib_interop::protocol::core::PExperimentDef;
+use lib_interop::contract::CExperimentDefinition;
 use lib_interop::protocol::for_client::PCreateExperimentRequest;
 
 use crate::{Result, spinner, System};
 
 #[derive(Debug, StructOpt)]
 pub enum LaunchExperimentCommand {
-    #[structopt(name = "try-toolchain")]
-    TryToolchain {
+    #[structopt(name = "override-toolchain")]
+    OverrideToolchain {
         toolchain: String,
+    },
+
+    #[structopt(name = "override-crate")]
+    OverrideCrate {
+        name: String,
+        version: String,
     },
 }
 
 impl LaunchExperimentCommand {
     pub async fn run(self, system: System, watch: bool) -> Result<()> {
-        launch_experiment(system, watch, match self {
-            LaunchExperimentCommand::TryToolchain { toolchain } => {
-                Op::TryToolchain(PTryToolchain { toolchain })
+        use LaunchExperimentCommand::*;
+
+        launch_experiment(system, match self {
+            OverrideToolchain { toolchain } => {
+                CExperimentDefinition::OverrideToolchain { toolchain }
             }
-        }).await
+
+            OverrideCrate { name, version } => {
+                CExperimentDefinition::OverrideCrate { name, version }
+            }
+        }, watch).await
     }
 }
 
 async fn launch_experiment(
     mut system: System,
+    definition: CExperimentDefinition,
     watch: bool,
-    experiment: Op,
 ) -> Result<()> {
-    let experiment_def = Some(PExperimentDef {
-        op: Some(experiment),
-    });
-
     let reply = spinner! {
         system
             .client().await?
-            .create_experiment(PCreateExperimentRequest { experiment_def }).await?
+            .create_experiment(PCreateExperimentRequest { experiment_definition: Some(definition.into()) }).await?
             .into_inner()
     };
 

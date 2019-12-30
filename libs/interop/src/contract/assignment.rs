@@ -1,31 +1,33 @@
-use std::convert::{TryFrom, TryInto};
+use std::convert::TryFrom;
 
-use crate::{Error, parse, Result};
-use crate::contract::{CExperiment, CProgram};
+use crate::{convert, Error, Result};
+use crate::contract::{CExperiment, CJob};
 use crate::protocol::core::PAssignment;
 
 #[derive(Clone, Debug)]
 pub struct CAssignment {
     pub experiment: CExperiment,
-    pub program: CProgram,
+    pub jobs: Vec<CJob>,
 }
 
 impl TryFrom<PAssignment> for CAssignment {
     type Error = Error;
 
-    fn try_from(PAssignment { experiment, program }: PAssignment) -> Result<Self> {
+    fn try_from(PAssignment { experiment, jobs }: PAssignment) -> Result<Self> {
         Ok(Self {
-            experiment: parse!(experiment? as _?),
-            program: parse!(program? as _?),
+            experiment: convert!(experiment? as _?),
+            jobs: convert!(jobs as [_?]),
         })
     }
 }
 
 impl Into<PAssignment> for CAssignment {
     fn into(self) -> PAssignment {
+        let Self { experiment, jobs } = self;
+
         PAssignment {
-            experiment: Some(self.experiment.into()),
-            program: Some(self.program.into()),
+            experiment: Some(convert!(experiment as _)),
+            jobs: convert!(jobs as [_]),
         }
     }
 }

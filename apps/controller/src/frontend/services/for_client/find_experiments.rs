@@ -14,7 +14,7 @@ pub async fn find_experiments(system: &System, request: PFindExperimentsRequest)
         let mut matches = true;
 
         if !request.id.is_empty() {
-            matches = experiment.id.as_str() == &request.id;
+            matches = experiment.id.as_str() == request.id;
         }
 
         if matches {

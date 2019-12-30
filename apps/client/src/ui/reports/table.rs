@@ -1,13 +1,13 @@
 use std::fmt;
 
-use lib_interop::protocol::core::PReport;
+use lib_interop::contract::CReport;
 
 pub struct ReportsTable<'a> {
-    reports: &'a [PReport],
+    reports: &'a [CReport],
 }
 
 impl<'a> ReportsTable<'a> {
-    pub fn new(reports: &'a [PReport]) -> Self {
+    pub fn new(reports: &'a [CReport]) -> Self {
         Self { reports }
     }
 }
@@ -23,17 +23,17 @@ impl fmt::Display for ReportsTable<'_> {
         }
 
         let mut table = table! {
-            titles: ["▲ Created at", "Kind", "Message"],
+            titles: ["▲ At", "Type", "Message"],
         };
 
         for report in self.reports {
-            let created_at = ui::DateTime::new(&report.created_at)
+            let at = ui::DateTime::new(report.at)
                 .to_string()
                 .dimmed();
 
             table.add_row(row![
-                created_at,
-                ui::ReportKind::new(report),
+                at,
+                ui::ReportType::new(&report.ty),
                 ui::ReportMessage::new(report),
             ]);
         }

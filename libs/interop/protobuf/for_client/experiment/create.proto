@@ -2,10 +2,10 @@ syntax = "proto3";
 
 package cr8r.for_client;
 
-import "core/experiment_def.proto";
+import "core/experiment.proto";
 
 message PCreateExperimentRequest {
-    core.PExperimentDef experiment_def = 1;
+    core.PExperimentDefinition experiment_definition = 1;
 }
 
 message PCreateExperimentReply {

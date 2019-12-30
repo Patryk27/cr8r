@@ -26,7 +26,7 @@ impl Runners {
             return Err("Runner with such name has been already registered".into());
         }
 
-        let id = CRunnerId::new();
+        let id = CRunnerId::default();
 
         let runner = Runner::new(
             self.system.clone(),
@@ -63,6 +63,6 @@ impl Runners {
         self.index
             .get_by_left(id)
             .map(|_| ())
-            .ok_or("No such runner exists".into())
+            .ok_or_else(|| "No such runner exists".into())
     }
 }

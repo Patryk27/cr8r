@@ -1,25 +1,25 @@
-use closure::*;
 use log::*;
 
-use lib_interop::contract::{CAssignment, CEventType, CProgramOpcode};
-use lib_sandbox::{Sandbox, SandboxListener};
+use lib_interop::contract::{CAssignment, CEventType};
+use lib_sandbox::Sandbox;
 
 use crate::backend::{ExecutorStatus, Journalist};
-use crate::backend::executor::{ExecutorResult, ExperimentExecutorRx};
+use crate::backend::executor::ExecutorRx;
 
+mod perform_job;
 mod process_messages;
 
-pub struct ExperimentExecutorActor {
-    rx: ExperimentExecutorRx,
+pub struct ExecutorActor {
+    rx: ExecutorRx,
     pub(super) sandbox: Sandbox,
     pub(super) assignment: CAssignment,
     pub(super) journalist: Journalist,
     pub(super) status: ExecutorStatus,
 }
 
-impl ExperimentExecutorActor {
+impl ExecutorActor {
     pub fn new(
-        rx: ExperimentExecutorRx,
+        rx: ExecutorRx,
         sandbox: Sandbox,
         assignment: CAssignment,
         journalist: Journalist,
@@ -36,127 +36,34 @@ impl ExperimentExecutorActor {
     pub async fn main(mut self) {
         debug!("Actor started");
 
-        self.journalist.add_event(CEventType::ExperimentStarted);
+        self.journalist.dispatch(CEventType::ExperimentStarted);
 
-        // @todo
-        self.process_messages_and_yield();
+        self.process_messages_and_yield()
+            .await;
 
-        let experiment_result: ExecutorResult<()> = try {
-            self.init_sandbox()
-                .await?;
+        let jobs = self.assignment.jobs
+            .drain(..)
+            .collect(): Vec<_>;
 
-            let opcodes = self.assignment
-                .program
-                .opcodes
-                .drain(..)
-                .collect(): Vec<_>;
+        for (id, job) in jobs.into_iter().enumerate() {
+            self.journalist.dispatch(CEventType::JobStarted { id });
 
-            for (opcode_id, opcode) in opcodes.into_iter().enumerate() {
-                let opcode_id = opcode_id as u32;
+            let result = self
+                .perform_job(job)
+                .await;
 
-                match self.execute_opcode(opcode).await {
-                    Ok(()) => {
-                        self.journalist.add_event(CEventType::OpcodeSucceeded {
-                            id: opcode_id,
-                        });
-                    }
+            self.journalist.dispatch(CEventType::JobCompleted { id, result });
+        }
 
-                    Err(err) => {
-                        self.journalist.add_event(CEventType::OpcodeFailed {
-                            id: opcode_id,
-                            cause: err.to_string(),
-                        });
-
-                        Err(err)?;
-                    }
-                }
-            }
-
-            if let Err(err) = self.destroy_sandbox().await {
-                error!("{}", err);
-            }
-        };
-
-        match experiment_result {
-            Ok(()) => {
-                self.journalist.add_event(CEventType::ExperimentSucceeded);
-            }
-
-            Err(err) => {
-                self.journalist.add_event(CEventType::ExperimentFailed {
-                    cause: err.to_string(),
-                });
-            }
-        };
+        self.journalist.dispatch(CEventType::ExperimentCompleted);
 
         self.status = ExecutorStatus::Completed;
+
+        debug!("Actor finished working, entering event loop");
 
         self.process_messages_and_wait()
             .await;
 
-        debug!("Actor finished working, halting");
-    }
-
-    async fn init_sandbox(&mut self) -> ExecutorResult<()> {
-        self.journalist.add_event(CEventType::SystemMsg {
-            msg: "Initializing sandbox".to_string(),
-        });
-
-        let journalist = self.journalist.clone();
-
-        let listener = SandboxListener {
-            on_command_executed: Some(box closure!(clone journalist, |cmd| {
-                journalist.add_event(CEventType::UserMsg {
-                    msg: format!("Executing: {}", cmd),
-                });
-            })),
-
-            on_command_output: Some(box closure!(clone journalist, |line| {
-                journalist.add_event(CEventType::ProcessOutput { line });
-            })),
-        };
-
-        self.sandbox
-            .init(Some(listener))
-            .await
-            .map_err(|err| format!("Couldn't initialize the sandbox: {}", err))
-    }
-
-    async fn execute_opcode(&mut self, opcode: CProgramOpcode) -> ExecutorResult<()> {
-        self.process_messages_and_yield();
-
-        match opcode {
-            CProgramOpcode::LogSystemMsg { msg } => {
-                self.journalist.add_event(CEventType::SystemMsg { msg });
-            }
-
-            CProgramOpcode::LogUserMsg { msg } => {
-                self.journalist.add_event(CEventType::UserMsg { msg });
-            }
-
-            CProgramOpcode::Exec { cmd } => {
-                self.sandbox
-                    .exec(&cmd)
-                    .await
-                    .map_err(|err| err.to_string())?;
-            }
-
-            CProgramOpcode::PatchCrate { name, attachment_id } => {
-                unimplemented!()
-            }
-        }
-
-        Ok(())
-    }
-
-    async fn destroy_sandbox(&mut self) -> ExecutorResult<()> {
-        self.journalist.add_event(CEventType::SystemMsg {
-            msg: "Destroying sandbox".to_string(),
-        });
-
-        self.sandbox
-            .destroy()
-            .await
-            .map_err(|err| format!("Couldn't destroy the sandbox: {}", err))
+        debug!("Actor orphaned, halting");
     }
 }

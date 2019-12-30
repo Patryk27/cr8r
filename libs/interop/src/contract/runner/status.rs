@@ -1,7 +1,10 @@
+use std::convert::TryFrom;
+
 use chrono::{DateTime, Utc};
 
+use crate::{convert, Error, Result};
 use crate::contract::CExperimentId;
-use crate::protocol::core::p_runner::PStatus;
+use crate::protocol::core::PRunnerStatus;
 
 #[derive(Clone, Debug)]
 pub enum CRunnerStatus {
@@ -19,33 +22,60 @@ pub enum CRunnerStatus {
     },
 }
 
-impl Into<PStatus> for CRunnerStatus {
-    fn into(self) -> PStatus {
-        use crate::protocol::core::p_runner::p_status::*;
+impl TryFrom<PRunnerStatus> for CRunnerStatus {
+    type Error = Error;
 
-        let op = match self {
+    fn try_from(PRunnerStatus { ty }: PRunnerStatus) -> Result<Self> {
+        use crate::protocol::core::p_runner_status::*;
+
+        Ok(match convert!(ty?) {
+            Ty::Idle(PIdle { since }) => {
+                CRunnerStatus::Idle {
+                    since: convert!(since as DateTime),
+                }
+            }
+
+            Ty::Working(PWorking { since, .. }) => {
+                CRunnerStatus::Working {
+                    since: convert!(since as DateTime),
+                    experiment_id: convert!(since as _),
+                }
+            }
+
+            Ty::Zombie(PZombie { since }) => {
+                CRunnerStatus::Zombie {
+                    since: convert!(since as DateTime),
+                }
+            }
+        })
+    }
+}
+
+impl Into<PRunnerStatus> for CRunnerStatus {
+    fn into(self) -> PRunnerStatus {
+        use crate::protocol::core::p_runner_status::*;
+
+        let ty = match self {
             CRunnerStatus::Idle { since } => {
-                Op::Idle(PIdle {
+                Ty::Idle(PIdle {
                     since: since.to_rfc3339(),
                 })
             }
 
             CRunnerStatus::Working { since, experiment_id } => {
-                Op::Working(PWorking {
+                Ty::Working(PWorking {
                     since: since.to_rfc3339(),
                     experiment_id: experiment_id.into(),
                 })
             }
 
             CRunnerStatus::Zombie { since } => {
-                Op::Zombie(PZombie {
+                Ty::Zombie(PZombie {
                     since: since.to_rfc3339(),
                 })
             }
         };
 
-        PStatus {
-            op: Some(op),
-        }
+        PRunnerStatus { ty: Some(ty) }
     }
 }

@@ -3,7 +3,7 @@ pub use self::{
     attachment::*,
     event::*,
     experiment::*,
-    program::*,
+    job::*,
     report::*,
     runner::*,
 };
@@ -14,6 +14,6 @@ mod assignment;
 mod attachment;
 mod event;
 mod experiment;
-mod program;
+mod job;
 mod report;
 mod runner;

@@ -3,23 +3,23 @@ syntax = "proto3";
 package cr8r.for_client;
 
 message PCreateAttachmentRequest {
-    message Create {
+    message PCreate {
         string name = 1;
         uint64 size = 2;
     }
 
-    message UploadChunk {
+    message PUploadChunk {
         bytes data = 1;
     }
 
-    message Finalize {
+    message PFinalize {
         //
     }
 
-    oneof op {
-        Create create = 1;
-        UploadChunk upload_chunk = 2;
-        Finalize finalize = 3;
+    oneof ty {
+        PCreate create = 1;
+        PUploadChunk upload_chunk = 2;
+        PFinalize finalize = 3;
     }
 }
 

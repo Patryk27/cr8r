@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use lib_interop::contract::{CExperimentDef, CProgram};
+use lib_interop::contract::{CExperimentDefinition, CJob};
 
 use crate::{CompilerBuilder, Defaults, Project, ProjectName, Provider, ProviderName};
 
@@ -17,16 +17,20 @@ impl Compiler {
         CompilerBuilder::default()
     }
 
-    pub fn compile(&self, experiment_def: &CExperimentDef) -> CProgram {
-        use CExperimentDef::*;
+    pub fn compile(&self, experiment_def: &CExperimentDefinition) -> Vec<CJob> {
+        use CExperimentDefinition::*;
 
         match experiment_def {
-            TryPatchCrate { name, attachment_id } => {
-                compilers::compile_try_patch_crate(self, name, attachment_id.as_str())
+            OverrideToolchain { toolchain } => {
+                compilers::compile_override_toolchain(self, toolchain)
             }
 
-            TryToolchain { toolchain } => {
-                compilers::compile_try_toolchain(self, toolchain)
+            OverrideCrate { .. } => {
+                unimplemented!()
+            }
+
+            PatchCrate { .. } => {
+                unimplemented!()
             }
         }
     }

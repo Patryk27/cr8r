@@ -3,7 +3,7 @@ use std::sync::Arc;
 use tokio::sync::mpsc;
 
 use lib_actor::{ask, tell};
-use lib_interop::contract::{CAssignment, CEvent, CExperiment, CExperimentId, CProgram, CReport, CRunnerId};
+use lib_interop::contract::{CAssignment, CEvent, CExperiment, CExperimentId, CJob, CReport, CRunnerId};
 
 use crate::backend::Result;
 
@@ -23,13 +23,13 @@ pub struct Experiment {
 }
 
 impl Experiment {
-    pub fn new(id: CExperimentId, program: CProgram) -> Self {
+    pub fn new(id: CExperimentId, jobs: Vec<CJob>) -> Self {
         let (tx, rx) = mpsc::unbounded_channel();
 
         tokio::spawn(ExperimentActor::new(
             rx,
             id,
-            program,
+            jobs,
         ).main());
 
         Self { tx }

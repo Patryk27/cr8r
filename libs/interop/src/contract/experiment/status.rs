@@ -3,8 +3,8 @@ use std::result;
 
 use chrono::{DateTime, Utc};
 
-use crate::{Error, parse, Result};
-use crate::protocol::core::p_experiment::PStatus;
+use crate::{convert, Error, Result};
+use crate::protocol::core::PExperimentStatus;
 
 #[derive(Clone, Debug)]
 pub enum CExperimentStatus {
@@ -15,7 +15,8 @@ pub enum CExperimentStatus {
     Running {
         since: DateTime<Utc>,
         last_heartbeat_at: DateTime<Utc>,
-        completed_ops: u32,
+        completed_jobs: u32,
+        total_jobs: u32,
     },
 
     Completed {
@@ -28,28 +29,29 @@ pub enum CExperimentStatus {
     },
 }
 
-impl TryFrom<PStatus> for CExperimentStatus {
+impl TryFrom<PExperimentStatus> for CExperimentStatus {
     type Error = Error;
 
-    fn try_from(PStatus { op }: PStatus) -> Result<Self> {
-        use crate::protocol::core::p_experiment::p_status::*;
+    fn try_from(PExperimentStatus { ty }: PExperimentStatus) -> Result<Self> {
+        use crate::protocol::core::p_experiment_status::*;
 
-        Ok(match parse!(op?) {
-            Op::Idle(PIdle { since }) => {
+        Ok(match convert!(ty?) {
+            Ty::Idle(PIdle { since }) => {
                 CExperimentStatus::Idle {
-                    since: parse!(since as DateTime),
+                    since: convert!(since as DateTime),
                 }
             }
 
-            Op::Running(PRunning { since, last_heartbeat_at, completed_ops }) => {
+            Ty::Running(PRunning { since, last_heartbeat_at, completed_jobs, total_jobs }) => {
                 CExperimentStatus::Running {
-                    since: parse!(since as DateTime),
-                    last_heartbeat_at: parse!(last_heartbeat_at as DateTime),
-                    completed_ops,
+                    since: convert!(since as DateTime),
+                    last_heartbeat_at: convert!(last_heartbeat_at as DateTime),
+                    completed_jobs,
+                    total_jobs,
                 }
             }
 
-            Op::Completed(PCompleted { since, success, cause }) => {
+            Ty::Completed(PCompleted { since, success, cause }) => {
                 let result = if success {
                     Ok(())
                 } else {
@@ -57,41 +59,42 @@ impl TryFrom<PStatus> for CExperimentStatus {
                 };
 
                 CExperimentStatus::Completed {
-                    since: parse!(since as DateTime),
+                    since: convert!(since as DateTime),
                     result,
                 }
             }
 
-            Op::Zombie(PZombie { since }) => {
+            Ty::Zombie(PZombie { since }) => {
                 CExperimentStatus::Zombie {
-                    since: parse!(since as DateTime),
+                    since: convert!(since as DateTime),
                 }
             }
         })
     }
 }
 
-impl Into<PStatus> for CExperimentStatus {
-    fn into(self) -> PStatus {
-        use crate::protocol::core::p_experiment::p_status::*;
+impl Into<PExperimentStatus> for CExperimentStatus {
+    fn into(self) -> PExperimentStatus {
+        use crate::protocol::core::p_experiment_status::*;
 
-        let op = match self {
+        let ty = match self {
             CExperimentStatus::Idle { since } => {
-                Op::Idle(PIdle {
+                Ty::Idle(PIdle {
                     since: since.to_rfc3339(),
                 })
             }
 
-            CExperimentStatus::Running { since, last_heartbeat_at, completed_ops } => {
-                Op::Running(PRunning {
+            CExperimentStatus::Running { since, last_heartbeat_at, completed_jobs, total_jobs } => {
+                Ty::Running(PRunning {
                     since: since.to_rfc3339(),
                     last_heartbeat_at: last_heartbeat_at.to_rfc3339(),
-                    completed_ops,
+                    completed_jobs,
+                    total_jobs,
                 })
             }
 
             CExperimentStatus::Completed { since, result } => {
-                Op::Completed(PCompleted {
+                Ty::Completed(PCompleted {
                     since: since.to_rfc3339(),
                     success: result.is_ok(),
                     cause: result.err().unwrap_or_default(),
@@ -99,14 +102,12 @@ impl Into<PStatus> for CExperimentStatus {
             }
 
             CExperimentStatus::Zombie { since } => {
-                Op::Zombie(PZombie {
+                Ty::Zombie(PZombie {
                     since: since.to_rfc3339(),
                 })
             }
         };
 
-        PStatus {
-            op: Some(op),
-        }
+        PExperimentStatus { ty: Some(ty) }
     }
 }

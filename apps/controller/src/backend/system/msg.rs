@@ -1,7 +1,7 @@
 use log::*;
 use tokio::sync::{mpsc, oneshot};
 
-use lib_interop::contract::{CAssignment, CExperimentDef, CExperimentId, CRunnerId, CRunnerName};
+use lib_interop::contract::{CAssignment, CExperimentDefinition, CExperimentId, CRunnerId, CRunnerName};
 
 use crate::backend::{Experiment, Result, Runner};
 use crate::backend::system::SystemActor;
@@ -23,7 +23,7 @@ pub enum SystemMsg {
     // ---- //
 
     CreateExperiment {
-        def: CExperimentDef,
+        def: CExperimentDefinition,
         tx: oneshot::Sender<Result<CExperimentId>>,
     },
 

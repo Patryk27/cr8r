@@ -14,12 +14,12 @@ pub fn start(actor: &mut ExperimentActor, runner: CRunnerId) -> Result<CAssignme
                 runner,
                 events: Vec::new(),
                 reports: Vec::new(),
-                completed_ops: 0,
+                completed_jobs: 0,
             };
 
             Ok(CAssignment {
                 experiment: super::get_model::get_model(actor),
-                program: actor.program.clone(),
+                jobs: actor.jobs.clone(),
             })
         }
 

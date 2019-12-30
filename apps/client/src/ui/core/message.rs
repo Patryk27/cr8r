@@ -7,30 +7,30 @@ pub enum MessageType {
     Error,
 }
 
-pub struct Message<'a> {
+pub struct Message {
     ty: MessageType,
-    message: &'a str,
+    msg: String,
 }
 
-impl<'a> Message<'a> {
-    pub fn new(ty: MessageType, message: &'a str) -> Self {
-        Self { ty, message }
+impl Message {
+    pub fn new(ty: MessageType, msg: impl Into<String>) -> Self {
+        Self { ty, msg: msg.into() }
     }
 
-    pub fn info(message: &'a str) -> Self {
-        Self::new(MessageType::Info, message)
+    pub fn info(msg: impl Into<String>) -> Self {
+        Self::new(MessageType::Info, msg)
     }
 
-    pub fn warn(message: &'a str) -> Self {
-        Self::new(MessageType::Warn, message)
+    pub fn warn(msg: impl Into<String>) -> Self {
+        Self::new(MessageType::Warn, msg)
     }
 
-    pub fn error(message: &'a str) -> Self {
-        Self::new(MessageType::Error, message)
+    pub fn error(msg: impl Into<String>) -> Self {
+        Self::new(MessageType::Error, msg)
     }
 }
 
-impl fmt::Display for Message<'_> {
+impl fmt::Display for Message {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         // @todo
         unimplemented!()

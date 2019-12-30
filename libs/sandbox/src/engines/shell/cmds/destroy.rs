@@ -1,7 +1,5 @@
 use crate::{Result, ShellEngine};
 
-pub async fn destroy(engine: &mut ShellEngine) -> Result<()> {
-    // @todo clear `dir`
-
+pub async fn destroy(_: &mut ShellEngine) -> Result<()> {
     Ok(())
 }

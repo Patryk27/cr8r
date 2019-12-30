@@ -1,5 +1,8 @@
+use std::convert::TryFrom;
+
 use chrono::{DateTime, Utc};
 
+use crate::{convert, Error, Result};
 use crate::protocol::core::PRunner;
 
 pub use self::{
@@ -21,14 +24,30 @@ pub struct CRunner {
     pub status: CRunnerStatus,
 }
 
+impl TryFrom<PRunner> for CRunner {
+    type Error = Error;
+
+    fn try_from(PRunner { id, name, joined_at, last_heartbeat_at, status }: PRunner) -> Result<Self> {
+        Ok(Self {
+            id: convert!(id as _),
+            name: convert!(name as _),
+            joined_at: convert!(joined_at as DateTime),
+            last_heartbeat_at: convert!(last_heartbeat_at as DateTime),
+            status: convert!(status? as _?),
+        })
+    }
+}
+
 impl Into<PRunner> for CRunner {
     fn into(self) -> PRunner {
+        let Self { id, name, joined_at, last_heartbeat_at, status } = self;
+
         PRunner {
-            id: self.id.into(),
-            name: self.name.into(),
-            joined_at: self.joined_at.to_rfc3339(),
-            last_heartbeat_at: self.last_heartbeat_at.to_rfc3339(),
-            status: Some(self.status.into()),
+            id: convert!(id as _),
+            name: convert!(name as _),
+            joined_at: joined_at.to_rfc3339(),
+            last_heartbeat_at: last_heartbeat_at.to_rfc3339(),
+            status: Some(convert!(status as _)),
         }
     }
 }

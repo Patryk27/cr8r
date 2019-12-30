@@ -1,14 +1,14 @@
 use std::fmt;
 
-use lib_interop::protocol::core::PRunner;
+use lib_interop::contract::CRunnerStatus;
 
 pub struct RunnerStatus<'a> {
-    runner: &'a PRunner,
+    status: &'a CRunnerStatus,
 }
 
 impl<'a> RunnerStatus<'a> {
-    pub fn new(runner: &'a PRunner) -> Self {
-        Self { runner }
+    pub fn new(status: &'a CRunnerStatus) -> Self {
+        Self { status }
     }
 }
 
@@ -16,41 +16,28 @@ impl fmt::Display for RunnerStatus<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use crate::ui;
         use colored::Colorize;
-        use lib_interop::protocol::core::p_runner::p_status::*;
 
-        let status = try {
-            match self.runner.status.as_ref()?.op.as_ref()? {
-                Op::Idle(PIdle { since }) => {
-                    let status = "idle / awaiting experiment".yellow();
-                    let since = ui::DateTime::new(since);
+        write!(f, "{}", match self.status {
+            CRunnerStatus::Idle { since } => {
+                let status = "idle / awaiting experiment".yellow();
+                let since = ui::DateTime::new(*since);
 
-                    format!("{} (since {})", status, since)
-                }
-
-                Op::Working(PWorking { since, .. }) => {
-                    let status = "working".green();
-                    let since = ui::DateTime::new(since);
-
-                    format!("{} (since {})", status, since)
-                }
-
-                Op::Zombie(PZombie { since }) => {
-                    let status = "zombie".red();
-                    let since = ui::DateTime::new(since);
-
-                    format!("{} (since {})", status, since)
-                }
-            }
-        };
-
-        match status {
-            Some(status) => {
-                write!(f, "{}", status)
+                format!("{} (since {})", status, since)
             }
 
-            None => {
-                write!(f, "invalid status")
+            CRunnerStatus::Working { since, .. } => {
+                let status = "working".green();
+                let since = ui::DateTime::new(*since);
+
+                format!("{} (since {})", status, since)
             }
-        }
+
+            CRunnerStatus::Zombie { since } => {
+                let status = "zombie".red();
+                let since = ui::DateTime::new(*since);
+
+                format!("{} (since {})", status, since)
+            }
+        })
     }
 }

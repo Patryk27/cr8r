@@ -1,14 +1,14 @@
 use log::*;
 use tokio::sync::{mpsc, oneshot};
 
-use crate::backend::executor::ExperimentExecutorActor;
+use crate::backend::executor::ExecutorActor;
 use crate::backend::ExecutorStatus;
 
-pub type ExperimentExecutorTx = mpsc::UnboundedSender<ExperimentExecutorMsg>;
-pub type ExperimentExecutorRx = mpsc::UnboundedReceiver<ExperimentExecutorMsg>;
+pub type ExecutorTx = mpsc::UnboundedSender<ExecutorMsg>;
+pub type ExecutorRx = mpsc::UnboundedReceiver<ExecutorMsg>;
 
 #[derive(Debug)]
-pub enum ExperimentExecutorMsg {
+pub enum ExecutorMsg {
     GetStatus {
         tx: oneshot::Sender<ExecutorStatus>,
     }
@@ -16,12 +16,12 @@ pub enum ExperimentExecutorMsg {
 
 mod get_status;
 
-impl ExperimentExecutorMsg {
-    pub fn handle(self, actor: &mut ExperimentExecutorActor) {
+impl ExecutorMsg {
+    pub fn handle(self, actor: &mut ExecutorActor) {
         debug!("Handling message: {:?}", self);
 
         match self {
-            ExperimentExecutorMsg::GetStatus { tx } => {
+            ExecutorMsg::GetStatus { tx } => {
                 let _ = tx.send(get_status::get_status(actor));
             }
         }

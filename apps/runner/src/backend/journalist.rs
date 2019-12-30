@@ -31,12 +31,12 @@ impl Journalist {
         Self { tx }
     }
 
-    pub fn add_event(&self, ty: CEventType) {
+    pub fn dispatch(&self, ty: CEventType) {
         let event = CEvent {
             at: Utc::now(),
             ty,
         };
 
-        tell!(self.tx, JournalistMsg::AddEvent { event });
+        tell!(self.tx, JournalistMsg::Dispatch { event });
     }
 }

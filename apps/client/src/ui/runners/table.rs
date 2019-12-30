@@ -1,13 +1,13 @@
 use std::fmt;
 
-use lib_interop::protocol::core::PRunner;
+use lib_interop::contract::CRunner;
 
 pub struct RunnersTable<'a> {
-    runners: &'a [PRunner],
+    runners: &'a [CRunner],
 }
 
 impl<'a> RunnersTable<'a> {
-    pub fn new(runners: &'a [PRunner]) -> Self {
+    pub fn new(runners: &'a [CRunner]) -> Self {
         Self { runners }
     }
 }
@@ -27,10 +27,10 @@ impl fmt::Display for RunnersTable<'_> {
 
         for runner in self.runners {
             table.add_row(row![
-                ui::RunnerName::new(runner),
-                ui::RunnerStatus::new(runner),
-                ui::DateTime::new(&runner.joined_at),
-                ui::DateTime::new(&runner.last_heartbeat_at),
+                ui::RunnerName::new(&runner.name),
+                ui::RunnerStatus::new(&runner.status),
+                ui::DateTime::new(runner.joined_at),
+                ui::DateTime::new(runner.last_heartbeat_at),
             ]);
         }
 

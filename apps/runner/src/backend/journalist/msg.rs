@@ -10,12 +10,12 @@ pub type JournalistRx = mpsc::UnboundedReceiver<JournalistMsg>;
 
 #[derive(Debug)]
 pub enum JournalistMsg {
-    AddEvent {
+    Dispatch {
         event: CEvent,
     },
 }
 
-mod add_event;
+mod dispatch;
 
 impl JournalistMsg {
     pub async fn handle(self, actor: &mut JournalistActor) {
@@ -24,8 +24,8 @@ impl JournalistMsg {
         debug!("Handling message: {:?}", self);
 
         match self {
-            AddEvent { event } => {
-                add_event::add_event(actor, event)
+            Dispatch { event } => {
+                dispatch::dispatch(actor, event)
                     .await;
             }
         }

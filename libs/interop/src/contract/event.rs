@@ -1,8 +1,9 @@
 use std::convert::TryFrom;
+use std::result;
 
 use chrono::{DateTime, Utc};
 
-use crate::{Error, parse, Result};
+use crate::{convert, Error, Result};
 use crate::protocol::core::PEvent;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -29,68 +30,66 @@ pub enum CEventType {
 
     ExperimentStarted,
 
-    ExperimentSucceeded,
+    ExperimentCompleted,
 
-    ExperimentFailed {
-        cause: String,
+    JobStarted {
+        id: usize,
     },
 
-    OpcodeSucceeded {
-        id: u32,
-    },
-
-    OpcodeFailed {
-        id: u32,
-        cause: String,
+    JobCompleted {
+        id: usize,
+        result: result::Result<(), String>,
     },
 }
 
 impl TryFrom<PEvent> for CEvent {
     type Error = Error;
 
-    fn try_from(PEvent { created_at, op }: PEvent) -> Result<Self> {
+    fn try_from(PEvent { at, ty }: PEvent) -> Result<Self> {
         use crate::protocol::core::p_event::*;
 
-        let ty = match parse!(op?) {
-            Op::Ping(_) => {
+        let ty = match convert!(ty?) {
+            Ty::Ping(_) => {
                 CEventType::Ping
             }
 
-            Op::SystemMsg(PSystemMsg { msg }) => {
+            Ty::SystemMsg(PSystemMsg { msg }) => {
                 CEventType::SystemMsg { msg }
             }
 
-            Op::UserMsg(PUserMsg { msg }) => {
+            Ty::UserMsg(PUserMsg { msg }) => {
                 CEventType::UserMsg { msg }
             }
 
-            Op::ProcessOutput(PProcessOutput { line }) => {
+            Ty::ProcessOutput(PProcessOutput { line }) => {
                 CEventType::ProcessOutput { line }
             }
 
-            Op::ExperimentStarted(_) => {
+            Ty::ExperimentStarted(_) => {
                 CEventType::ExperimentStarted
             }
 
-            Op::ExperimentSucceeded(_) => {
-                CEventType::ExperimentSucceeded
+            Ty::ExperimentCompleted(_) => {
+                CEventType::ExperimentCompleted
             }
 
-            Op::ExperimentFailed(PExperimentFailed { cause }) => {
-                CEventType::ExperimentFailed { cause }
+            Ty::JobStarted(PJobStarted { id }) => {
+                CEventType::JobStarted { id: id as _ }
             }
 
-            Op::OpcodeSucceeded(POpcodeSucceeded { id }) => {
-                CEventType::OpcodeSucceeded { id }
-            }
+            Ty::JobCompleted(PJobCompleted { id, failure_cause }) => {
+                let result = if failure_cause.is_empty() {
+                    Ok(())
+                } else {
+                    Err(failure_cause)
+                };
 
-            Op::OpcodeFailed(POpcodeFailed { id, cause }) => {
-                CEventType::OpcodeFailed { id, cause }
+                CEventType::JobCompleted { id: id as _, result }
             }
         };
 
         Ok(Self {
-            at: parse!(created_at as DateTime),
+            at: convert!(at as DateTime),
             ty,
         })
     }
@@ -100,47 +99,46 @@ impl Into<PEvent> for CEvent {
     fn into(self) -> PEvent {
         use crate::protocol::core::p_event::*;
 
-        let op = match self.ty {
+        let ty = match self.ty {
             CEventType::Ping => {
-                Op::Ping(PPing {})
+                Ty::Ping(PPing {})
             }
 
             CEventType::SystemMsg { msg } => {
-                Op::SystemMsg(PSystemMsg { msg })
+                Ty::SystemMsg(PSystemMsg { msg })
             }
 
             CEventType::UserMsg { msg } => {
-                Op::UserMsg(PUserMsg { msg })
+                Ty::UserMsg(PUserMsg { msg })
             }
 
             CEventType::ProcessOutput { line } => {
-                Op::ProcessOutput(PProcessOutput { line })
+                Ty::ProcessOutput(PProcessOutput { line })
             }
 
             CEventType::ExperimentStarted => {
-                Op::ExperimentStarted(PExperimentStarted {})
+                Ty::ExperimentStarted(PExperimentStarted {})
             }
 
-            CEventType::ExperimentSucceeded => {
-                Op::ExperimentSucceeded(PExperimentSucceeded {})
+            CEventType::ExperimentCompleted => {
+                Ty::ExperimentCompleted(PExperimentCompleted {})
             }
 
-            CEventType::ExperimentFailed { cause } => {
-                Op::ExperimentFailed(PExperimentFailed { cause })
+            CEventType::JobStarted { id } => {
+                Ty::JobStarted(PJobStarted { id: id as _ })
             }
 
-            CEventType::OpcodeSucceeded { id } => {
-                Op::OpcodeSucceeded(POpcodeSucceeded { id })
-            }
-
-            CEventType::OpcodeFailed { id, cause } => {
-                Op::OpcodeFailed(POpcodeFailed { id, cause })
+            CEventType::JobCompleted { id, result } => {
+                Ty::JobCompleted(PJobCompleted {
+                    id: id as _,
+                    failure_cause: result.err().unwrap_or_default(),
+                })
             }
         };
 
         PEvent {
-            created_at: self.at.to_rfc3339(),
-            op: Some(op),
+            at: self.at.to_rfc3339(),
+            ty: Some(ty),
         }
     }
 }

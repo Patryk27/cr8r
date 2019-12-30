@@ -1,4 +1,5 @@
-use lib_interop::protocol::core::PExperiment;
+use lib_interop::contract::CExperiment;
+use lib_interop::convert;
 use lib_interop::protocol::for_client::{PFindExperimentsRequest, PFindReportsRequest};
 
 use crate::{Result, spinner, System, ui};
@@ -6,10 +7,10 @@ use crate::{Result, spinner, System, ui};
 pub async fn show(
     mut system: System,
     id: &str,
-    show_opcodes: bool,
+    show_jobs: bool,
     show_reports: bool,
 ) -> Result<()> {
-    let experiments = spinner! {
+    let mut experiments = spinner! {
         system
             .client().await?
             .find_experiments(PFindExperimentsRequest { id: id.into() }).await?
@@ -17,14 +18,16 @@ pub async fn show(
             .experiments
     };
 
-    if let Some(experiment) = experiments.first() {
-        if show_opcodes || show_reports {
+    if let Some(experiment) = experiments.drain(..).next() {
+        let experiment = convert!(experiment as _?);
+
+        if show_jobs || show_reports {
             print!("{}", ui::Header::new("Experiment"));
         }
 
-        print_experiment(experiment);
+        print_experiment(&experiment);
 
-        if show_opcodes {
+        if show_jobs {
 //            unimplemented!() @todo
         }
 
@@ -41,14 +44,9 @@ pub async fn show(
     Ok(())
 }
 
-fn print_experiment(experiment: &PExperiment) {
+fn print_experiment(experiment: &CExperiment) {
     print!("{}", ui::ExperimentDetails::new(experiment));
 }
-
-//fn print_opcodes(experiment: &PExperiment) {
-//    println!("{}", ui::Header::new("Steps"));
-//    println!("{}", ui::ExperimentStepsTable::new(&experiment.steps));
-//}
 
 async fn print_reports(system: &mut System, id: &str) -> Result<()> {
     print!("{}", ui::Header::new("Reports"));
@@ -60,6 +58,8 @@ async fn print_reports(system: &mut System, id: &str) -> Result<()> {
             .into_inner()
             .reports
     };
+
+    let reports = convert!(reports as [_?]);
 
     print!("{}", ui::ReportsTable::new(&reports));
 

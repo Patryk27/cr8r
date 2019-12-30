@@ -5,25 +5,25 @@ use log::*;
 use tokio::stream::StreamExt;
 use tokio::sync::mpsc;
 
-use lib_interop::contract::{CExperimentId, CProgram, CReport};
+use lib_interop::contract::{CExperimentId, CJob, CReport};
 
 use crate::backend::experiment::{ExperimentRx, ExperimentStatus};
 
 pub struct ExperimentActor {
     rx: ExperimentRx,
     pub(super) id: CExperimentId,
-    pub(super) program: CProgram,
+    pub(super) jobs: Vec<CJob>,
     pub(super) created_at: DateTime<Utc>,
     pub(super) watchers: Vec<mpsc::UnboundedSender<Arc<CReport>>>,
     pub(super) status: ExperimentStatus,
 }
 
 impl ExperimentActor {
-    pub fn new(rx: ExperimentRx, id: CExperimentId, program: CProgram) -> Self {
+    pub fn new(rx: ExperimentRx, id: CExperimentId, jobs: Vec<CJob>) -> Self {
         Self {
             rx,
             id,
-            program,
+            jobs,
             created_at: Utc::now(),
             watchers: Vec::new(),
             status: ExperimentStatus::default(),

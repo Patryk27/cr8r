@@ -1,14 +1,14 @@
 use std::fmt;
 
-use lib_interop::protocol::core::PExperiment;
+use lib_interop::contract::CExperimentId;
 
 pub struct ExperimentId<'a> {
-    experiment: &'a PExperiment,
+    id: &'a CExperimentId,
 }
 
 impl<'a> ExperimentId<'a> {
-    pub fn new(experiment: &'a PExperiment) -> Self {
-        Self { experiment }
+    pub fn new(id: &'a CExperimentId) -> Self {
+        Self { id }
     }
 }
 
@@ -16,6 +16,6 @@ impl fmt::Display for ExperimentId<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use colored::Colorize;
 
-        write!(f, "{}", self.experiment.id.bright_cyan())
+        write!(f, "{}", self.id.as_str().bright_cyan())
     }
 }

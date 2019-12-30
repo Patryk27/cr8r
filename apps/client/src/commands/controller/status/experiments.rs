@@ -1,3 +1,4 @@
+use lib_interop::convert;
 use lib_interop::protocol::for_client::PFindExperimentsRequest;
 
 use crate::{Result, spinner, System, ui};
@@ -12,6 +13,8 @@ pub async fn print(system: &mut System) -> Result<()> {
             .into_inner()
             .experiments
     };
+
+    let experiments = convert!(experiments as [_?]);
 
     print!("{}", ui::ExperimentsTable::new(&experiments));
 

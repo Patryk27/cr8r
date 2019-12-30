@@ -1,17 +1,17 @@
-use std::convert::{TryFrom, TryInto};
+use std::convert::TryFrom;
 
 use chrono::{DateTime, Utc};
 
-use crate::{Error, parse, Result};
+use crate::{convert, Error, Result};
 use crate::protocol::core::PExperiment;
 
 pub use self::{
-    def::*,
+    definition::*,
     id::*,
     status::*,
 };
 
-mod def;
+mod definition;
 mod id;
 mod status;
 
@@ -27,19 +27,21 @@ impl TryFrom<PExperiment> for CExperiment {
 
     fn try_from(PExperiment { id, created_at, status }: PExperiment) -> Result<Self> {
         Ok(Self {
-            id: parse!(id as _),
-            created_at: parse!(created_at as DateTime),
-            status: parse!(status? as _?),
+            id: convert!(id as _),
+            created_at: convert!(created_at as DateTime),
+            status: convert!(status? as _?),
         })
     }
 }
 
 impl Into<PExperiment> for CExperiment {
     fn into(self) -> PExperiment {
+        let Self { id, created_at, status } = self;
+
         PExperiment {
-            id: self.id.into(),
-            created_at: self.created_at.to_rfc3339(),
-            status: Some(self.status.into()),
+            id: convert!(id as _),
+            created_at: created_at.to_rfc3339(),
+            status: Some(convert!(status as _)),
         }
     }
 }

@@ -1,13 +1,13 @@
 use std::fmt;
 
-use lib_interop::protocol::core::PExperiment;
+use lib_interop::contract::CExperiment;
 
 pub struct ExperimentsTable<'a> {
-    experiments: &'a [PExperiment],
+    experiments: &'a [CExperiment],
 }
 
 impl<'a> ExperimentsTable<'a> {
-    pub fn new(experiments: &'a [PExperiment]) -> Self {
+    pub fn new(experiments: &'a [CExperiment]) -> Self {
         Self { experiments }
     }
 }
@@ -27,9 +27,9 @@ impl fmt::Display for ExperimentsTable<'_> {
 
         for experiment in self.experiments {
             table.add_row(row![
-                ui::ExperimentId::new(experiment),
-                ui::ExperimentStatus::new(experiment),
-                ui::DateTime::new(&experiment.created_at),
+                ui::ExperimentId::new(&experiment.id),
+                ui::ExperimentStatus::new(&experiment.status),
+                ui::DateTime::new(experiment.created_at),
             ]);
         }
 

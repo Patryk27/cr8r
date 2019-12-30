@@ -1,7 +1,9 @@
+use std::convert::TryFrom;
+
 use chrono::{DateTime, Utc};
 
-use crate::protocol::core::p_report::Kind;
-use crate::protocol::core::PReport;
+use crate::{convert, Error, Result};
+use crate::protocol::core::{PReport, PReportType};
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum CReportType {
@@ -12,9 +14,9 @@ pub enum CReportType {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CReport {
-    at: DateTime<Utc>,
-    ty: CReportType,
-    msg: String,
+    pub at: DateTime<Utc>,
+    pub ty: CReportType,
+    pub msg: String,
 }
 
 impl CReport {
@@ -43,18 +45,36 @@ impl CReport {
     }
 }
 
+impl TryFrom<PReport> for CReport {
+    type Error = Error;
+
+    fn try_from(PReport { at, ty, msg }: PReport) -> Result<Self> {
+        let ty = match PReportType::from_i32(ty).unwrap_or(PReportType::UserMsg) {
+            PReportType::SystemMsg => CReportType::SystemMsg,
+            PReportType::UserMsg => CReportType::UserMsg,
+            PReportType::ProcessOutput => CReportType::ProcessOutput,
+        };
+
+        Ok(Self {
+            at: convert!(at as DateTime),
+            ty,
+            msg,
+        })
+    }
+}
+
 impl Into<PReport> for &'_ CReport {
     fn into(self) -> PReport {
-        let kind = match self.ty {
-            CReportType::SystemMsg => Kind::SystemMsg,
-            CReportType::UserMsg => Kind::UserMsg,
-            CReportType::ProcessOutput => Kind::ProcessOutput,
+        let ty = match self.ty {
+            CReportType::SystemMsg => PReportType::SystemMsg,
+            CReportType::UserMsg => PReportType::UserMsg,
+            CReportType::ProcessOutput => PReportType::ProcessOutput,
         } as _;
 
         PReport {
-            created_at: self.at.to_rfc3339(),
-            kind,
-            message: self.msg.to_owned(),
+            at: self.at.to_rfc3339(),
+            ty,
+            msg: self.msg.to_owned(),
         }
     }
 }

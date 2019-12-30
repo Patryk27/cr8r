@@ -1,9 +1,9 @@
 pub use self::{
     inline::*,
-    kind::*,
     message::*,
+    r#type::*,
 };
 
 mod inline;
-mod kind;
 mod message;
+mod r#type;

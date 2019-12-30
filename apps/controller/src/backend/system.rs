@@ -1,7 +1,7 @@
 use tokio::sync::mpsc;
 
 use lib_actor::ask;
-use lib_interop::contract::{CAssignment, CExperimentDef, CExperimentId, CRunnerId, CRunnerName};
+use lib_interop::contract::{CAssignment, CExperimentDefinition, CExperimentId, CRunnerId, CRunnerName};
 
 use crate::backend::{Compiler, Experiment, Result, Runner};
 
@@ -46,7 +46,7 @@ impl System {
 
 /// Experiment-oriented impls
 impl System {
-    pub async fn create_experiment(&self, def: CExperimentDef) -> Result<CExperimentId> {
+    pub async fn create_experiment(&self, def: CExperimentDefinition) -> Result<CExperimentId> {
         ask!(self.tx, SystemMsg::CreateExperiment { def })
     }
 

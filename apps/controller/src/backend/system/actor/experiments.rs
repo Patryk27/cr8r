@@ -1,6 +1,6 @@
 use std::collections::{HashMap, VecDeque};
 
-use lib_interop::contract::{CExperimentId, CProgram};
+use lib_interop::contract::{CExperimentId, CJob};
 
 use crate::backend::{Experiment, Result};
 
@@ -17,12 +17,12 @@ impl Experiments {
         }
     }
 
-    pub fn create(&mut self, program: CProgram) -> CExperimentId {
-        let id = CExperimentId::new();
+    pub fn create(&mut self, jobs: Vec<CJob>) -> CExperimentId {
+        let id = CExperimentId::default();
 
         let experiment = Experiment::new(
             id.clone(),
-            program,
+            jobs,
         );
 
         self.experiments.insert(id.clone(), experiment);

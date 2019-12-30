@@ -16,7 +16,7 @@ pub enum ExperimentStatus {
         runner: CRunnerId,
         events: Vec<Arc<CEvent>>,
         reports: Vec<Arc<CReport>>,
-        completed_ops: u32,
+        completed_jobs: u32,
     },
 
     Completed {

@@ -1,8 +1,9 @@
 use std::sync::Arc;
 
 use chrono::Utc;
+use log::*;
 
-use lib_interop::contract::{CEvent, CEventType, CReport, CRunnerId};
+use lib_interop::contract::{CEvent, CEventType, CJob, CReport, CRunnerId};
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
 use crate::backend::Result;
@@ -17,7 +18,7 @@ pub fn add_event(actor: &mut ExperimentActor, runner: CRunnerId, event: CEvent) 
             runner: experiment_runner,
             events,
             reports,
-            completed_ops,
+            completed_jobs,
             ..
         } => {
             if &runner != experiment_runner {
@@ -28,7 +29,7 @@ pub fn add_event(actor: &mut ExperimentActor, runner: CRunnerId, event: CEvent) 
 
             events.push(Arc::clone(&event));
 
-            if let Some(report) = event_as_report(&event).map(Arc::new) {
+            if let Some(report) = event_as_report(&actor.jobs, &event).map(Arc::new) {
                 for watcher in &actor.watchers {
                     let _ = watcher.send(Arc::clone(&report));
                 }
@@ -37,28 +38,31 @@ pub fn add_event(actor: &mut ExperimentActor, runner: CRunnerId, event: CEvent) 
             }
 
             match &event.ty {
-                CEventType::ExperimentSucceeded => {
+                CEventType::ExperimentCompleted => {
+                    let result = {
+                        let mut result = Ok(());
+
+                        for event in events {
+                            if let CEventType::JobCompleted { id, result: Err(err) } = &event.ty {
+                                result = Err(format!("job #{} failed: {}", id, err));
+                                break;
+                            }
+                        }
+
+                        result
+                    };
+
                     actor.status = ExperimentStatus::Completed {
                         since: Utc::now(),
                         reports: reports.to_vec(),
-                        result: Ok(()),
+                        result,
                     };
 
                     kill_watchers(actor);
                 }
 
-                CEventType::ExperimentFailed { cause } => {
-                    actor.status = ExperimentStatus::Completed {
-                        since: Utc::now(),
-                        reports: reports.to_vec(),
-                        result: Err(cause.to_string()),
-                    };
-
-                    kill_watchers(actor);
-                }
-
-                CEventType::OpcodeSucceeded { .. } | CEventType::OpcodeFailed { .. } => {
-                    *completed_ops += 1;
+                CEventType::JobCompleted { .. } => {
+                    *completed_jobs += 1;
                 }
 
                 _ => (),
@@ -77,7 +81,7 @@ pub fn add_event(actor: &mut ExperimentActor, runner: CRunnerId, event: CEvent) 
     }
 }
 
-fn event_as_report(event: &CEvent) -> Option<CReport> {
+fn event_as_report(jobs: &[CJob], event: &CEvent) -> Option<CReport> {
     Some(match &event.ty {
         CEventType::SystemMsg { msg } => {
             CReport::system_msg(event.at, msg)
@@ -95,12 +99,32 @@ fn event_as_report(event: &CEvent) -> Option<CReport> {
             CReport::system_msg(event.at, "Experiment started")
         }
 
-        CEventType::ExperimentSucceeded => {
-            CReport::system_msg(event.at, "Experiment completed successfully")
+        CEventType::ExperimentCompleted => {
+            CReport::system_msg(event.at, "Experiment completed")
         }
 
-        CEventType::ExperimentFailed { cause } => {
-            CReport::system_msg(event.at, format!("Experiment completed with failure: {}", cause))
+        CEventType::JobStarted { id } => {
+            if let Some(job) = jobs.get(*id) {
+                CReport::system_msg(event.at, format!("Job `{}` started", job.name))
+            } else {
+                warn!("Runner reported that it has started working on job #{}, which does not exist; this is probably a bug", id);
+                return None;
+            }
+        }
+
+        CEventType::JobCompleted { id, result } => {
+            let result = if let Err(err) = result {
+                format!("failure: {}", err)
+            } else {
+                "success".to_string()
+            };
+
+            if let Some(job) = jobs.get(*id) {
+                CReport::system_msg(event.at, format!("Job `{}` completed; result: {}", job.name, result))
+            } else {
+                warn!("Runner reported that it has finished working on job #{}, which does not exist; this is probably a bug", id);
+                return None;
+            }
         }
 
         _ => {

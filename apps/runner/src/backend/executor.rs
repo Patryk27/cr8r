@@ -20,7 +20,7 @@ mod msg;
 mod status;
 
 pub struct Executor {
-    tx: ExperimentExecutorTx,
+    tx: ExecutorTx,
 }
 
 impl Executor {
@@ -28,7 +28,7 @@ impl Executor {
         let (tx, rx) = mpsc::unbounded_channel();
         let journalist = Journalist::new(client);
 
-        tokio::spawn(ExperimentExecutorActor::new(
+        tokio::spawn(ExecutorActor::new(
             rx,
             sandbox,
             assignment,
@@ -39,6 +39,6 @@ impl Executor {
     }
 
     pub async fn get_status(&self) -> ExecutorStatus {
-        ask!(self.tx, ExperimentExecutorMsg::GetStatus)
+        ask!(self.tx, ExecutorMsg::GetStatus)
     }
 }

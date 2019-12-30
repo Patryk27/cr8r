@@ -3,36 +3,59 @@ syntax = "proto3";
 package cr8r.core;
 
 message PExperiment {
-    message PStatus {
-        message PIdle {
-            string since = 1;
-        }
-
-        message PRunning {
-            string since = 1;
-            string last_heartbeat_at = 2;
-            uint32 completed_ops = 3;
-        }
-
-        message PCompleted {
-            string since = 1;
-            bool success = 2;
-            string cause = 3;
-        }
-
-        message PZombie {
-            string since = 1;
-        }
-
-        oneof op {
-            PIdle idle = 1;
-            PRunning running = 2;
-            PCompleted completed = 3;
-            PZombie zombie = 4;
-        }
-    }
-
     string id = 1;
     string created_at = 2;
-    PStatus status = 3;
+    PExperimentStatus status = 3;
+}
+
+message PExperimentStatus {
+    message PIdle {
+        string since = 1;
+    }
+
+    message PRunning {
+        string since = 1;
+        string last_heartbeat_at = 2;
+        uint32 completed_jobs = 3;
+        uint32 total_jobs = 4;
+    }
+
+    message PCompleted {
+        string since = 1;
+        bool success = 2;
+        string cause = 3;
+    }
+
+    message PZombie {
+        string since = 1;
+    }
+
+    oneof ty {
+        PIdle idle = 1;
+        PRunning running = 2;
+        PCompleted completed = 3;
+        PZombie zombie = 4;
+    }
+}
+
+message PExperimentDefinition {
+    message POverrideToolchain {
+        string toolchain = 1;
+    }
+
+    message POverrideCrate {
+        string name = 1;
+        string version = 2;
+    }
+
+    message PPatchCrate {
+        string name = 1;
+        string attachment_id = 2;
+    }
+
+    oneof ty {
+        POverrideToolchain override_toolchain = 1;
+        POverrideCrate override_crate = 2;
+        PPatchCrate patch_crate = 3;
+    }
 }

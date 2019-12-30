@@ -22,6 +22,11 @@ pub enum Error {
     CouldntRequestController {
         source: tonic::Status,
     },
+
+    #[snafu(display("Couldn't parse response: {}", source))]
+    InteropError {
+        source: lib_interop::Error,
+    },
 }
 
 impl From<tonic::transport::Error> for Error {
@@ -33,5 +38,11 @@ impl From<tonic::transport::Error> for Error {
 impl From<tonic::Status> for Error {
     fn from(source: tonic::Status) -> Self {
         Error::CouldntRequestController { source }
+    }
+}
+
+impl From<lib_interop::Error> for Error {
+    fn from(source: lib_interop::Error) -> Self {
+        Error::InteropError { source }
     }
 }

@@ -5,7 +5,7 @@ use lib_interop::protocol::for_client::{PCreateExperimentReply, PCreateExperimen
 use crate::backend::{Result, System};
 
 pub async fn create_experiment(system: &System, request: PCreateExperimentRequest) -> Result<PCreateExperimentReply> {
-    let def = request.experiment_def
+    let def = request.experiment_definition
         .ok_or("No experiment definition has been provided")?
         .try_into()?;
 

@@ -23,26 +23,22 @@ message PEvent {
         //
     }
 
-    message PExperimentSucceeded {
+    message PExperimentCompleted {
         //
     }
 
-    message PExperimentFailed {
-        string cause = 1;
-    }
-
-    message POpcodeSucceeded {
+    message PJobStarted {
         uint32 id = 1;
     }
 
-    message POpcodeFailed {
+    message PJobCompleted {
         uint32 id = 1;
-        string cause = 2;
+        string failure_cause = 2;
     }
 
-    string created_at = 1;
+    string at = 1;
 
-    oneof op {
+    oneof ty {
         PPing ping = 100;
 
         PSystemMsg system_msg = 200;
@@ -50,10 +46,9 @@ message PEvent {
         PProcessOutput process_output = 202;
 
         PExperimentStarted experiment_started = 300;
-        PExperimentSucceeded experiment_succeeded = 301;
-        PExperimentFailed experiment_failed = 302;
+        PExperimentCompleted experiment_completed = 301;
 
-        POpcodeSucceeded opcode_succeeded = 400;
-        POpcodeFailed opcode_failed = 401;
+        PJobStarted job_started = 400;
+        PJobCompleted job_completed = 401;
     }
 }

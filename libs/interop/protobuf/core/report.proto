@@ -3,13 +3,13 @@ syntax = "proto3";
 package cr8r.core;
 
 message PReport {
-    enum Kind {
-        SYSTEM_MSG = 0;
-        USER_MSG = 1;
-        PROCESS_OUTPUT = 2;
-    }
+    string at = 1;
+    PReportType ty = 2;
+    string msg = 3;
+}
 
-    string created_at = 1;
-    Kind kind = 2;
-    string message = 3;
+enum PReportType {
+    SYSTEM_MSG = 0;
+    USER_MSG = 1;
+    PROCESS_OUTPUT = 2;
 }

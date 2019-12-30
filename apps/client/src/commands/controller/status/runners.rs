@@ -1,3 +1,4 @@
+use lib_interop::convert;
 use lib_interop::protocol::for_client::PFindRunnersRequest;
 
 use crate::{Result, spinner, System, ui};
@@ -12,6 +13,8 @@ pub async fn print(system: &mut System) -> Result<()> {
             .into_inner()
             .runners
     };
+
+    let runners = convert!(runners as [_?]);
 
     print!("{}", ui::RunnersTable::new(&runners));
 

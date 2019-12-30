@@ -6,7 +6,7 @@ macro_rules! create_identifier_model {
         }
 
         impl $name {
-            pub fn new() -> Self {
+            pub fn default() -> Self {
                 uuid::Uuid::new_v4()
                     .to_hyphenated()
                     .to_string()
@@ -54,17 +54,21 @@ macro_rules! create_identifier_model {
 }
 
 #[macro_export]
-macro_rules! parse {
+macro_rules! convert {
     ($field:ident? $($tt:tt)*) => {{
-        use crate::error::Error;
+        use $crate::Error;
 
-        let $field = $field.ok_or_else(|| Error::Missing { field: stringify!($field) })?;
+        let field = $field.ok_or_else(|| {
+            Error::Missing {
+                field: stringify!($field),
+            }
+        })?;
 
-        parse!($field $($tt)*)
+        convert!(field $($tt)*)
     }};
 
-    // Having `parse!(x)` as a no-op is useful, because thanks to this we can re-use rule above to have zero-cost
-    // `parse!(x?)`
+    // Having `convert!(x)` as a no-op is useful, because it nicely adapts with other conversion routines, e.g.
+    // `convert!(x?)`
     ($field:ident) => {
         $field
     };
@@ -73,9 +77,11 @@ macro_rules! parse {
         $field.into()
     };
 
-    ($field:ident as _?) => {
+    ($field:ident as _?) => {{
+        use std::convert::TryInto;
+
         $field.try_into()?
-    };
+    }};
 
     ($field:ident as [_]) => {
         $field
@@ -85,18 +91,19 @@ macro_rules! parse {
     };
 
     ($field:ident as [_?]) => {{
+        use $crate::Result;
         use std::convert::TryInto;
 
-        let items = $field
+        let field = $field
             .into_iter()
             .map(TryInto::try_into)
             .collect(): Result<Vec<_>>;
 
-        items?
+        field?
     }};
 
     ($field:ident as DateTime) => {{
-        use crate::error;
+        use $crate::error;
         use chrono::{DateTime, Utc};
         use snafu::ResultExt;
 

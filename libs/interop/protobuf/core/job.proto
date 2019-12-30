@@ -2,13 +2,14 @@ syntax = "proto3";
 
 package cr8r.core;
 
-message PProgram {
-    string system = 1;
-    string toolchain = 2;
-    repeated PProgramOpcode opcodes = 3;
+message PJob {
+    string name = 1;
+    string system = 2;
+    string toolchain = 3;
+    repeated PJobOpcode opcodes = 4;
 }
 
-message PProgramOpcode {
+message PJobOpcode {
     message PExec {
         string cmd = 1;
     }
@@ -21,7 +22,7 @@ message PProgramOpcode {
         string msg = 1;
     }
 
-    oneof op {
+    oneof ty {
         PExec exec = 1;
         PLogSystemMsg log_system_msg = 2;
         PLogUserMsg log_user_msg = 3;
