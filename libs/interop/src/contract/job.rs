@@ -10,7 +10,6 @@ mod opcode;
 #[derive(Clone, Debug)]
 pub struct CJob {
     pub name: String,
-    pub system: String,
     pub toolchain: String,
     pub opcodes: Vec<CJobOpcode>,
 }
@@ -18,10 +17,9 @@ pub struct CJob {
 impl TryFrom<PJob> for CJob {
     type Error = Error;
 
-    fn try_from(PJob { name, system, toolchain, opcodes }: PJob) -> Result<Self> {
+    fn try_from(PJob { name, toolchain, opcodes }: PJob) -> Result<Self> {
         Ok(Self {
             name,
-            system,
             toolchain,
             opcodes: convert!(opcodes as [_?]),
         })
@@ -30,11 +28,10 @@ impl TryFrom<PJob> for CJob {
 
 impl Into<PJob> for CJob {
     fn into(self) -> PJob {
-        let Self { name, system, toolchain, opcodes } = self;
+        let Self { name, toolchain, opcodes } = self;
 
         PJob {
             name,
-            system,
             toolchain,
             opcodes: convert!(opcodes as [_]),
         }

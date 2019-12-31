@@ -2,6 +2,7 @@ use crate::ProviderName;
 
 pub type ProjectName = String;
 
+#[derive(Debug)]
 pub struct Project {
     repository: String,
     requirements: Vec<ProviderName>,

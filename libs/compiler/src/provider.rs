@@ -2,6 +2,7 @@ use crate::Command;
 
 pub type ProviderName = String;
 
+#[derive(Debug)]
 pub struct Provider {
     setup: Vec<Command>,
 }

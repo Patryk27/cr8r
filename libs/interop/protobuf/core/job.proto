@@ -4,9 +4,8 @@ package cr8r.core;
 
 message PJob {
     string name = 1;
-    string system = 2;
-    string toolchain = 3;
-    repeated PJobOpcode opcodes = 4;
+    string toolchain = 2;
+    repeated PJobOpcode opcodes = 3;
 }
 
 message PJobOpcode {

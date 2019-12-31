@@ -1,7 +1,8 @@
+use lib_compiler::CompilerBuilder;
 use lib_interop::contract::{CExperimentDefinition, CJob};
 
 use crate::backend::Result;
-use crate::core::Ecosystem;
+use crate::core::{Ecosystem, Environment, Projects, Providers};
 
 pub struct Compiler {
     compiler: lib_compiler::Compiler,
@@ -11,30 +12,9 @@ impl Compiler {
     pub fn new(ecosystem: Ecosystem) -> Result<Self> {
         let mut compiler = lib_compiler::Compiler::builder();
 
-        compiler.defaults(lib_compiler::Defaults {
-            system: ecosystem.environment.default_system,
-            toolchain: ecosystem.environment.default_toolchain,
-        });
-
-        for (provider_name, provider) in ecosystem.flora {
-            let setup = provider.setup
-                .into_iter()
-                .map(lib_compiler::Command::new)
-                .collect();
-
-            let provider = lib_compiler::Provider::new(setup);
-
-            compiler.add_provider(provider_name, provider)?;
-        }
-
-        for (project_name, project) in ecosystem.fauna {
-            let project = lib_compiler::Project::new(
-                project.repository,
-                project.requirements,
-            );
-
-            compiler.add_project(project_name, project)?;
-        }
+        setup_environment(&mut compiler, ecosystem.environment);
+        setup_providers(&mut compiler, ecosystem.providers)?;
+        setup_projects(&mut compiler, ecosystem.projects)?;
 
         Ok(Self {
             compiler: compiler.build()?,
@@ -44,4 +24,38 @@ impl Compiler {
     pub fn compile(&self, def: &CExperimentDefinition) -> Vec<CJob> {
         self.compiler.compile(def)
     }
+}
+
+fn setup_environment(compiler: &mut CompilerBuilder, environment: Environment) {
+    compiler.environment(lib_compiler::Environment {
+        default_toolchain: environment.default_toolchain,
+    });
+}
+
+fn setup_providers(compiler: &mut CompilerBuilder, providers: Providers) -> Result<()> {
+    for (provider_name, provider) in providers {
+        let setup = provider.setup
+            .into_iter()
+            .map(lib_compiler::Command::new)
+            .collect();
+
+        let provider = lib_compiler::Provider::new(setup);
+
+        compiler.add_provider(provider_name, provider)?;
+    }
+
+    Ok(())
+}
+
+fn setup_projects(compiler: &mut CompilerBuilder, projects: Projects) -> Result<()> {
+    for (project_name, project) in projects {
+        let project = lib_compiler::Project::new(
+            project.repository,
+            project.requirements,
+        );
+
+        compiler.add_project(project_name, project)?;
+    }
+
+    Ok(())
 }

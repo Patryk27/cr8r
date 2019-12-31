@@ -4,7 +4,7 @@ pub use self::{
     command::*,
     compiler::*,
     compiler_builder::*,
-    defaults::*,
+    environment::*,
     error::{Error, Result},
     project::*,
     provider::*,
@@ -13,7 +13,7 @@ pub use self::{
 mod command;
 mod compiler;
 mod compiler_builder;
-mod defaults;
+mod environment;
 mod error;
 mod project;
 mod provider;

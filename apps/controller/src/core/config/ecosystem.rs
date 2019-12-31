@@ -1,22 +1,28 @@
+use std::collections::HashMap;
+
 use serde::Deserialize;
 
 pub use self::{
     environment::*,
-    fauna::*,
-    flora::*,
+    project::*,
+    provider::*,
 };
 
 mod environment;
-mod flora;
-mod fauna;
+mod project;
+mod provider;
+
+pub type Providers = HashMap<String, Provider>;
+pub type Projects = HashMap<String, Project>;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Ecosystem {
+    #[serde(default)]
     pub environment: Environment,
 
     #[serde(default)]
-    pub flora: Flora,
+    pub providers: Providers,
 
-    pub fauna: Fauna,
+    pub projects: Projects,
 }

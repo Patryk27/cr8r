@@ -2,12 +2,13 @@ use std::collections::HashMap;
 
 use lib_interop::contract::{CExperimentDefinition, CJob};
 
-use crate::{CompilerBuilder, Defaults, Project, ProjectName, Provider, ProviderName};
+use crate::{CompilerBuilder, Environment, Project, ProjectName, Provider, ProviderName};
 
 mod compilers;
 
+#[derive(Debug)]
 pub struct Compiler {
-    crate defaults: Defaults,
+    crate defaults: Environment,
     crate providers: HashMap<ProviderName, Provider>,
     crate projects: HashMap<ProjectName, Project>,
 }

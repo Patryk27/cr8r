@@ -3,9 +3,6 @@ use lib_interop::contract::{CJob, CJobOpcode};
 use crate::Compiler;
 
 pub fn compile_override_toolchain(compiler: &Compiler, toolchain: &str) -> Vec<CJob> {
-    let system = compiler.defaults.system.clone();
-    let toolchain = toolchain.to_owned();
-
     let mut jobs = Vec::new();
 
     for (project_name, project) in &compiler.projects {
@@ -51,8 +48,7 @@ pub fn compile_override_toolchain(compiler: &Compiler, toolchain: &str) -> Vec<C
 
         jobs.push(CJob {
             name: project_name.to_string(),
-            system: system.clone(),
-            toolchain: toolchain.clone(),
+            toolchain: toolchain.to_owned(),
             opcodes,
         });
     }

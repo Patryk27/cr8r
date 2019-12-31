@@ -4,10 +4,6 @@ controller:
   runner-secret: 'top-secret'
 
 ecosystem:
-  environment:
-    default-system: 'ubuntu:18.04'
-    default-toolchain: 'stable'
-
-  fauna:
+  projects:
     cr8r-test:
       repository: 'https://gitlab.pwychowaniec.com/patryk/cr8r-test'
