@@ -2,6 +2,8 @@
 #![feature(try_blocks)]
 #![feature(type_ascription)]
 
+use std::path::PathBuf;
+
 use colored::Colorize;
 use log::*;
 use snafu::ResultExt;
@@ -21,7 +23,10 @@ async fn main() -> Result<()> {
     lib_log::init()
         .context(error::CouldntStart)?;
 
-    let config = config::load()?;
+    let config = config::load(
+        &PathBuf::from("runner.yaml")
+    )?;
+
     let sandbox_provider = SandboxProvider::new();
 
     let client = Client::connect(config.controller.address)

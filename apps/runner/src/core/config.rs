@@ -1,5 +1,5 @@
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use serde::Deserialize;
 use snafu::ResultExt;
@@ -24,13 +24,7 @@ pub struct Config {
     pub sandbox: SandboxConfig,
 }
 
-pub fn load() -> Result<Config> {
-    let file = PathBuf::from("runner.yaml");
-
-    from_file(&file)
-}
-
-pub fn from_file(file: &Path) -> Result<Config> {
+pub fn load(file: &Path) -> Result<Config> {
     (try {
         let file = fs::read_to_string(file)?;
         serde_yaml::from_str(&file)?
