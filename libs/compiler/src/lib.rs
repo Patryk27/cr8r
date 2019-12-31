@@ -1,3 +1,5 @@
+#![feature(crate_visibility_modifier)]
+
 pub use self::{
     command::*,
     compiler::*,

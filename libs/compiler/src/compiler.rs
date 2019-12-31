@@ -7,9 +7,9 @@ use crate::{CompilerBuilder, Defaults, Project, ProjectName, Provider, ProviderN
 mod compilers;
 
 pub struct Compiler {
-    pub(crate) defaults: Defaults,
-    pub(crate) providers: HashMap<ProviderName, Provider>,
-    pub(crate) projects: HashMap<ProjectName, Project>,
+    crate defaults: Defaults,
+    crate providers: HashMap<ProviderName, Provider>,
+    crate projects: HashMap<ProjectName, Project>,
 }
 
 impl Compiler {
@@ -25,8 +25,8 @@ impl Compiler {
                 compilers::compile_override_toolchain(self, toolchain)
             }
 
-            OverrideCrate { .. } => {
-                unimplemented!()
+            OverrideCrate { name, version } => {
+                compilers::compile_override_crate(self, name, version)
             }
 
             PatchCrate { .. } => {

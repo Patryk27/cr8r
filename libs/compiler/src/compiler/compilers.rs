@@ -1,7 +1,7 @@
 pub use self::{
-    try_patch_crate::*,
-    try_toolchain::*,
+    override_crate::*,
+    override_toolchain::*,
 };
 
-mod try_patch_crate;
-mod try_toolchain;
+mod override_crate;
+mod override_toolchain;

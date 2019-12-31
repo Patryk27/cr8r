@@ -16,18 +16,20 @@ impl CompilerBuilder {
 
     pub fn add_provider(&mut self, name: ProviderName, provider: Provider) -> Result<()> {
         // @todo check for duplicates
+
         self.providers.insert(name, provider);
         Ok(())
     }
 
     pub fn add_project(&mut self, name: ProjectName, project: Project) -> Result<()> {
         // @todo check for duplicates
+
         self.projects.insert(name, project);
         Ok(())
     }
 
     pub fn build(self) -> Result<Compiler> {
-        // @todo ensure project <-> provider dependencies make sense
+        // @todo ensure projects <-> providers dependencies make sense
 
         Ok(Compiler {
             defaults: self.defaults.unwrap(),
