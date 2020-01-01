@@ -268,6 +268,7 @@ dependencies = [
  "chrono 0.4.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "colored 1.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "hyper 0.13.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "lib_actor 0.1.0",
  "lib_compiler 0.1.0",
  "lib_interop 0.1.0",
@@ -278,6 +279,7 @@ dependencies = [
  "snafu 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tokio 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "tonic 0.1.0-beta.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tower 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

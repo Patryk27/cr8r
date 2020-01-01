@@ -5,9 +5,6 @@ use serde::Deserialize;
 pub struct Controller {
     pub listen: String,
 
-    #[serde(rename = "client-secret")]
-    pub client_secret: String,
-
-    #[serde(rename = "runner-secret")]
-    pub runner_secret: String,
+    #[serde(default)]
+    pub secret: Option<String>,
 }

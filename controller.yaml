@@ -1,7 +1,6 @@
 controller:
   listen: '127.0.0.1:1234'
-  client-secret: 'top-secret'
-  runner-secret: 'top-secret'
+  secret: 'top-secret'
 
 ecosystem:
   projects:

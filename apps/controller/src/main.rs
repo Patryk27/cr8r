@@ -26,7 +26,9 @@ async fn main() -> core::Result<()> {
     ).unwrap(); // @todo
 
     frontend::start(
-        config.controller.listen, system,
+        config.controller.listen,
+        config.controller.secret,
+        system,
     ).await?;
 
     Ok(())
