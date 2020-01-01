@@ -14,8 +14,10 @@ pub async fn watch_experiment(
     request: PWatchExperimentRequest,
 ) -> Result<impl Stream<Item=result::Result<PReport, Status>>> {
     let mut report_rx = system
-        .find_experiment(request.id.into()).await?
-        .watch().await?;
+        .find_experiment(request.id.into())
+        .await?
+        .watch()
+        .await?;
 
     let (mut tx, rx) = mpsc::channel(4);
 

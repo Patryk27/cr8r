@@ -12,8 +12,10 @@ pub async fn show(
 ) -> Result<()> {
     let mut experiments = spinner! {
         system
-            .client().await?
-            .find_experiments(PFindExperimentsRequest { id: id.into() }).await?
+            .client()
+            .await?
+            .find_experiments(PFindExperimentsRequest { id: id.into() })
+            .await?
             .into_inner()
             .experiments
     };
@@ -53,8 +55,10 @@ async fn print_reports(system: &mut System, id: &str) -> Result<()> {
 
     let reports = spinner! {
         system
-            .client().await?
-            .find_reports(PFindReportsRequest { experiment_id: id.into() }).await?
+            .client()
+            .await?
+            .find_reports(PFindReportsRequest { experiment_id: id.into() })
+            .await?
             .into_inner()
             .reports
     };

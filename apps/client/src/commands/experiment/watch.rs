@@ -10,8 +10,10 @@ pub async fn watch(mut system: System, id: String) -> Result<()> {
 
     let mut reply = spinner! {
         system
-            .client().await?
-            .watch_experiment(PWatchExperimentRequest { id }).await?
+            .client()
+            .await?
+            .watch_experiment(PWatchExperimentRequest { id })
+            .await?
             .into_inner()
     };
 

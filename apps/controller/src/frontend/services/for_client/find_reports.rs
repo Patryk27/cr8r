@@ -7,8 +7,10 @@ pub async fn find_reports(
     request: PFindReportsRequest,
 ) -> Result<PFindReportsReply> {
     let reports = system
-        .find_experiment(request.experiment_id.into()).await?
-        .get_reports().await
+        .find_experiment(request.experiment_id.into())
+        .await?
+        .get_reports()
+        .await
         .into_iter()
         .map(|report| (&*report).into())
         .collect();

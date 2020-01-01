@@ -43,8 +43,10 @@ async fn launch_experiment(
 ) -> Result<()> {
     let reply = spinner! {
         system
-            .client().await?
-            .create_experiment(PCreateExperimentRequest { experiment_definition: Some(definition.into()) }).await?
+            .client()
+            .await?
+            .create_experiment(PCreateExperimentRequest { experiment_definition: Some(definition.into()) })
+            .await?
             .into_inner()
     };
 

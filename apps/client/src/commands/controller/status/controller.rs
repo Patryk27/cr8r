@@ -16,8 +16,10 @@ pub async fn print(system: &mut System) -> Result<()> {
 
     let status = spinner! {
         system
-            .client().await?
-            .hello(PHelloRequest::default()).await?
+            .client()
+            .await?
+            .hello(PHelloRequest::default())
+            .await?
             .into_inner()
     };
 

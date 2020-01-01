@@ -8,8 +8,10 @@ pub async fn print(system: &mut System) -> Result<()> {
 
     let runners = spinner! {
         system
-            .client().await?
-            .find_runners(PFindRunnersRequest::default()).await?
+            .client()
+            .await?
+            .find_runners(PFindRunnersRequest::default())
+            .await?
             .into_inner()
             .runners
     };

@@ -8,8 +8,10 @@ pub async fn print(system: &mut System) -> Result<()> {
 
     let experiments = spinner! {
         system
-            .client().await?
-            .find_experiments(PFindExperimentsRequest::default()).await?
+            .client()
+            .await?
+            .find_experiments(PFindExperimentsRequest::default())
+            .await?
             .into_inner()
             .experiments
     };

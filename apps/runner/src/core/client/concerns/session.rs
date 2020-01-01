@@ -28,7 +28,9 @@ impl SessionClient {
         // Register us
         debug!("Registering");
 
-        let runner = client.register(runner_name).await?.id;
+        let runner = client.register(runner_name)
+            .await?
+            .id;
 
         debug!("... ok, we've been registered as: {}", runner);
 

@@ -7,9 +7,17 @@ mod controller;
 mod runners;
 
 pub async fn status(mut system: System) -> Result<()> {
-    print_section(controller::print(&mut system).await, true);
-    print_section(experiments::print(&mut system).await, true);
-    print_section(runners::print(&mut system).await, false);
+    print_section(
+        controller::print(&mut system).await, true,
+    );
+
+    print_section(
+        experiments::print(&mut system).await, true,
+    );
+
+    print_section(
+        runners::print(&mut system).await, false,
+    );
 
     Ok(())
 }

@@ -35,14 +35,14 @@ impl ExperimentActor {
         debug!("-> id: {}", self.id);
 
         while let Some(msg) = self.rx.next().await {
-            self.perform_triage();
+            self.triage();
             msg.handle(&mut self);
         }
 
         debug!("Actor orphaned, halting");
     }
 
-    fn perform_triage(&mut self) {
+    fn triage(&mut self) {
         if let ExperimentStatus::Running { last_heartbeat_at, .. } = self.status {
             if (Utc::now() - last_heartbeat_at).num_minutes() >= 5 {
                 self.status = ExperimentStatus::Zombie {

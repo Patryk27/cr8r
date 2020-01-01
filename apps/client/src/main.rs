@@ -31,13 +31,9 @@ async fn main() {
 
     let system = System::new(config);
 
-    match cmd.run(system).await {
-        Ok(_) => (),
+    if let Err(err) = cmd.run(system).await {
+        println!("{} {}", "Error:".red(), err);
 
-        Err(err) => {
-            println!("{} {}", "Error:".red(), err);
-
-            exit(2);
-        }
+        exit(1);
     }
 }

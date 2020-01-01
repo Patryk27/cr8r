@@ -23,7 +23,8 @@ impl SystemHeartbeaterActor {
                 error!("We'll try again in a moment");
             }
 
-            time::delay_for(Duration::from_secs(60)).await;
+            time::delay_for(Duration::from_secs(60))
+                .await;
         }
     }
 }
