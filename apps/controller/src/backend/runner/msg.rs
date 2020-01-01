@@ -1,3 +1,4 @@
+use derivative::Derivative;
 use log::*;
 use tokio::sync::{mpsc, oneshot};
 
@@ -9,9 +10,11 @@ use crate::backend::runner::RunnerActor;
 pub type RunnerTx = mpsc::UnboundedSender<RunnerMsg>;
 pub type RunnerRx = mpsc::UnboundedReceiver<RunnerMsg>;
 
-#[derive(Debug)]
+#[derive(Derivative)]
+#[derivative(Debug)]
 pub enum RunnerMsg {
     GetModel {
+        #[derivative(Debug = "ignore")]
         tx: oneshot::Sender<CRunner>,
     },
 

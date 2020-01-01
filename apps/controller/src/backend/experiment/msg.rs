@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use derivative::Derivative;
 use log::*;
 use tokio::sync::{mpsc, oneshot};
 
@@ -11,30 +12,36 @@ use crate::backend::Result;
 pub type ExperimentTx = mpsc::UnboundedSender<ExperimentMsg>;
 pub type ExperimentRx = mpsc::UnboundedReceiver<ExperimentMsg>;
 
-#[derive(Debug)]
+#[derive(Derivative)]
+#[derivative(Debug)]
 pub enum ExperimentMsg {
     Abort,
 
     AddEvent {
         runner_id: CRunnerId,
         event: CEvent,
+        #[derivative(Debug = "ignore")]
         tx: oneshot::Sender<Result<()>>,
     },
 
     GetModel {
+        #[derivative(Debug = "ignore")]
         tx: oneshot::Sender<CExperiment>,
     },
 
     GetReports {
+        #[derivative(Debug = "ignore")]
         tx: oneshot::Sender<Vec<Arc<CReport>>>,
     },
 
     Start {
         runner_id: CRunnerId,
+        #[derivative(Debug = "ignore")]
         tx: oneshot::Sender<Result<CAssignment>>,
     },
 
     Watch {
+        #[derivative(Debug = "ignore")]
         tx: oneshot::Sender<Result<mpsc::UnboundedReceiver<Arc<CReport>>>>,
     },
 }

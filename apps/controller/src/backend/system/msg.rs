@@ -1,3 +1,4 @@
+use derivative::Derivative;
 use log::*;
 use tokio::sync::{mpsc, oneshot};
 
@@ -9,14 +10,17 @@ use crate::backend::system::SystemActor;
 pub type SystemTx = mpsc::UnboundedSender<SystemMsg>;
 pub type SystemRx = mpsc::UnboundedReceiver<SystemMsg>;
 
-#[derive(Debug)]
+#[derive(Derivative)]
+#[derivative(Debug)]
 pub enum SystemMsg {
     CreateRunner {
         name: CRunnerName,
+        #[derivative(Debug = "ignore")]
         tx: oneshot::Sender<Result<CRunnerId>>,
     },
 
     FindRunners {
+        #[derivative(Debug = "ignore")]
         tx: oneshot::Sender<Vec<Runner>>,
     },
 
@@ -24,15 +28,18 @@ pub enum SystemMsg {
 
     CreateExperiment {
         def: CExperimentDefinition,
+        #[derivative(Debug = "ignore")]
         tx: oneshot::Sender<Result<CExperimentId>>,
     },
 
     FindExperiment {
         id: CExperimentId,
+        #[derivative(Debug = "ignore")]
         tx: oneshot::Sender<Result<Experiment>>,
     },
 
     FindExperiments {
+        #[derivative(Debug = "ignore")]
         tx: oneshot::Sender<Vec<Experiment>>,
     },
 
@@ -40,6 +47,7 @@ pub enum SystemMsg {
 
     GetAssignment {
         runner_id: CRunnerId,
+        #[derivative(Debug = "ignore")]
         tx: oneshot::Sender<Result<Option<CAssignment>>>,
     },
 }
