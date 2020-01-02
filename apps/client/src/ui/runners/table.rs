@@ -18,7 +18,7 @@ impl fmt::Display for RunnersTable<'_> {
         use prettytable::{cell, row};
 
         if self.runners.is_empty() {
-            return write!(f, "There are no runners");
+            return writeln!(f, "There are no runners");
         }
 
         let mut table = table! {

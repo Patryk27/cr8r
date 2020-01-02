@@ -18,7 +18,7 @@ impl fmt::Display for ExperimentsTable<'_> {
         use prettytable::{cell, row};
 
         if self.experiments.is_empty() {
-            return write!(f, "There are no experiments");
+            return writeln!(f, "There are no experiments");
         }
 
         let mut table = table! {

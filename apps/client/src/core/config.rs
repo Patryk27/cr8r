@@ -15,8 +15,10 @@ pub struct Config {
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Controller {
-    pub secret: String,
     pub address: String,
+
+    #[serde(default)]
+    pub secret: Option<String>,
 }
 
 pub fn load(file: &Path) -> Result<Config> {

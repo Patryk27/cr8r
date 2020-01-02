@@ -15,7 +15,7 @@ pub enum Error {
 
     #[snafu(display("Couldn't connect to the controller: {}", source))]
     CouldntConnectToController {
-        source: tonic::transport::Error,
+        source: Box<dyn std::error::Error>,
     },
 
     #[snafu(display("Couldn't perform request to the controller: {}", source))]
@@ -29,9 +29,27 @@ pub enum Error {
     },
 }
 
+impl From<hyper::header::InvalidHeaderValue> for Error {
+    fn from(source: hyper::header::InvalidHeaderValue) -> Self {
+        Error::CouldntConnectToController {
+            source: box source,
+        }
+    }
+}
+
+impl From<hyper::http::uri::InvalidUri> for Error {
+    fn from(source: hyper::http::uri::InvalidUri) -> Self {
+        Error::CouldntConnectToController {
+            source: box source,
+        }
+    }
+}
+
 impl From<tonic::transport::Error> for Error {
     fn from(source: tonic::transport::Error) -> Self {
-        Error::CouldntConnectToController { source }
+        Error::CouldntConnectToController {
+            source: box source,
+        }
     }
 }
 

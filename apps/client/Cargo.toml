@@ -7,6 +7,7 @@ edition = "2018"
 [dependencies]
 chrono = "0.4"
 colored = "1.9"
+hyper = "0.13"
 indicatif = "0.13"
 lib_interop = { path = "../../libs/interop" }
 prettytable-rs = "0.8"

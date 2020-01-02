@@ -1,5 +1,6 @@
 // @todo ensure controller's protocol version matches ours
 
+#![feature(box_syntax)]
 #![feature(try_blocks)]
 #![feature(type_ascription)]
 

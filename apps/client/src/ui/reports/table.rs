@@ -19,7 +19,7 @@ impl fmt::Display for ReportsTable<'_> {
         use prettytable::{cell, row};
 
         if self.reports.is_empty() {
-            return write!(f, "There are no reports");
+            return writeln!(f, "There are no reports");
         }
 
         let mut table = table! {
