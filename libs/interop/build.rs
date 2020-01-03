@@ -5,7 +5,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .format(true)
         .out_dir("protobuf/.artifacts")
         .compile(
-            &["protobuf/for_client.proto", "protobuf/for_runner.proto"],
+            &["protobuf/controller.proto"],
             &["protobuf"],
         )?;
 

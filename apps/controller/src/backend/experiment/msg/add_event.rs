@@ -3,12 +3,12 @@ use std::sync::Arc;
 use chrono::Utc;
 use log::*;
 
-use lib_interop::contract::{CEvent, CEventType, CJob, CReport, CRunnerId};
+use lib_interop::domain::{DEvent, DEventType, DJob, DReport, DRunnerId};
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
 use crate::backend::Result;
 
-pub fn add_event(actor: &mut ExperimentActor, runner: CRunnerId, event: CEvent) -> Result<()> {
+pub fn add_event(actor: &mut ExperimentActor, runner: DRunnerId, event: DEvent) -> Result<()> {
     match &mut actor.status {
         ExperimentStatus::Idle { .. } => {
             Err("This experiment has not yet been started".into())
@@ -38,12 +38,12 @@ pub fn add_event(actor: &mut ExperimentActor, runner: CRunnerId, event: CEvent) 
             }
 
             match &event.ty {
-                CEventType::ExperimentCompleted => {
+                DEventType::ExperimentCompleted => {
                     let result = {
                         let mut result = Ok(());
 
                         for event in events {
-                            if let CEventType::JobCompleted { id, result: Err(err) } = &event.ty {
+                            if let DEventType::JobCompleted { id, result: Err(err) } = &event.ty {
                                 result = Err(format!("job #{} failed: {}", id, err));
                                 break;
                             }
@@ -61,7 +61,7 @@ pub fn add_event(actor: &mut ExperimentActor, runner: CRunnerId, event: CEvent) 
                     kill_watchers(actor);
                 }
 
-                CEventType::JobCompleted { .. } => {
+                DEventType::JobCompleted { .. } => {
                     *completed_jobs += 1;
                 }
 
@@ -81,38 +81,38 @@ pub fn add_event(actor: &mut ExperimentActor, runner: CRunnerId, event: CEvent) 
     }
 }
 
-fn event_as_report(jobs: &[CJob], event: &CEvent) -> Option<CReport> {
+fn event_as_report(jobs: &[DJob], event: &DEvent) -> Option<DReport> {
     Some(match &event.ty {
-        CEventType::SystemMsg { msg } => {
-            CReport::system_msg(event.at, msg)
+        DEventType::SystemMsg { msg } => {
+            DReport::system_msg(event.at, msg)
         }
 
-        CEventType::UserMsg { msg } => {
-            CReport::user_msg(event.at, msg)
+        DEventType::UserMsg { msg } => {
+            DReport::user_msg(event.at, msg)
         }
 
-        CEventType::ProcessOutput { line } => {
-            CReport::process_output(event.at, line)
+        DEventType::ProcessOutput { line } => {
+            DReport::process_output(event.at, line)
         }
 
-        CEventType::ExperimentStarted => {
-            CReport::system_msg(event.at, "Experiment started")
+        DEventType::ExperimentStarted => {
+            DReport::system_msg(event.at, "Experiment started")
         }
 
-        CEventType::ExperimentCompleted => {
-            CReport::system_msg(event.at, "Experiment completed")
+        DEventType::ExperimentCompleted => {
+            DReport::system_msg(event.at, "Experiment completed")
         }
 
-        CEventType::JobStarted { id } => {
+        DEventType::JobStarted { id } => {
             if let Some(job) = jobs.get(*id) {
-                CReport::system_msg(event.at, format!("Job `{}` started", job.name))
+                DReport::system_msg(event.at, format!("Job `{}` started", job.name))
             } else {
                 warn!("Runner reported that it has started working on job #{}, which does not exist; this is probably a bug", id);
                 return None;
             }
         }
 
-        CEventType::JobCompleted { id, result } => {
+        DEventType::JobCompleted { id, result } => {
             let result = if let Err(err) = result {
                 format!("failure: {}", err)
             } else {
@@ -120,7 +120,7 @@ fn event_as_report(jobs: &[CJob], event: &CEvent) -> Option<CReport> {
             };
 
             if let Some(job) = jobs.get(*id) {
-                CReport::system_msg(event.at, format!("Job `{}` completed; result: {}", job.name, result))
+                DReport::system_msg(event.at, format!("Job `{}` completed; result: {}", job.name, result))
             } else {
                 warn!("Runner reported that it has finished working on job #{}, which does not exist; this is probably a bug", id);
                 return None;

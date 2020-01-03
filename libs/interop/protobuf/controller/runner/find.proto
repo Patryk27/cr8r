@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package cr8r.controller;
+
+import "core/runner.proto";
+
+message PFindRunnersRequest {
+    //
+}
+
+message PFindRunnersReply {
+    repeated core.PRunner runners = 1;
+}

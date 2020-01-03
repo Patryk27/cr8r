@@ -1,6 +1,6 @@
 use log::*;
 
-use lib_interop::contract::{CAssignment, CEventType};
+use lib_interop::domain::{DAssignment, DEventType};
 use lib_sandbox::Sandbox;
 
 use crate::backend::{ExecutorStatus, Journalist};
@@ -12,7 +12,7 @@ mod process_messages;
 pub struct ExecutorActor {
     rx: ExecutorRx,
     pub(super) sandbox: Sandbox,
-    pub(super) assignment: CAssignment,
+    pub(super) assignment: DAssignment,
     pub(super) journalist: Journalist,
     pub(super) status: ExecutorStatus,
 }
@@ -21,7 +21,7 @@ impl ExecutorActor {
     pub fn new(
         rx: ExecutorRx,
         sandbox: Sandbox,
-        assignment: CAssignment,
+        assignment: DAssignment,
         journalist: Journalist,
     ) -> Self {
         Self {
@@ -36,7 +36,7 @@ impl ExecutorActor {
     pub async fn main(mut self) {
         debug!("Actor started");
 
-        self.journalist.dispatch(CEventType::ExperimentStarted);
+        self.journalist.dispatch(DEventType::ExperimentStarted);
 
         self.process_messages_and_yield()
             .await;
@@ -46,16 +46,16 @@ impl ExecutorActor {
             .collect(): Vec<_>;
 
         for (id, job) in jobs.into_iter().enumerate() {
-            self.journalist.dispatch(CEventType::JobStarted { id });
+            self.journalist.dispatch(DEventType::JobStarted { id });
 
             let result = self
                 .perform_job(job)
                 .await;
 
-            self.journalist.dispatch(CEventType::JobCompleted { id, result });
+            self.journalist.dispatch(DEventType::JobCompleted { id, result });
         }
 
-        self.journalist.dispatch(CEventType::ExperimentCompleted);
+        self.journalist.dispatch(DEventType::ExperimentCompleted);
 
         self.status = ExecutorStatus::Completed;
 

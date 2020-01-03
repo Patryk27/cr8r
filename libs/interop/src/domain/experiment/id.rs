@@ -1,0 +1,3 @@
+crate::newtype! {
+    DExperimentId: Uuid
+}

@@ -1,11 +1,11 @@
 use chrono::Utc;
 
-use lib_interop::contract::{CAssignment, CRunnerId};
+use lib_interop::domain::{DAssignment, DRunnerId};
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
 use crate::backend::Result;
 
-pub fn start(actor: &mut ExperimentActor, runner: CRunnerId) -> Result<CAssignment> {
+pub fn start(actor: &mut ExperimentActor, runner: DRunnerId) -> Result<DAssignment> {
     match &actor.status {
         ExperimentStatus::Idle { .. } => {
             actor.status = ExperimentStatus::Running {
@@ -17,7 +17,7 @@ pub fn start(actor: &mut ExperimentActor, runner: CRunnerId) -> Result<CAssignme
                 completed_jobs: 0,
             };
 
-            Ok(CAssignment {
+            Ok(DAssignment {
                 experiment: super::get_model::get_model(actor),
                 jobs: actor.jobs.clone(),
             })

@@ -1,7 +1,7 @@
 use tokio::sync::mpsc;
 
 use lib_actor::ask;
-use lib_interop::contract::CAssignment;
+use lib_interop::domain::DAssignment;
 use lib_sandbox::Sandbox;
 
 use crate::backend::Journalist;
@@ -24,7 +24,7 @@ pub struct Executor {
 }
 
 impl Executor {
-    pub fn new(sandbox: Sandbox, assignment: CAssignment, client: ExperimentClient) -> Self {
+    pub fn new(sandbox: Sandbox, assignment: DAssignment, client: ExperimentClient) -> Self {
         let (tx, rx) = mpsc::unbounded_channel();
         let journalist = Journalist::new(client);
 

@@ -1,16 +1,12 @@
-use std::str::FromStr;
+use anyhow::Result;
 
-use hyper::header::HeaderValue;
-use hyper::Uri;
-use tonic::transport::Channel;
+use lib_interop::client::ControllerClient;
 
-use lib_interop::protocol::for_client::for_client_client::ForClientClient;
-
-use crate::{Config, Result};
+use crate::Config;
 
 pub struct System {
     config: Config,
-    client: Option<ForClientClient<Channel>>,
+    client: Option<ControllerClient>,
 }
 
 impl System {
@@ -25,34 +21,20 @@ impl System {
         &self.config
     }
 
-    pub async fn client(&mut self) -> Result<&mut ForClientClient<Channel>> {
+    pub async fn client(&mut self) -> Result<&mut ControllerClient> {
         if self.client.is_none() {
-            self.client = Some(self.connect().await?);
+            let controller = &self.config.controller;
+
+            let client = ControllerClient::connect(
+                controller.address.to_owned(),
+                controller.secret.to_owned(),
+            ).await?;
+
+            self.client = Some(client);
         }
 
         Ok(self.client
             .as_mut()
             .unwrap())
-    }
-
-    async fn connect(&self) -> Result<ForClientClient<Channel>> {
-        let auth = self.config.controller.secret
-            .as_ref()
-            .map(|secret| format!("Bearer {}", secret))
-            .map(|secret| HeaderValue::from_str(&secret))
-            .transpose()?;
-
-        let uri = Uri::from_str(&self.config.controller.address)?;
-
-        let channel = Channel::builder(uri)
-            .intercept_headers(move |headers| {
-                if let Some(auth) = &auth {
-                    headers.insert("authorization", auth.to_owned());
-                }
-            })
-            .connect()
-            .await?;
-
-        Ok(ForClientClient::new(channel))
     }
 }

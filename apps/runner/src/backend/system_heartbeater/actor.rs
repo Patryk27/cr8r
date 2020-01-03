@@ -18,10 +18,12 @@ impl SystemHeartbeaterActor {
         debug!("Actor started");
 
         loop {
-            if let Err(err) = self.client.ping().await {
-                error!("Couldn't ping the controller: {:?}", err);
-                error!("We'll try again in a moment");
-            }
+            // @todo
+
+//            if let Err(err) = self.client.ping().await {
+//                error!("Couldn't ping the controller: {:?}", err);
+//                error!("We'll try again in a moment");
+//            }
 
             time::delay_for(Duration::from_secs(60))
                 .await;

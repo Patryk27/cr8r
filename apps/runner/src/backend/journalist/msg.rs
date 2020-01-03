@@ -1,7 +1,7 @@
 use log::*;
 use tokio::sync::mpsc;
 
-use lib_interop::contract::CEvent;
+use lib_interop::domain::DEvent;
 
 use crate::backend::journalist::JournalistActor;
 
@@ -11,7 +11,7 @@ pub type JournalistRx = mpsc::UnboundedReceiver<JournalistMsg>;
 #[derive(Debug)]
 pub enum JournalistMsg {
     Dispatch {
-        event: CEvent,
+        event: DEvent,
     },
 }
 

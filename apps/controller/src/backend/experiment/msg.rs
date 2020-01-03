@@ -4,7 +4,7 @@ use derivative::Derivative;
 use log::*;
 use tokio::sync::{mpsc, oneshot};
 
-use lib_interop::contract::{CAssignment, CEvent, CExperiment, CReport, CRunnerId};
+use lib_interop::domain::{DAssignment, DEvent, DExperiment, DReport, DRunnerId};
 
 use crate::backend::experiment::ExperimentActor;
 use crate::backend::Result;
@@ -18,31 +18,31 @@ pub enum ExperimentMsg {
     Abort,
 
     AddEvent {
-        runner_id: CRunnerId,
-        event: CEvent,
+        runner_id: DRunnerId,
+        event: DEvent,
         #[derivative(Debug = "ignore")]
         tx: oneshot::Sender<Result<()>>,
     },
 
     GetModel {
         #[derivative(Debug = "ignore")]
-        tx: oneshot::Sender<CExperiment>,
+        tx: oneshot::Sender<DExperiment>,
     },
 
     GetReports {
         #[derivative(Debug = "ignore")]
-        tx: oneshot::Sender<Vec<Arc<CReport>>>,
+        tx: oneshot::Sender<Vec<Arc<DReport>>>,
     },
 
     Start {
-        runner_id: CRunnerId,
+        runner_id: DRunnerId,
         #[derivative(Debug = "ignore")]
-        tx: oneshot::Sender<Result<CAssignment>>,
+        tx: oneshot::Sender<Result<DAssignment>>,
     },
 
     Watch {
         #[derivative(Debug = "ignore")]
-        tx: oneshot::Sender<Result<mpsc::UnboundedReceiver<Arc<CReport>>>>,
+        tx: oneshot::Sender<Result<mpsc::UnboundedReceiver<Arc<DReport>>>>,
     },
 }
 

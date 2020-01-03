@@ -7,6 +7,8 @@ pub type Result<T> = result::Result<T, Error>;
 #[derive(Debug, Snafu)]
 #[snafu(visibility(pub (crate)))]
 pub enum Error {
+    RequestFailed,
+
     #[snafu(display("Field `{}` is missing", field))]
     Missing {
         field: &'static str,

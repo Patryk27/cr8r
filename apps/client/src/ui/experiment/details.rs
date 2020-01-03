@@ -1,13 +1,13 @@
 use std::fmt;
 
-use lib_interop::contract::CExperiment;
+use lib_interop::domain::DExperiment;
 
 pub struct ExperimentDetails<'a> {
-    experiment: &'a CExperiment,
+    experiment: &'a DExperiment,
 }
 
 impl<'a> ExperimentDetails<'a> {
-    pub fn new(experiment: &'a CExperiment) -> Self {
+    pub fn new(experiment: &'a DExperiment) -> Self {
         Self { experiment }
     }
 }

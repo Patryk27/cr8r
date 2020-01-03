@@ -4,5 +4,6 @@ pub use self::error::*;
 
 mod error;
 
-pub mod contract;
-pub mod protocol;
+pub mod client;
+pub mod domain;
+pub mod proto;

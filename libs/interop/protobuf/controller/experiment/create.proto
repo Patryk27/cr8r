@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package cr8r.controller;
+
+import "core/experiment.proto";
+
+message PCreateExperimentRequest {
+    core.PExperimentDefinition experiment_definition = 1;
+}
+
+message PCreateExperimentReply {
+    string id = 1;
+}

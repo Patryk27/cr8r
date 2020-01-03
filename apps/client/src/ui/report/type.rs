@@ -1,13 +1,13 @@
 use std::fmt;
 
-use lib_interop::contract::CReportType;
+use lib_interop::domain::DReportType;
 
 pub struct ReportType<'a> {
-    ty: &'a CReportType,
+    ty: &'a DReportType,
 }
 
 impl<'a> ReportType<'a> {
-    pub fn new(ty: &'a CReportType) -> Self {
+    pub fn new(ty: &'a DReportType) -> Self {
         Self { ty }
     }
 }
@@ -18,9 +18,9 @@ impl fmt::Display for ReportType<'_> {
 
         //@formatter:off
         let ty = match self.ty {
-            CReportType::SystemMsg     => "sys ",
-            CReportType::UserMsg       => "msg ",
-            CReportType::ProcessOutput => "proc",
+            DReportType::SystemMsg     => "sys ",
+            DReportType::UserMsg       => "msg ",
+            DReportType::ProcessOutput => "proc",
         };
         //@formatter:on
 

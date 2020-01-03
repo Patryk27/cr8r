@@ -1,13 +1,13 @@
 use std::fmt;
 
-use lib_interop::contract::CExperimentId;
+use lib_interop::domain::DExperimentId;
 
 pub struct ExperimentId<'a> {
-    id: &'a CExperimentId,
+    id: &'a DExperimentId,
 }
 
 impl<'a> ExperimentId<'a> {
-    pub fn new(id: &'a CExperimentId) -> Self {
+    pub fn new(id: &'a DExperimentId) -> Self {
         Self { id }
     }
 }

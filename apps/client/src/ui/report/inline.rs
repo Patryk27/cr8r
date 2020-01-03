@@ -1,13 +1,13 @@
 use std::fmt;
 
-use lib_interop::contract::CReport;
+use lib_interop::domain::DReport;
 
 pub struct InlineReport<'a> {
-    report: &'a CReport,
+    report: &'a DReport,
 }
 
 impl<'a> InlineReport<'a> {
-    pub fn new(report: &'a CReport) -> Self {
+    pub fn new(report: &'a DReport) -> Self {
         Self { report }
     }
 }

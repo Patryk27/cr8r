@@ -3,7 +3,7 @@ use std::collections::VecDeque;
 use log::*;
 use tokio::stream::StreamExt;
 
-use lib_interop::contract::CEvent;
+use lib_interop::domain::DEvent;
 
 use crate::backend::journalist::JournalistRx;
 use crate::core::ExperimentClient;
@@ -11,7 +11,7 @@ use crate::core::ExperimentClient;
 pub struct JournalistActor {
     rx: JournalistRx,
     pub(super) client: ExperimentClient,
-    pub(super) pending_events: VecDeque<CEvent>,
+    pub(super) pending_events: VecDeque<DEvent>,
 }
 
 impl JournalistActor {

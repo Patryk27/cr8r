@@ -3,7 +3,7 @@ use log::*;
 use tokio::sync::{mpsc, oneshot};
 
 use lib_actor::ActorSpirit;
-use lib_interop::contract::CRunner;
+use lib_interop::domain::DRunner;
 
 use crate::backend::runner::RunnerActor;
 
@@ -15,7 +15,7 @@ pub type RunnerRx = mpsc::UnboundedReceiver<RunnerMsg>;
 pub enum RunnerMsg {
     GetModel {
         #[derivative(Debug = "ignore")]
-        tx: oneshot::Sender<CRunner>,
+        tx: oneshot::Sender<DRunner>,
     },
 
     Kill,

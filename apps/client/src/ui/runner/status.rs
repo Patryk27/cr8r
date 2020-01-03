@@ -1,13 +1,13 @@
 use std::fmt;
 
-use lib_interop::contract::CRunnerStatus;
+use lib_interop::domain::DRunnerStatus;
 
 pub struct RunnerStatus<'a> {
-    status: &'a CRunnerStatus,
+    status: &'a DRunnerStatus,
 }
 
 impl<'a> RunnerStatus<'a> {
-    pub fn new(status: &'a CRunnerStatus) -> Self {
+    pub fn new(status: &'a DRunnerStatus) -> Self {
         Self { status }
     }
 }
@@ -18,21 +18,21 @@ impl fmt::Display for RunnerStatus<'_> {
         use colored::Colorize;
 
         write!(f, "{}", match self.status {
-            CRunnerStatus::Idle { since } => {
+            DRunnerStatus::Idle { since } => {
                 let status = "idle / awaiting experiment".yellow();
                 let since = ui::DateTime::new(*since);
 
                 format!("{} (since {})", status, since)
             }
 
-            CRunnerStatus::Working { since, .. } => {
+            DRunnerStatus::Working { since, .. } => {
                 let status = "working".green();
                 let since = ui::DateTime::new(*since);
 
                 format!("{} (since {})", status, since)
             }
 
-            CRunnerStatus::Zombie { since } => {
+            DRunnerStatus::Zombie { since } => {
                 let status = "zombie".red();
                 let since = ui::DateTime::new(*since);
 

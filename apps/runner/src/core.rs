@@ -1,9 +1,9 @@
 pub use self::{
-    client::*,
+    clients::*,
     config::*,
     error::{Error, Result, StdResult},
 };
 
-mod client;
+mod clients;
 pub mod config;
 pub mod error;

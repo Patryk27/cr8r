@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use lib_interop::contract::{CExperimentDefinition, CJob};
+use lib_interop::domain::{DExperimentDefinition, DJob};
 
 use crate::{CompilerBuilder, Environment, Project, ProjectName, Provider, ProviderName};
 
@@ -18,8 +18,8 @@ impl Compiler {
         CompilerBuilder::default()
     }
 
-    pub fn compile(&self, experiment_def: &CExperimentDefinition) -> Vec<CJob> {
-        use CExperimentDefinition::*;
+    pub fn compile(&self, experiment_def: &DExperimentDefinition) -> Vec<DJob> {
+        use DExperimentDefinition::*;
 
         match experiment_def {
             OverrideToolchain { toolchain } => {

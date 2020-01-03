@@ -1,10 +1,9 @@
 use std::time::Duration;
 
+use anyhow::Result;
 use colored::Colorize;
 
-use lib_interop::protocol::for_client::PHelloRequest;
-
-use crate::{Result, spinner, System, ui};
+use crate::{spinner, System, ui};
 
 pub async fn print(system: &mut System) -> Result<()> {
     println!("{}", ui::Header::new("Controller"));
@@ -18,9 +17,8 @@ pub async fn print(system: &mut System) -> Result<()> {
         system
             .client()
             .await?
-            .hello(PHelloRequest::default())
+            .howdy()
             .await?
-            .into_inner()
     };
 
     // @todo extract it to a separate component

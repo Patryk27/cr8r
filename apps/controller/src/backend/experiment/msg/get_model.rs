@@ -1,17 +1,17 @@
-use lib_interop::contract::{CExperiment, CExperimentStatus};
+use lib_interop::domain::{DExperiment, DExperimentStatus};
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
 
-pub fn get_model(actor: &mut ExperimentActor) -> CExperiment {
+pub fn get_model(actor: &mut ExperimentActor) -> DExperiment {
     let status = match &actor.status {
         ExperimentStatus::Idle { since } => {
-            CExperimentStatus::Idle {
+            DExperimentStatus::Idle {
                 since: since.to_owned(),
             }
         }
 
         ExperimentStatus::Running { since, last_heartbeat_at, completed_jobs, .. } => {
-            CExperimentStatus::Running {
+            DExperimentStatus::Running {
                 since: since.to_owned(),
                 last_heartbeat_at: last_heartbeat_at.to_owned(),
                 completed_jobs: *completed_jobs,
@@ -20,20 +20,20 @@ pub fn get_model(actor: &mut ExperimentActor) -> CExperiment {
         }
 
         ExperimentStatus::Completed { since, result, .. } => {
-            CExperimentStatus::Completed {
+            DExperimentStatus::Completed {
                 since: since.to_owned(),
                 result: result.to_owned(),
             }
         }
 
         ExperimentStatus::Zombie { since, .. } => {
-            CExperimentStatus::Zombie {
+            DExperimentStatus::Zombie {
                 since: since.to_owned(),
             }
         }
     };
 
-    CExperiment {
+    DExperiment {
         id: actor.id.to_owned(),
         created_at: actor.created_at.to_owned(),
         status,

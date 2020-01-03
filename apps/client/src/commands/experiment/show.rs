@@ -1,8 +1,10 @@
-use lib_interop::contract::CExperiment;
-use lib_interop::convert;
-use lib_interop::protocol::for_client::{PFindExperimentsRequest, PFindReportsRequest};
+use anyhow::Result;
 
-use crate::{Result, spinner, System, ui};
+use lib_interop::convert;
+use lib_interop::domain::DExperiment;
+use lib_interop::proto::controller::{PFindExperimentsRequest, PFindReportsRequest};
+
+use crate::{spinner, System, ui};
 
 pub async fn show(
     mut system: System,
@@ -16,7 +18,6 @@ pub async fn show(
             .await?
             .find_experiments(PFindExperimentsRequest { id: id.into() })
             .await?
-            .into_inner()
             .experiments
     };
 
@@ -46,7 +47,7 @@ pub async fn show(
     Ok(())
 }
 
-fn print_experiment(experiment: &CExperiment) {
+fn print_experiment(experiment: &DExperiment) {
     print!("{}", ui::ExperimentDetails::new(experiment));
 }
 
@@ -59,7 +60,6 @@ async fn print_reports(system: &mut System, id: &str) -> Result<()> {
             .await?
             .find_reports(PFindReportsRequest { experiment_id: id.into() })
             .await?
-            .into_inner()
             .reports
     };
 

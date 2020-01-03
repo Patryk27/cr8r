@@ -1,8 +1,8 @@
-use lib_interop::contract::CEvent;
+use lib_interop::domain::DEvent;
 
 use crate::backend::journalist::JournalistActor;
 
-pub async fn dispatch(actor: &mut JournalistActor, event: CEvent) {
+pub async fn dispatch(actor: &mut JournalistActor, event: DEvent) {
     actor.pending_events.push_back(event);
 
     while let Some(event) = actor.pending_events.pop_front() {

@@ -1,7 +1,9 @@
-use lib_interop::convert;
-use lib_interop::protocol::for_client::PFindRunnersRequest;
+use anyhow::Result;
 
-use crate::{Result, spinner, System, ui};
+use lib_interop::convert;
+use lib_interop::proto::controller::PFindRunnersRequest;
+
+use crate::{spinner, System, ui};
 
 pub async fn print(system: &mut System) -> Result<()> {
     println!("{}", ui::Header::new("Runners"));
@@ -12,7 +14,6 @@ pub async fn print(system: &mut System) -> Result<()> {
             .await?
             .find_runners(PFindRunnersRequest::default())
             .await?
-            .into_inner()
             .runners
     };
 

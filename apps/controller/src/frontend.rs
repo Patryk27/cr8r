@@ -7,17 +7,14 @@ use tonic::body::BoxBody;
 use tonic::transport::Server;
 use tower::Service;
 
-use lib_interop::protocol::{
-    for_client::for_client_server::ForClientServer,
-    for_runner::for_runner_server::ForRunnerServer,
-};
+use lib_interop::proto::controller::controller_server::ControllerServer;
 
 use crate::backend::System;
 use crate::core::Result;
 
-use self::services::*;
+use self::service::*;
 
-mod services;
+mod service;
 
 pub async fn start(addr: String, secret: Option<String>, system: System) -> Result<()> {
     let addr = addr.parse()?: SocketAddr;
@@ -45,8 +42,7 @@ pub async fn start(addr: String, secret: Option<String>, system: System) -> Resu
                 }
             }
         })
-        .add_service(ForClientServer::new(ForClientService::new(system.clone())))
-        .add_service(ForRunnerServer::new(ForRunnerService::new(system)))
+        .add_service(ControllerServer::new(ControllerService::new(system.clone())))
         .serve(addr)
         .await
         .unwrap();

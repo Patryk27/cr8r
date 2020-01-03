@@ -1,5 +1,5 @@
 use lib_compiler::CompilerBuilder;
-use lib_interop::contract::{CExperimentDefinition, CJob};
+use lib_interop::domain::{DExperimentDefinition, DJob};
 
 use crate::backend::Result;
 use crate::core::{Ecosystem, Environment, Projects, Providers};
@@ -21,7 +21,7 @@ impl Compiler {
         })
     }
 
-    pub fn compile(&self, def: &CExperimentDefinition) -> Vec<CJob> {
+    pub fn compile(&self, def: &DExperimentDefinition) -> Vec<DJob> {
         self.compiler.compile(def)
     }
 }

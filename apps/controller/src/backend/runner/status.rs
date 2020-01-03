@@ -1,6 +1,6 @@
 use chrono::{DateTime, Utc};
 
-use lib_interop::contract::CExperimentId;
+use lib_interop::domain::DExperimentId;
 
 use crate::backend::Experiment;
 
@@ -12,7 +12,7 @@ pub enum RunnerStatus {
     Working {
         since: DateTime<Utc>,
         experiment: Experiment,
-        experiment_id: CExperimentId,
+        experiment_id: DExperimentId,
     },
 
     Zombie {

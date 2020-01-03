@@ -1,7 +1,7 @@
 use tokio::sync::mpsc;
 
 use lib_actor::ask;
-use lib_interop::contract::{CAssignment, CExperimentDefinition, CExperimentId, CRunnerId, CRunnerName};
+use lib_interop::domain::{DAssignment, DExperimentDefinition, DExperimentId, DRunnerId, DRunnerName};
 
 use crate::backend::{Compiler, Experiment, Result, Runner};
 
@@ -35,7 +35,7 @@ impl System {
 
 /// Runner-oriented impls
 impl System {
-    pub async fn create_runner(&self, name: CRunnerName) -> Result<CRunnerId> {
+    pub async fn create_runner(&self, name: DRunnerName) -> Result<DRunnerId> {
         ask!(self.tx, SystemMsg::CreateRunner { name })
     }
 
@@ -46,11 +46,11 @@ impl System {
 
 /// Experiment-oriented impls
 impl System {
-    pub async fn create_experiment(&self, def: CExperimentDefinition) -> Result<CExperimentId> {
+    pub async fn create_experiment(&self, def: DExperimentDefinition) -> Result<DExperimentId> {
         ask!(self.tx, SystemMsg::CreateExperiment { def })
     }
 
-    pub async fn find_experiment(&self, id: CExperimentId) -> Result<Experiment> {
+    pub async fn find_experiment(&self, id: DExperimentId) -> Result<Experiment> {
         ask!(self.tx, SystemMsg::FindExperiment { id })
     }
 
@@ -61,7 +61,7 @@ impl System {
 
 /// Assignment-oriented impls
 impl System {
-    pub async fn get_assignment(&self, runner_id: CRunnerId) -> Result<Option<CAssignment>> {
+    pub async fn get_assignment(&self, runner_id: DRunnerId) -> Result<Option<DAssignment>> {
         ask!(self.tx, SystemMsg::GetAssignment { runner_id })
     }
 }

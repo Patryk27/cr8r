@@ -2,7 +2,7 @@ use chrono::Utc;
 use tokio::sync::mpsc;
 
 use lib_actor::tell;
-use lib_interop::contract::{CEvent, CEventType};
+use lib_interop::domain::{DEvent, DEventType};
 
 use crate::core::ExperimentClient;
 
@@ -31,8 +31,8 @@ impl Journalist {
         Self { tx }
     }
 
-    pub fn dispatch(&self, ty: CEventType) {
-        let event = CEvent {
+    pub fn dispatch(&self, ty: DEventType) {
+        let event = DEvent {
             at: Utc::now(),
             ty,
         };

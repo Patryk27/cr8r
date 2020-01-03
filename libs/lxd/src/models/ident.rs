@@ -34,7 +34,7 @@ impl fmt::Display for LxdIdent {
 
 
 #[macro_export]
-macro_rules! create_identifier_model {
+macro_rules! newtype {
     ($name:ident) => {
         use serde::Deserialize;
         use std::fmt;

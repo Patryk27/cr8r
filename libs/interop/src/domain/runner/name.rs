@@ -1,0 +1,3 @@
+crate::newtype! {
+    DRunnerName: String
+}

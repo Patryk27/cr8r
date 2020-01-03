@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package cr8r.controller;
+
+import "core/report.proto";
+import "controller/howdy.proto";
+import "controller/assignment/get.proto";
+import "controller/attachment/create.proto";
+import "controller/event/add.proto";
+import "controller/experiment/abort.proto";
+import "controller/experiment/create.proto";
+import "controller/experiment/find.proto";
+import "controller/experiment/watch.proto";
+import "controller/report/find.proto";
+import "controller/runner/find.proto";
+import "controller/runner/register.proto";
+
+service Controller {
+    rpc Howdy (PHowdyRequest) returns (PHowdyReply);
+
+    // Assignment-oriented methods
+    rpc GetAssignment (PGetAssignmentRequest) returns (PGetAssignmentReply);
+
+    // Attachment-oriented methods
+    rpc CreateAttachment (stream PCreateAttachmentRequest) returns (PCreateAttachmentReply);
+
+    // Experiment-oriented methods
+    rpc AbortExperiment (PAbortExperimentRequest) returns (PAbortExperimentReply);
+    rpc CreateExperiment (PCreateExperimentRequest) returns (PCreateExperimentReply);
+    rpc FindExperiments (PFindExperimentsRequest) returns (PFindExperimentsReply);
+    rpc WatchExperiment (PWatchExperimentRequest) returns (stream core.PReport);
+
+    // Event-oriented methods
+    rpc AddEvent (PAddEventRequest) returns (PAddEventReply);
+
+    // Report-oriented methods
+    rpc FindReports (PFindReportsRequest) returns (PFindReportsReply);
+
+    // Runner-oriented methods
+    rpc FindRunners (PFindRunnersRequest) returns (PFindRunnersReply);
+    rpc RegisterRunner (PRegisterRunnerRequest) returns (PRegisterRunnerReply);
+}

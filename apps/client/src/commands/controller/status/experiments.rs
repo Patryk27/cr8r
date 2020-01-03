@@ -1,7 +1,9 @@
-use lib_interop::convert;
-use lib_interop::protocol::for_client::PFindExperimentsRequest;
+use anyhow::Result;
 
-use crate::{Result, spinner, System, ui};
+use lib_interop::convert;
+use lib_interop::proto::controller::PFindExperimentsRequest;
+
+use crate::{spinner, System, ui};
 
 pub async fn print(system: &mut System) -> Result<()> {
     println!("{}", ui::Header::new("Experiments"));
@@ -12,7 +14,6 @@ pub async fn print(system: &mut System) -> Result<()> {
             .await?
             .find_experiments(PFindExperimentsRequest::default())
             .await?
-            .into_inner()
             .experiments
     };
 

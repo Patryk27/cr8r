@@ -5,21 +5,21 @@ use log::*;
 use tokio::stream::StreamExt;
 use tokio::sync::mpsc;
 
-use lib_interop::contract::{CExperimentId, CJob, CReport};
+use lib_interop::domain::{DExperimentId, DJob, DReport};
 
 use crate::backend::experiment::{ExperimentRx, ExperimentStatus};
 
 pub struct ExperimentActor {
     rx: ExperimentRx,
-    pub(super) id: CExperimentId,
-    pub(super) jobs: Vec<CJob>,
+    pub(super) id: DExperimentId,
+    pub(super) jobs: Vec<DJob>,
     pub(super) created_at: DateTime<Utc>,
-    pub(super) watchers: Vec<mpsc::UnboundedSender<Arc<CReport>>>,
+    pub(super) watchers: Vec<mpsc::UnboundedSender<Arc<DReport>>>,
     pub(super) status: ExperimentStatus,
 }
 
 impl ExperimentActor {
-    pub fn new(rx: ExperimentRx, id: CExperimentId, jobs: Vec<CJob>) -> Self {
+    pub fn new(rx: ExperimentRx, id: DExperimentId, jobs: Vec<DJob>) -> Self {
         Self {
             rx,
             id,

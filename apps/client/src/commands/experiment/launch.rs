@@ -1,10 +1,11 @@
+use anyhow::Result;
 use colored::Colorize;
 use structopt::StructOpt;
 
-use lib_interop::contract::CExperimentDefinition;
-use lib_interop::protocol::for_client::PCreateExperimentRequest;
+use lib_interop::domain::DExperimentDefinition;
+use lib_interop::proto::controller::PCreateExperimentRequest;
 
-use crate::{Result, spinner, System};
+use crate::{spinner, System};
 
 #[derive(Debug, StructOpt)]
 pub enum LaunchExperimentCommand {
@@ -26,11 +27,11 @@ impl LaunchExperimentCommand {
 
         launch_experiment(system, match self {
             OverrideToolchain { toolchain } => {
-                CExperimentDefinition::OverrideToolchain { toolchain }
+                DExperimentDefinition::OverrideToolchain { toolchain }
             }
 
             OverrideCrate { name, version } => {
-                CExperimentDefinition::OverrideCrate { name, version }
+                DExperimentDefinition::OverrideCrate { name, version }
             }
         }, watch).await
     }
@@ -38,16 +39,16 @@ impl LaunchExperimentCommand {
 
 async fn launch_experiment(
     mut system: System,
-    definition: CExperimentDefinition,
+    definition: DExperimentDefinition,
     watch: bool,
 ) -> Result<()> {
-    let reply = spinner! {
+    let id = spinner! {
         system
             .client()
             .await?
             .create_experiment(PCreateExperimentRequest { experiment_definition: Some(definition.into()) })
             .await?
-            .into_inner()
+            .id
     };
 
     println!("{}", "Success!".green());
@@ -55,14 +56,14 @@ async fn launch_experiment(
     println!();
 
     if watch {
-        super::watch::watch(system, reply.id)
+        super::watch::watch(system, id)
             .await?;
     } else {
         println!("You can see status of your experiment using:");
-        println!("$ {}", format!("cr8r experiment status {}", reply.id).blue());
+        println!("$ {}", format!("cr8r experiment status {}", id).blue());
         println!();
         println!("Or, if you prefer a semi-real-time view:");
-        println!("$ {}", format!("cr8r experiment watch {}", reply.id).blue());
+        println!("$ {}", format!("cr8r experiment watch {}", id).blue());
     }
 
     Ok(())

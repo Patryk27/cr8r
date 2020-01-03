@@ -2,14 +2,14 @@ use std::collections::HashMap;
 
 use bimap::BiMap;
 
-use lib_interop::contract::{CRunnerId, CRunnerName};
+use lib_interop::domain::{DRunnerId, DRunnerName};
 
 use crate::backend::{Result, Runner, System};
 
 pub struct Runners {
     system: System,
-    index: BiMap<CRunnerId, CRunnerName>,
-    runners: HashMap<CRunnerId, Runner>,
+    index: BiMap<DRunnerId, DRunnerName>,
+    runners: HashMap<DRunnerId, Runner>,
 }
 
 impl Runners {
@@ -21,12 +21,12 @@ impl Runners {
         }
     }
 
-    pub fn create(&mut self, name: CRunnerName) -> Result<CRunnerId> {
+    pub fn create(&mut self, name: DRunnerName) -> Result<DRunnerId> {
         if self.index.contains_right(&name) {
             return Err("Runner with such name has been already registered".into());
         }
 
-        let id = CRunnerId::default();
+        let id = DRunnerId::default();
 
         let runner = Runner::new(
             self.system.clone(),
@@ -40,12 +40,12 @@ impl Runners {
         Ok(id)
     }
 
-    pub fn remove(&mut self, id: &CRunnerId) {
+    pub fn remove(&mut self, id: &DRunnerId) {
         self.index.remove_by_left(id);
         self.runners.remove(id);
     }
 
-    pub fn get(&self, id: &CRunnerId) -> Option<&Runner> {
+    pub fn get(&self, id: &DRunnerId) -> Option<&Runner> {
         self.runners.get(id)
     }
 
@@ -55,11 +55,11 @@ impl Runners {
             .collect()
     }
 
-    pub fn name_to_id(&self, name: &CRunnerName) -> Option<&CRunnerId> {
+    pub fn name_to_id(&self, name: &DRunnerName) -> Option<&DRunnerId> {
         self.index.get_by_right(name)
     }
 
-    pub fn validate(&self, id: &CRunnerId) -> Result<()> {
+    pub fn validate(&self, id: &DRunnerId) -> Result<()> {
         self.index
             .get_by_left(id)
             .map(|_| ())

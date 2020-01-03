@@ -1,9 +1,10 @@
+use anyhow::Result;
 use colored::Colorize;
 
 use lib_interop::convert;
-use lib_interop::protocol::for_client::PWatchExperimentRequest;
+use lib_interop::proto::controller::PWatchExperimentRequest;
 
-use crate::{Result, spinner, System, ui};
+use crate::{spinner, System, ui};
 
 pub async fn watch(mut system: System, id: String) -> Result<()> {
     println!("Attaching to experiment `{}`", id.cyan());
@@ -14,7 +15,6 @@ pub async fn watch(mut system: System, id: String) -> Result<()> {
             .await?
             .watch_experiment(PWatchExperimentRequest { id })
             .await?
-            .into_inner()
     };
 
     println!("Attached, logs follow:");

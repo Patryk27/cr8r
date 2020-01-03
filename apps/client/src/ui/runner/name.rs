@@ -1,13 +1,13 @@
 use std::fmt;
 
-use lib_interop::contract::CRunnerName;
+use lib_interop::domain::DRunnerName;
 
 pub struct RunnerName<'a> {
-    name: &'a CRunnerName,
+    name: &'a DRunnerName,
 }
 
 impl<'a> RunnerName<'a> {
-    pub fn new(name: &'a CRunnerName) -> Self {
+    pub fn new(name: &'a DRunnerName) -> Self {
         Self { name }
     }
 }

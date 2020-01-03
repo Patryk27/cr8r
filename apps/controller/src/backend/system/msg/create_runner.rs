@@ -1,11 +1,11 @@
 use log::*;
 
-use lib_interop::contract::{CRunnerId, CRunnerName};
+use lib_interop::domain::{DRunnerId, DRunnerName};
 
 use crate::backend::Result;
 use crate::backend::system::SystemActor;
 
-pub fn create_runner(actor: &mut SystemActor, name: CRunnerName) -> Result<CRunnerId> {
+pub fn create_runner(actor: &mut SystemActor, name: DRunnerName) -> Result<DRunnerId> {
     if let Some(id) = actor.runners.name_to_id(&name).map(ToOwned::to_owned) {
         warn!("A new runner tries to join under a name that's already taken: {}", name);
 

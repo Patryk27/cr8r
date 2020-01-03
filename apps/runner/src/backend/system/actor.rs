@@ -4,7 +4,7 @@ use std::time::Duration;
 use log::*;
 use tokio::time;
 
-use lib_interop::contract::CAssignment;
+use lib_interop::domain::DAssignment;
 use lib_sandbox::{SandboxDef, SandboxProvider};
 
 use crate::backend::{Executor, ExecutorStatus};
@@ -51,15 +51,15 @@ impl SystemActor {
         }
     }
 
-    async fn poll_for_assignment(&mut self) -> (CAssignment, ExperimentClient) {
+    async fn poll_for_assignment(&mut self) -> (DAssignment, ExperimentClient) {
         loop {
             debug!("Polling controller for an assignment");
 
-            match self.client.request_assignment().await {
+            match self.client.get_assignment().await {
                 Ok(Some((assignment, client))) => {
                     let assignment = assignment
                         .try_into()
-                        .unwrap(): CAssignment;
+                        .unwrap(): DAssignment;
 
                     info!("We've been assigned experiment `{}`", assignment.experiment.id);
 
@@ -85,7 +85,7 @@ impl SystemActor {
         }
     }
 
-    async fn conduct_experiment(&mut self, assignment: CAssignment, client: ExperimentClient) -> Result<()> {
+    async fn conduct_experiment(&mut self, assignment: DAssignment, client: ExperimentClient) -> Result<()> {
         debug!("Conducting experiment");
 
         let sandbox_def = match &self.sandbox_config {

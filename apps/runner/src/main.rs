@@ -8,6 +8,7 @@ use colored::Colorize;
 use log::*;
 use snafu::ResultExt;
 
+use lib_interop::client::ControllerClient;
 use lib_sandbox::SandboxProvider;
 
 use self::{
@@ -29,10 +30,11 @@ async fn main() -> Result<()> {
 
     let sandbox_provider = SandboxProvider::new();
 
-    let client = Client::connect(config.controller.address)
-        .await?;
+    let client = ControllerClient::connect(config.controller.address, config.controller.secret)
+        .await
+        .unwrap();
 
-    let client = SessionClient::start(config.runner.name, config.controller.secret, client)
+    let client = SessionClient::start(config.runner.name, client)
         .await?;
 
     info!("{}", "🚀 We are ready to accept commands".green());

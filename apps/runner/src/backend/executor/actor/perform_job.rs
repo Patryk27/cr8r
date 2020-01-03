@@ -1,13 +1,13 @@
 use closure::*;
 use log::*;
 
-use lib_interop::contract::{CEventType, CJob, CJobOpcode};
+use lib_interop::domain::{DEventType, DJob, DJobOpcode};
 use lib_sandbox::SandboxListener;
 
 use crate::backend::executor::{ExecutorActor, ExecutorResult};
 
 impl ExecutorActor {
-    pub(super) async fn perform_job(&mut self, job: CJob) -> ExecutorResult<()> {
+    pub(super) async fn perform_job(&mut self, job: DJob) -> ExecutorResult<()> {
         self.init_sandbox()
             .await?;
 
@@ -25,11 +25,11 @@ impl ExecutorActor {
             warn!("Could not destroy sandbox: {}", err);
             warn!("This may affect the next job");
 
-            self.journalist.dispatch(CEventType::SystemMsg {
+            self.journalist.dispatch(DEventType::SystemMsg {
                 msg: format!("Could not destroy sandbox: {}", err),
             });
 
-            self.journalist.dispatch(CEventType::SystemMsg {
+            self.journalist.dispatch(DEventType::SystemMsg {
                 msg: "This may affect the next job".to_string(),
             });
         }
@@ -38,7 +38,7 @@ impl ExecutorActor {
     }
 
     async fn init_sandbox(&mut self) -> ExecutorResult<()> {
-        self.journalist.dispatch(CEventType::SystemMsg {
+        self.journalist.dispatch(DEventType::SystemMsg {
             msg: "Initializing sandbox".to_string(),
         });
 
@@ -46,13 +46,13 @@ impl ExecutorActor {
 
         let listener = SandboxListener {
             on_command_executed: Some(box closure!(clone journalist, |cmd| {
-                journalist.dispatch(CEventType::UserMsg {
+                journalist.dispatch(DEventType::UserMsg {
                     msg: format!("Executing: {}", cmd),
                 });
             })),
 
             on_command_output: Some(box closure!(clone journalist, |line| {
-                journalist.dispatch(CEventType::ProcessOutput { line });
+                journalist.dispatch(DEventType::ProcessOutput { line });
             })),
         };
 
@@ -62,24 +62,24 @@ impl ExecutorActor {
             .map_err(|err| format!("Couldn't initialize the sandbox: {}", err))
     }
 
-    async fn perform_opcode(&mut self, opcode: CJobOpcode) -> ExecutorResult<()> {
+    async fn perform_opcode(&mut self, opcode: DJobOpcode) -> ExecutorResult<()> {
         match opcode {
-            CJobOpcode::LogSystemMsg { msg } => {
-                self.journalist.dispatch(CEventType::SystemMsg { msg });
+            DJobOpcode::LogSystemMsg { msg } => {
+                self.journalist.dispatch(DEventType::SystemMsg { msg });
             }
 
-            CJobOpcode::LogUserMsg { msg } => {
-                self.journalist.dispatch(CEventType::UserMsg { msg });
+            DJobOpcode::LogUserMsg { msg } => {
+                self.journalist.dispatch(DEventType::UserMsg { msg });
             }
 
-            CJobOpcode::Exec { cmd } => {
+            DJobOpcode::Exec { cmd } => {
                 self.sandbox
                     .exec(&cmd)
                     .await
                     .map_err(|err| err.to_string())?;
             }
 
-            CJobOpcode::PatchCrate { .. } => {
+            DJobOpcode::PatchCrate { .. } => {
                 unimplemented!()
             }
         }
@@ -88,7 +88,7 @@ impl ExecutorActor {
     }
 
     async fn destroy_sandbox(&mut self) -> ExecutorResult<()> {
-        self.journalist.dispatch(CEventType::SystemMsg {
+        self.journalist.dispatch(DEventType::SystemMsg {
             msg: "Destroying sandbox".to_string(),
         });
 

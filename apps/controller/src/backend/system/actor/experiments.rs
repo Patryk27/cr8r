@@ -1,12 +1,12 @@
 use std::collections::{HashMap, VecDeque};
 
-use lib_interop::contract::{CExperimentId, CJob};
+use lib_interop::domain::{DExperimentId, DJob};
 
 use crate::backend::{Experiment, Result};
 
 pub struct Experiments {
-    experiments: HashMap<CExperimentId, Experiment>,
-    pending: VecDeque<CExperimentId>,
+    experiments: HashMap<DExperimentId, Experiment>,
+    pending: VecDeque<DExperimentId>,
 }
 
 impl Experiments {
@@ -17,8 +17,8 @@ impl Experiments {
         }
     }
 
-    pub fn create(&mut self, jobs: Vec<CJob>) -> CExperimentId {
-        let id = CExperimentId::default();
+    pub fn create(&mut self, jobs: Vec<DJob>) -> DExperimentId {
+        let id = DExperimentId::default();
 
         let experiment = Experiment::new(
             id.clone(),
@@ -42,7 +42,7 @@ impl Experiments {
         Some(experiment)
     }
 
-    pub fn get(&self, id: &CExperimentId) -> Result<Experiment> {
+    pub fn get(&self, id: &DExperimentId) -> Result<Experiment> {
         self.experiments
             .get(id)
             .map(ToOwned::to_owned)

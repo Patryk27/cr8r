@@ -1,6 +1,7 @@
+use anyhow::Result;
 use structopt::StructOpt;
 
-use crate::{Result, System};
+use crate::System;
 
 mod status;
 

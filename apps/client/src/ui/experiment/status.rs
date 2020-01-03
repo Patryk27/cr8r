@@ -1,13 +1,13 @@
 use std::fmt;
 
-use lib_interop::contract::CExperimentStatus;
+use lib_interop::domain::DExperimentStatus;
 
 pub struct ExperimentStatus<'a> {
-    status: &'a CExperimentStatus,
+    status: &'a DExperimentStatus,
 }
 
 impl<'a> ExperimentStatus<'a> {
-    pub fn new(status: &'a CExperimentStatus) -> Self {
+    pub fn new(status: &'a DExperimentStatus) -> Self {
         Self { status }
     }
 }
@@ -18,14 +18,14 @@ impl fmt::Display for ExperimentStatus<'_> {
         use colored::Colorize;
 
         write!(f, "{}", match self.status {
-            CExperimentStatus::Idle { since } => {
+            DExperimentStatus::Idle { since } => {
                 let state = "idle / awaiting runner".yellow();
                 let since = ui::DateTime::new(*since);
 
                 format!("{} (since {})", state, since)
             }
 
-            CExperimentStatus::Running { since, completed_jobs, total_jobs, .. } => {
+            DExperimentStatus::Running { since, completed_jobs, total_jobs, .. } => {
                 let state = "running".green();
 
                 let completed_jobs = completed_jobs
@@ -41,7 +41,7 @@ impl fmt::Display for ExperimentStatus<'_> {
                 format!("{} (completed {} out of {} jobs(s), since {})", state, completed_jobs, total_jobs, since)
             }
 
-            CExperimentStatus::Completed { since, result } => {
+            DExperimentStatus::Completed { since, result } => {
                 let state = "completed"
                     .blue()
                     .bold();
@@ -61,7 +61,7 @@ impl fmt::Display for ExperimentStatus<'_> {
                 format!("{} ({}, since {})", state, result, since)
             }
 
-            CExperimentStatus::Zombie { since } => {
+            DExperimentStatus::Zombie { since } => {
                 let state = "zombie".red();
                 let since = ui::DateTime::new(*since);
 

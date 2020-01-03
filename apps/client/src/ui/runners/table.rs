@@ -1,13 +1,13 @@
 use std::fmt;
 
-use lib_interop::contract::CRunner;
+use lib_interop::domain::DRunner;
 
 pub struct RunnersTable<'a> {
-    runners: &'a [CRunner],
+    runners: &'a [DRunner],
 }
 
 impl<'a> RunnersTable<'a> {
-    pub fn new(runners: &'a [CRunner]) -> Self {
+    pub fn new(runners: &'a [DRunner]) -> Self {
         Self { runners }
     }
 }

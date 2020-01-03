@@ -1,3 +1,3 @@
-crate::create_identifier_model! {
+crate::newtype! {
     LxdDeviceName
 }
