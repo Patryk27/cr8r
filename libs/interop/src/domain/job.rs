@@ -1,6 +1,7 @@
 use std::convert::TryFrom;
 
-use crate::{convert, Error, Result};
+use crate::convert;
+use crate::domain::{DomainError, DomainResult};
 use crate::proto::core::PJob;
 
 pub use self::opcode::*;
@@ -15,9 +16,9 @@ pub struct DJob {
 }
 
 impl TryFrom<PJob> for DJob {
-    type Error = Error;
+    type Error = DomainError;
 
-    fn try_from(PJob { name, toolchain, opcodes }: PJob) -> Result<Self> {
+    fn try_from(PJob { name, toolchain, opcodes }: PJob) -> DomainResult<Self> {
         Ok(Self {
             name,
             toolchain,

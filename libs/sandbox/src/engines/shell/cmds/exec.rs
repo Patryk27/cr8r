@@ -1,9 +1,7 @@
-use snafu::ResultExt;
-
+use anyhow::{anyhow, Result};
 use lib_process::Process;
 
-use crate::{Error, Result, ShellEngine};
-use crate::engines::shell::error;
+use crate::ShellEngine;
 
 pub async fn exec(engine: &mut ShellEngine, cmd: &str) -> Result<()> {
     if let Some(handler) = &engine.listener.on_command_executed {
@@ -19,12 +17,11 @@ pub async fn exec(engine: &mut ShellEngine, cmd: &str) -> Result<()> {
             }
         })
         .spawn()
-        .await
-        .context(error::CommandNotStarted)?;
+        .await?;
 
     if status.success() {
         Ok(())
     } else {
-        Err(Error::CommandFailed)
+        Err(anyhow!("Previous command returned a non-zero exit code"))
     }
 }

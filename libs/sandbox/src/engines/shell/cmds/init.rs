@@ -1,12 +1,7 @@
-use std::{io, result};
-
-use snafu::ResultExt;
+use anyhow::{Context, Result};
 use tokio::fs;
 
-use crate::{Result, SandboxListener, ShellEngine};
-use crate::engines::shell::error;
-
-pub type IoResult = result::Result<(), io::Error>;
+use crate::{SandboxListener, ShellEngine};
 
 pub async fn init(engine: &mut ShellEngine, listener: SandboxListener) -> Result<()> {
     engine.listener = listener;
@@ -20,12 +15,12 @@ pub async fn init(engine: &mut ShellEngine, listener: SandboxListener) -> Result
 
         clean_root_dir(engine)
             .await?;
-    }: IoResult).with_context(|| error::RootDirectoryInaccessible { root: engine.root.clone() })?;
+    }: Result<_>).context("Could not prepare root directory")?;
 
     Ok(())
 }
 
-async fn create_root_dir_if_not_exists(engine: &ShellEngine) -> IoResult {
+async fn create_root_dir_if_not_exists(engine: &ShellEngine) -> Result<()> {
     if !engine.root.exists() {
         fs::create_dir(&engine.root)
             .await?;
@@ -34,7 +29,7 @@ async fn create_root_dir_if_not_exists(engine: &ShellEngine) -> IoResult {
     Ok(())
 }
 
-async fn ensure_root_dir_is_writable(engine: &ShellEngine) -> IoResult {
+async fn ensure_root_dir_is_writable(engine: &ShellEngine) -> Result<()> {
     let file = engine.root.join(".test");
 
     fs::write(&file, "Hello World!")
@@ -46,7 +41,7 @@ async fn ensure_root_dir_is_writable(engine: &ShellEngine) -> IoResult {
     Ok(())
 }
 
-async fn clean_root_dir(engine: &ShellEngine) -> IoResult {
+async fn clean_root_dir(engine: &ShellEngine) -> Result<()> {
     let mut entries = fs::read_dir(&engine.root).await?;
 
     while let Some(entry) = entries.next_entry().await? {

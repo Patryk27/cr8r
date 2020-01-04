@@ -1,5 +1,4 @@
 use std::fs;
-use std::path::PathBuf;
 
 use anyhow::Result;
 use serde::Deserialize;
@@ -19,12 +18,11 @@ pub struct ControllerConfig {
     pub secret: Option<String>,
 }
 
-pub fn load() -> Result<Config> {
-    let file = fs::read_to_string(
-        &PathBuf::from("client.yaml")
-    )?;
+impl Config {
+    pub fn load() -> Result<Self> {
+        let file = fs::read_to_string("client.yaml")?;
+        let this = serde_yaml::from_str(&file)?;
 
-    let config = serde_yaml::from_str(&file)?;
-
-    Ok(config)
+        Ok(this)
+    }
 }

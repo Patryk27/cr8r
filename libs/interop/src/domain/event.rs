@@ -3,7 +3,8 @@ use std::result;
 
 use chrono::{DateTime, Utc};
 
-use crate::{convert, Error, Result};
+use crate::convert;
+use crate::domain::{DomainError, DomainResult};
 use crate::proto::core::PEvent;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -43,9 +44,9 @@ pub enum DEventType {
 }
 
 impl TryFrom<PEvent> for DEvent {
-    type Error = Error;
+    type Error = DomainError;
 
-    fn try_from(PEvent { at, ty }: PEvent) -> Result<Self> {
+    fn try_from(PEvent { at, ty }: PEvent) -> DomainResult<Self> {
         use crate::proto::core::p_event::*;
 
         let ty = match convert!(ty?) {

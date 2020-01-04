@@ -2,8 +2,8 @@ use std::convert::TryFrom;
 
 use chrono::{DateTime, Utc};
 
-use crate::{convert, Error, Result};
-use crate::domain::DExperimentId;
+use crate::convert;
+use crate::domain::{DExperimentId, DomainError, DomainResult};
 use crate::proto::core::PRunnerStatus;
 
 #[derive(Clone, Debug)]
@@ -23,9 +23,9 @@ pub enum DRunnerStatus {
 }
 
 impl TryFrom<PRunnerStatus> for DRunnerStatus {
-    type Error = Error;
+    type Error = DomainError;
 
-    fn try_from(PRunnerStatus { ty }: PRunnerStatus) -> Result<Self> {
+    fn try_from(PRunnerStatus { ty }: PRunnerStatus) -> DomainResult<Self> {
         use crate::proto::core::p_runner_status::*;
 
         Ok(match convert!(ty?) {

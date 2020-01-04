@@ -1,5 +1,6 @@
 use std::net::SocketAddr;
 
+use anyhow::Result;
 use colored::Colorize;
 use hyper::{Body, Request, Response};
 use log::*;
@@ -10,7 +11,6 @@ use tower::Service;
 use lib_interop::proto::controller::controller_server::ControllerServer;
 
 use crate::backend::System;
-use crate::core::Result;
 
 use self::service::*;
 
@@ -44,8 +44,7 @@ pub async fn start(addr: String, secret: Option<String>, system: System) -> Resu
         })
         .add_service(ControllerServer::new(ControllerService::new(system.clone())))
         .serve(addr)
-        .await
-        .unwrap();
+        .await?;
 
     Ok(())
 }

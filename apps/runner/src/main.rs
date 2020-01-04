@@ -2,11 +2,9 @@
 #![feature(try_blocks)]
 #![feature(type_ascription)]
 
-use std::path::PathBuf;
-
+use anyhow::Result;
 use colored::Colorize;
 use log::*;
-use snafu::ResultExt;
 
 use lib_interop::client::ControllerClient;
 use lib_sandbox::SandboxProvider;
@@ -21,12 +19,9 @@ mod core;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    lib_log::init()
-        .context(error::CouldntStart)?;
+    lib_log::init()?;
 
-    let config = config::load(
-        &PathBuf::from("runner.yaml")
-    )?;
+    let config = Config::load()?;
 
     let sandbox_provider = SandboxProvider::new();
 

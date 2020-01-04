@@ -56,13 +56,10 @@ macro_rules! newtype {
 #[macro_export]
 macro_rules! convert {
     ($field:ident? $($tt:tt)*) => {{
-        use $crate::Error;
+        use crate::domain::DomainError;
 
-        let field = $field.ok_or_else(|| {
-            Error::Missing {
-                field: stringify!($field),
-            }
-        })?;
+        let field = $field
+            .ok_or_else(|| DomainError::MissingField { name: stringify!($field) })?;
 
         convert!(field $($tt)*)
     }};
@@ -91,24 +88,23 @@ macro_rules! convert {
     };
 
     ($field:ident as [_?]) => {{
-        use $crate::Result;
+        use $crate::domain::DomainResult;
         use std::convert::TryInto;
 
         let field = $field
             .into_iter()
             .map(TryInto::try_into)
-            .collect(): Result<Vec<_>>;
+            .collect(): DomainResult<Vec<_>>;
 
         field?
     }};
 
     ($field:ident as DateTime) => {{
-        use $crate::error;
+        use crate::domain::DomainError;
         use chrono::{DateTime, Utc};
-        use snafu::ResultExt;
 
         DateTime::parse_from_rfc3339(&$field)
-            .context(error::InvalidDateTime { field: stringify!($field) })?
+            .map_err(|source| DomainError::InvalidField { name: stringify!($field), source: source.into() })?
             .with_timezone(&Utc)
     }};
 }

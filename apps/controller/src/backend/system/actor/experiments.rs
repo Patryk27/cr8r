@@ -1,5 +1,6 @@
 use std::collections::{HashMap, VecDeque};
 
+use anyhow::anyhow;
 use lib_interop::domain::{DExperimentId, DJob};
 
 use crate::backend::{Experiment, Result};
@@ -46,7 +47,7 @@ impl Experiments {
         self.experiments
             .get(id)
             .map(ToOwned::to_owned)
-            .ok_or_else(|| format!("Experiment `{}` does not exist", id).into())
+            .ok_or_else(|| anyhow!("Experiment `{}` does not exist", id))
     }
 
     pub fn all(&self) -> Vec<Experiment> {

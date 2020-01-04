@@ -1,3 +1,4 @@
+use anyhow::Error;
 use tokio::stream::Stream;
 use tonic::{Request, Response, Status};
 
@@ -51,7 +52,7 @@ impl Controller for ControllerService {
         get_assignment(&self.system, request.into_inner())
             .await
             .map(Response::new)
-            .map_err(Status::internal)
+            .map_err(transform_error)
     }
 
     async fn create_experiment(
@@ -61,17 +62,17 @@ impl Controller for ControllerService {
         create_experiment(&self.system, request.into_inner())
             .await
             .map(Response::new)
-            .map_err(Status::internal)
+            .map_err(transform_error)
     }
 
     async fn find_experiments(
         &self,
         request: Request<PFindExperimentsRequest>,
     ) -> Result<Response<PFindExperimentsReply>, Status> {
-        let reply = find_experiments(&self.system, request.into_inner())
-            .await;
-
-        Ok(Response::new(reply))
+        find_experiments(&self.system, request.into_inner())
+            .await
+            .map(Response::new)
+            .map_err(transform_error)
     }
 
     type WatchExperimentStream = impl Stream<Item=Result<PReport, Status>>;
@@ -83,7 +84,7 @@ impl Controller for ControllerService {
         watch_experiment(&self.system, request.into_inner())
             .await
             .map(Response::new)
-            .map_err(Status::internal)
+            .map_err(transform_error)
     }
 
     async fn add_event(
@@ -93,7 +94,7 @@ impl Controller for ControllerService {
         add_event(&self.system, request.into_inner())
             .await
             .map(Response::new)
-            .map_err(Status::internal)
+            .map_err(transform_error)
     }
 
     async fn find_reports(
@@ -103,7 +104,7 @@ impl Controller for ControllerService {
         find_reports(&self.system, request.into_inner())
             .await
             .map(Response::new)
-            .map_err(Status::internal)
+            .map_err(transform_error)
     }
 
     async fn find_runners(
@@ -123,6 +124,11 @@ impl Controller for ControllerService {
         register_runner(&self.system, request.into_inner())
             .await
             .map(Response::new)
-            .map_err(Status::internal)
+            .map_err(transform_error)
     }
+}
+
+fn transform_error(err: Error) -> Status {
+    // @todo we could return more contextual status codes
+    Status::unknown(format!("{}", err))
 }

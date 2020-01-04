@@ -1,8 +1,7 @@
-use snafu::ResultExt;
-
+use anyhow::{anyhow, Result};
 use lib_process::Process;
 
-use crate::{Error, error, LxdClient, Result};
+use crate::LxdClient;
 
 pub async fn invoke(lxd: &LxdClient, args: &[String]) -> Result<String> {
     let mut output = String::new();
@@ -18,12 +17,11 @@ pub async fn invoke(lxd: &LxdClient, args: &[String]) -> Result<String> {
             }
         })
         .spawn()
-        .await
-        .context(error::CommandNotStarted)?;
+        .await?;
 
     if status.success() {
         Ok(output)
     } else {
-        Err(Error::CommandFailed)
+        Err(anyhow!("Previous command returned a non-zero exit code"))
     }
 }

@@ -2,7 +2,8 @@ use std::convert::TryFrom;
 
 use chrono::{DateTime, Utc};
 
-use crate::{convert, Error, Result};
+use crate::convert;
+use crate::domain::{DomainError, DomainResult};
 use crate::proto::core::{PReport, PReportType};
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -46,9 +47,9 @@ impl DReport {
 }
 
 impl TryFrom<PReport> for DReport {
-    type Error = Error;
+    type Error = DomainError;
 
-    fn try_from(PReport { at, ty, msg }: PReport) -> Result<Self> {
+    fn try_from(PReport { at, ty, msg }: PReport) -> DomainResult<Self> {
         let ty = match PReportType::from_i32(ty).unwrap_or(PReportType::UserMsg) {
             PReportType::SystemMsg => DReportType::SystemMsg,
             PReportType::UserMsg => DReportType::UserMsg,

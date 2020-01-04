@@ -10,7 +10,7 @@ use anyhow::{Context, Result};
 use colored::Colorize;
 use structopt::StructOpt;
 
-pub use self::{
+use self::{
     commands::*,
     config::*,
     system::*,
@@ -28,7 +28,7 @@ async fn main() {
     let result = try {
         let cmd = Command::from_args();
 
-        let config = config::load()
+        let config = Config::load()
             .context("Failed to load configuration")?;
 
         let system = System::new(config);

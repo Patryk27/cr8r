@@ -3,6 +3,7 @@ use std::sync::Arc;
 use chrono::Utc;
 use log::*;
 
+use anyhow::anyhow;
 use lib_interop::domain::{DEvent, DEventType, DJob, DReport, DRunnerId};
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
@@ -11,7 +12,7 @@ use crate::backend::Result;
 pub fn add_event(actor: &mut ExperimentActor, runner: DRunnerId, event: DEvent) -> Result<()> {
     match &mut actor.status {
         ExperimentStatus::Idle { .. } => {
-            Err("This experiment has not yet been started".into())
+            Err(anyhow!("This experiment has not yet been started"))
         }
 
         ExperimentStatus::Running {
@@ -22,7 +23,7 @@ pub fn add_event(actor: &mut ExperimentActor, runner: DRunnerId, event: DEvent) 
             ..
         } => {
             if &runner != experiment_runner {
-                return Err("Given runner is not allowed to report on this experiment".into());
+                return Err(anyhow!("Given runner is not allowed to report on this experiment"));
             }
 
             let event = Arc::new(event);
@@ -72,11 +73,11 @@ pub fn add_event(actor: &mut ExperimentActor, runner: DRunnerId, event: DEvent) 
         }
 
         ExperimentStatus::Completed { .. } => {
-            Err("This experiment has been already completed".into())
+            Err(anyhow!("This experiment has been already completed"))
         }
 
         ExperimentStatus::Zombie { .. } => {
-            Err("This experiment has been abandoned by its runner and has become a zombie - it can be manually aborted or restarted".into())
+            Err(anyhow!("This experiment has been abandoned by its runner and has become a zombie - it can be manually aborted or restarted"))
         }
     }
 }

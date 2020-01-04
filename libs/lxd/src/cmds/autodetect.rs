@@ -1,10 +1,12 @@
 use std::path::Path;
 
-use crate::{Error, LxdClient, Result};
+use tokio::fs;
+
+use anyhow::{anyhow, Result};
+
+use crate::LxdClient;
 
 pub async fn autodetect() -> Result<LxdClient> {
-    // @todo this function shouldn't perform direct I/O
-
     let paths = [
         // LXD installed from Snap:
         "/snap/bin/lxc",
@@ -22,11 +24,11 @@ pub async fn autodetect() -> Result<LxdClient> {
     for path in &paths {
         let path = Path::new(path);
 
-        if path.metadata().is_ok() {
+        if fs::metadata(path).await.is_ok() {
             return Ok(LxdClient::new(path));
         }
     }
 
-    Err(Error::ClientNotFound)
+    Err(anyhow!("Could not detect location of the `lxc` executable - please ensure you have LXD installed"))
 }
 

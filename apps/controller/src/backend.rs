@@ -1,8 +1,8 @@
-use crate::core::Ecosystem;
+use crate::config::Ecosystem;
 
 pub use self::{
     compiler::Compiler,
-    error::{Error, Result},
+    error::Result,
     experiment::Experiment,
     runner::Runner,
     system::System,

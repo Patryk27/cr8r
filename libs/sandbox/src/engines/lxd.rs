@@ -1,13 +1,11 @@
+use anyhow::Result;
+
 use async_trait::async_trait;
 use lib_lxd::{LxdClient, LxdContainerName, LxdImageName};
 
-use crate::{Result, SandboxEngine, SandboxListener};
-
-// We're exporting only the main struct to avoid exporting snafu-related types
-pub use self::error::LxdEngineError;
+use crate::{SandboxEngine, SandboxListener};
 
 mod cmds;
-mod error;
 
 pub struct LxdEngine {
     lxd: LxdClient,

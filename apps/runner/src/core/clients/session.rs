@@ -1,10 +1,10 @@
+use anyhow::Result;
 use log::*;
 
 use lib_interop::client::ControllerClient;
 use lib_interop::proto::core::{PAssignment, PRunnerId, PRunnerName};
 
 use crate::core::ExperimentClient;
-use crate::Result;
 
 #[derive(Clone)]
 pub struct SessionClient {
@@ -20,8 +20,7 @@ impl SessionClient {
         debug!("Confirming protocol's compatibility");
 
         let version = client.howdy()
-            .await
-            .unwrap()
+            .await?
             .version;
 
         debug!("... controller's protocol version: {}", version);
@@ -31,8 +30,7 @@ impl SessionClient {
         debug!("Registering");
 
         let id = client.register_runner(name)
-            .await
-            .unwrap()
+            .await?
             .id;
 
         debug!("... ok, we've been registered as: {}", id);
@@ -43,8 +41,7 @@ impl SessionClient {
     pub async fn get_assignment(&mut self) -> Result<Option<(PAssignment, ExperimentClient)>> {
         let reply = self.client
             .get_assignment(self.runner.clone())
-            .await
-            .unwrap();
+            .await?;
 
         if let Some(assignment) = reply.assignment {
             let client = ExperimentClient::new(

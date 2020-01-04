@@ -5,6 +5,7 @@ authors = ["Patryk Wychowaniec <wychowaniec.patryk@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+anyhow = "1.0"
 chrono = "0.4"
 fern = { version = "0.5", features = ["colored"] }
 log = "0.4"

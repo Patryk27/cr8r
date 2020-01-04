@@ -2,7 +2,8 @@ use std::convert::TryFrom;
 
 use chrono::{DateTime, Utc};
 
-use crate::{convert, Error, Result};
+use crate::convert;
+use crate::domain::{DomainError, DomainResult};
 use crate::proto::core::PRunner;
 
 pub use self::{
@@ -25,9 +26,9 @@ pub struct DRunner {
 }
 
 impl TryFrom<PRunner> for DRunner {
-    type Error = Error;
+    type Error = DomainError;
 
-    fn try_from(PRunner { id, name, joined_at, last_heartbeat_at, status }: PRunner) -> Result<Self> {
+    fn try_from(PRunner { id, name, joined_at, last_heartbeat_at, status }: PRunner) -> DomainResult<Self> {
         Ok(Self {
             id: convert!(id as _),
             name: convert!(name as _),

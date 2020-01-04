@@ -1,7 +1,7 @@
 use std::convert::TryFrom;
 
-use crate::{convert, Error, Result};
-use crate::domain::{DExperiment, DJob};
+use crate::convert;
+use crate::domain::{DExperiment, DJob, DomainError, DomainResult};
 use crate::proto::core::PAssignment;
 
 #[derive(Clone, Debug)]
@@ -11,9 +11,9 @@ pub struct DAssignment {
 }
 
 impl TryFrom<PAssignment> for DAssignment {
-    type Error = Error;
+    type Error = DomainError;
 
-    fn try_from(PAssignment { experiment, jobs }: PAssignment) -> Result<Self> {
+    fn try_from(PAssignment { experiment, jobs }: PAssignment) -> DomainResult<Self> {
         Ok(Self {
             experiment: convert!(experiment? as _?),
             jobs: convert!(jobs as [_?]),

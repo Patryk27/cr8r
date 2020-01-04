@@ -1,11 +1,11 @@
-use std::error::Error;
 use std::io;
 
+use anyhow::Result;
 use fern::colors::{Color, ColoredLevelConfig};
 use fern::Dispatch;
 use log::LevelFilter;
 
-pub fn init() -> Result<(), Box<dyn Error>> {
+pub fn init() -> Result<()> {
     let colors = ColoredLevelConfig::new()
         .error(Color::Red)
         .warn(Color::Yellow)

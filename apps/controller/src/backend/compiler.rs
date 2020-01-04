@@ -2,7 +2,7 @@ use lib_compiler::CompilerBuilder;
 use lib_interop::domain::{DExperimentDefinition, DJob};
 
 use crate::backend::Result;
-use crate::core::{Ecosystem, Environment, Projects, Providers};
+use crate::config::{Ecosystem, Environment, Projects, Providers};
 
 pub struct Compiler {
     compiler: lib_compiler::Compiler,

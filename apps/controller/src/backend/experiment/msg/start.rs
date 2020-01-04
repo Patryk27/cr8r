@@ -1,5 +1,6 @@
 use chrono::Utc;
 
+use anyhow::anyhow;
 use lib_interop::domain::{DAssignment, DRunnerId};
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
@@ -24,14 +25,17 @@ pub fn start(actor: &mut ExperimentActor, runner: DRunnerId) -> Result<DAssignme
         }
 
         ExperimentStatus::Running { runner, .. } => {
-            Err(format!(
-                "This experiment is already running on runner `{}` and thus cannot be re-claimed yet. If the runner's crashed, please wait a few minutes before trying again.",
+            Err(anyhow!(
+                "This experiment is already running on runner `{}` and cannot be reclaimed yet. \
+                 If the runner's crashed, please wait a few minutes before trying again.",
                 runner,
-            ).into())
+            ))
         }
 
         ExperimentStatus::Completed { .. } => {
-            Err("This experiment has been already completed - if you want to re-start it, please create a new one".into())
+            Err(anyhow!(
+                "This experiment has been already completed - if you want to re-start it, please create a new one",
+            ))
         }
 
         ExperimentStatus::Zombie { .. } => {

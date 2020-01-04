@@ -1,9 +1,8 @@
 use std::fmt;
 use std::str::FromStr;
 
+use anyhow::{Error, Result};
 use serde::Deserialize;
-
-use crate::Error;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
 pub struct LxdIdent(String);
@@ -17,7 +16,7 @@ impl LxdIdent {
 impl FromStr for LxdIdent {
     type Err = Error;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> Result<Self> {
         // @todo validate for [a-zA-Z0-9_]+
 
         Ok(Self(
@@ -36,11 +35,12 @@ impl fmt::Display for LxdIdent {
 #[macro_export]
 macro_rules! newtype {
     ($name:ident) => {
+        use anyhow::{Error, Result};
         use serde::Deserialize;
         use std::fmt;
         use std::str::FromStr;
 
-        use crate::{Error, LxdIdent};
+        use crate::LxdIdent;
 
         #[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
         pub struct $name(LxdIdent);
@@ -54,7 +54,7 @@ macro_rules! newtype {
         impl FromStr for $name {
             type Err = Error;
 
-            fn from_str(s: &str) -> Result<Self, Self::Err> {
+            fn from_str(s: &str) -> Result<Self> {
                 Ok(Self(s.parse()?))
             }
         }

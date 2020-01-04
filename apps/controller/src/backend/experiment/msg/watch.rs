@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use tokio::sync::mpsc;
 
+use anyhow::anyhow;
 use lib_interop::domain::DReport;
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
@@ -18,7 +19,7 @@ pub fn watch(actor: &mut ExperimentActor) -> Result<mpsc::UnboundedReceiver<Arc<
         }
 
         ExperimentStatus::Completed { .. } => {
-            Err("This experiment has been already completed".into())
+            Err(anyhow!("This experiment has been already completed"))
         }
     }
 }

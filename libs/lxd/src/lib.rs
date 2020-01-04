@@ -3,14 +3,14 @@
 
 use std::path::{Path, PathBuf};
 
+use anyhow::Result;
+
 pub use self::{
-    error::*,
     listener::*,
     models::*,
 };
 
 mod cmds;
-mod error;
 mod listener;
 mod models;
 

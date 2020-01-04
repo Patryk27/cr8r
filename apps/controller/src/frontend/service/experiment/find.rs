@@ -1,9 +1,9 @@
 use lib_interop::proto::controller::{PFindExperimentsReply, PFindExperimentsRequest};
 
-use crate::backend::System;
+use crate::backend::{Result, System};
 
 // @todo filtering should happen inside `system`, not here
-pub async fn find_experiments(system: &System, request: PFindExperimentsRequest) -> PFindExperimentsReply {
+pub async fn find_experiments(system: &System, request: PFindExperimentsRequest) -> Result<PFindExperimentsReply> {
     let mut experiments = Vec::new();
 
     for experiment in system.find_experiments().await {
@@ -33,5 +33,5 @@ pub async fn find_experiments(system: &System, request: PFindExperimentsRequest)
         .map(Into::into)
         .collect();
 
-    PFindExperimentsReply { experiments }
+    Ok(PFindExperimentsReply { experiments })
 }

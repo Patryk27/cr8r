@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
-use crate::{Compiler, Environment, Project, ProjectName, Provider, ProviderName, Result};
+use anyhow::Result;
+
+use crate::{Compiler, Environment, Project, ProjectName, Provider, ProviderName};
 
 #[derive(Default)]
 pub struct CompilerBuilder {

@@ -4,26 +4,20 @@
 #![feature(type_alias_impl_trait)]
 #![feature(type_ascription)]
 
-use std::path::PathBuf;
+use anyhow::Result;
 
-use snafu::ResultExt;
+use self::config::*;
 
 mod backend;
-mod core;
+mod config;
 mod frontend;
 
 #[tokio::main]
-async fn main() -> core::Result<()> {
-    lib_log::init()
-        .context(core::error::CouldntStart)?;
+async fn main() -> Result<()> {
+    lib_log::init()?;
 
-    let config = core::config::load(
-        &PathBuf::from("controller.yaml")
-    )?;
-
-    let system = backend::start(
-        config.ecosystem,
-    ).unwrap(); // @todo
+    let config = Config::load()?;
+    let system = backend::start(config.ecosystem)?;
 
     frontend::start(
         config.controller.listen,

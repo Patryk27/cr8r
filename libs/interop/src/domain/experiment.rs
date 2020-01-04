@@ -2,7 +2,8 @@ use std::convert::TryFrom;
 
 use chrono::{DateTime, Utc};
 
-use crate::{convert, Error, Result};
+use crate::convert;
+use crate::domain::{DomainError, DomainResult};
 use crate::proto::core::PExperiment;
 
 pub use self::{
@@ -23,9 +24,9 @@ pub struct DExperiment {
 }
 
 impl TryFrom<PExperiment> for DExperiment {
-    type Error = Error;
+    type Error = DomainError;
 
-    fn try_from(PExperiment { id, created_at, status }: PExperiment) -> Result<Self> {
+    fn try_from(PExperiment { id, created_at, status }: PExperiment) -> DomainResult<Self> {
         Ok(Self {
             id: convert!(id as _),
             created_at: convert!(created_at as DateTime),

@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use bimap::BiMap;
 
+use anyhow::anyhow;
 use lib_interop::domain::{DRunnerId, DRunnerName};
 
 use crate::backend::{Result, Runner, System};
@@ -23,7 +24,7 @@ impl Runners {
 
     pub fn create(&mut self, name: DRunnerName) -> Result<DRunnerId> {
         if self.index.contains_right(&name) {
-            return Err("Runner with such name has been already registered".into());
+            return Err(anyhow!("Runner with this name already exists"));
         }
 
         let id = DRunnerId::default();
@@ -63,6 +64,6 @@ impl Runners {
         self.index
             .get_by_left(id)
             .map(|_| ())
-            .ok_or_else(|| "No such runner exists".into())
+            .ok_or_else(|| anyhow!("No such runner exists"))
     }
 }

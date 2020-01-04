@@ -3,11 +3,12 @@
 #![feature(try_blocks)]
 #![feature(type_ascription)]
 
+use anyhow::Result;
+
 pub use self::{
     def::*,
     engine::*,
     engines::*,
-    error::*,
     listener::*,
     provider::*,
 };
@@ -15,7 +16,6 @@ pub use self::{
 mod def;
 mod engine;
 mod engines;
-mod error;
 mod listener;
 mod provider;
 

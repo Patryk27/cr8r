@@ -3,7 +3,8 @@ use std::result;
 
 use chrono::{DateTime, Utc};
 
-use crate::{convert, Error, Result};
+use crate::convert;
+use crate::domain::{DomainError, DomainResult};
 use crate::proto::core::PExperimentStatus;
 
 #[derive(Clone, Debug)]
@@ -30,9 +31,9 @@ pub enum DExperimentStatus {
 }
 
 impl TryFrom<PExperimentStatus> for DExperimentStatus {
-    type Error = Error;
+    type Error = DomainError;
 
-    fn try_from(PExperimentStatus { ty }: PExperimentStatus) -> Result<Self> {
+    fn try_from(PExperimentStatus { ty }: PExperimentStatus) -> DomainResult<Self> {
         use crate::proto::core::p_experiment_status::*;
 
         Ok(match convert!(ty?) {

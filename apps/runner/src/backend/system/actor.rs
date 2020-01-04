@@ -1,6 +1,7 @@
 use std::convert::TryInto;
 use std::time::Duration;
 
+use anyhow::Result;
 use log::*;
 use tokio::time;
 
@@ -8,7 +9,7 @@ use lib_interop::domain::DAssignment;
 use lib_sandbox::{SandboxDef, SandboxProvider};
 
 use crate::backend::{Executor, ExecutorStatus};
-use crate::core::{ExperimentClient, Result, SandboxConfig, SessionClient};
+use crate::core::{ExperimentClient, SandboxConfig, SessionClient};
 
 pub struct SystemActor {
     sandbox_config: SandboxConfig,

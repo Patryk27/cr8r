@@ -1,5 +1,6 @@
 use std::convert::TryInto;
 
+use anyhow::anyhow;
 use lib_interop::proto::controller::{PAddEventReply, PAddEventRequest};
 
 use crate::backend::{Result, System};
@@ -9,7 +10,7 @@ pub async fn add_event(
     request: PAddEventRequest,
 ) -> Result<PAddEventReply> {
     let event = request.event
-        .ok_or("No event has been provided")?
+        .ok_or_else(|| anyhow!("No event has been provided"))?
         .try_into()?;
 
     let experiment_id = request.experiment_id.into();

@@ -1,9 +1,8 @@
-use snafu::ResultExt;
+use anyhow::Result;
 
 use lib_lxd::LxdContainerConfig;
 
-use crate::{LxdEngine, Result};
-use crate::engines::lxd::error;
+use crate::LxdEngine;
 
 pub async fn set_env(engine: &mut LxdEngine, key: &str, value: &str) -> Result<()> {
     engine.lxd.config(&engine.container, LxdContainerConfig::Set {
@@ -25,8 +24,7 @@ pub async fn get_env(engine: &mut LxdEngine, key: &str) -> Result<String> {
 }
 
 pub fn get_host_env(key: &str) -> Result<String> {
-    let value = std::env::var(key)
-        .context(error::HostEnvVarError { key: key.to_string() })?;
+    let value = std::env::var(key)?;
 
     Ok(value)
 }

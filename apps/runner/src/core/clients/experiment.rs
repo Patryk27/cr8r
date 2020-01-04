@@ -1,7 +1,7 @@
+use anyhow::Result;
+
 use lib_interop::client::ControllerClient;
 use lib_interop::proto::core::{PEvent, PExperimentId, PRunnerId};
-
-use crate::core::Result;
 
 #[derive(Clone)]
 pub struct ExperimentClient {
@@ -20,7 +20,7 @@ impl ExperimentClient {
             self.runner.clone(),
             self.experiment.clone(),
             event,
-        ).await.unwrap();
+        ).await?;
 
         Ok(())
     }

@@ -1,7 +1,7 @@
 use std::convert::TryFrom;
 
-use crate::{convert, Error, Result};
-use crate::domain::DAttachmentId;
+use crate::convert;
+use crate::domain::{DAttachmentId, DomainError, DomainResult};
 use crate::proto::core::PJobOpcode;
 
 #[derive(Clone, Debug)]
@@ -52,9 +52,9 @@ impl DJobOpcode {
 }
 
 impl TryFrom<PJobOpcode> for DJobOpcode {
-    type Error = Error;
+    type Error = DomainError;
 
-    fn try_from(PJobOpcode { ty }: PJobOpcode) -> Result<Self> {
+    fn try_from(PJobOpcode { ty }: PJobOpcode) -> DomainResult<Self> {
         use crate::proto::core::p_job_opcode::*;
 
         Ok(match convert!(ty?) {

@@ -1,7 +1,7 @@
 use std::convert::TryFrom;
 
-use crate::{convert, Error, Result};
-use crate::domain::DAttachmentId;
+use crate::convert;
+use crate::domain::{DAttachmentId, DomainError, DomainResult};
 use crate::proto::core::PExperimentDefinition;
 
 #[derive(Clone, Debug)]
@@ -22,9 +22,9 @@ pub enum DExperimentDefinition {
 }
 
 impl TryFrom<PExperimentDefinition> for DExperimentDefinition {
-    type Error = Error;
+    type Error = DomainError;
 
-    fn try_from(PExperimentDefinition { ty }: PExperimentDefinition) -> Result<Self> {
+    fn try_from(PExperimentDefinition { ty }: PExperimentDefinition) -> DomainResult<Self> {
         use crate::proto::core::p_experiment_definition::*;
 
         Ok(match convert!(ty?) {
