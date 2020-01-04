@@ -27,8 +27,8 @@ pub enum ExperimentCommand {
     Show {
         id: String,
 
-        #[structopt(short = "d", long = "detailed")]
-        detailed: bool,
+        #[structopt(short = "a", long = "show-all")]
+        show_all: bool,
 
         #[structopt(short = "j", long = "show-jobs")]
         show_jobs: bool,
@@ -55,8 +55,8 @@ impl ExperimentCommand {
                     .await
             }
 
-            ExperimentCommand::Show { id, detailed, show_jobs, show_reports } => {
-                show::show(system, &id, detailed || show_jobs, detailed || show_reports)
+            ExperimentCommand::Show { id, show_all, show_jobs, show_reports } => {
+                show::show(system, &id, show_all || show_jobs, show_all || show_reports)
                     .await
             }
 
