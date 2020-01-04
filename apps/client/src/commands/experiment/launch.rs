@@ -3,7 +3,6 @@ use colored::Colorize;
 use structopt::StructOpt;
 
 use lib_interop::domain::DExperimentDefinition;
-use lib_interop::proto::controller::PCreateExperimentRequest;
 
 use crate::{spinner, System};
 
@@ -46,7 +45,7 @@ async fn launch_experiment(
         system
             .client()
             .await?
-            .create_experiment(PCreateExperimentRequest { experiment_definition: Some(definition.into()) })
+            .create_experiment(definition.into())
             .await?
             .id
     };

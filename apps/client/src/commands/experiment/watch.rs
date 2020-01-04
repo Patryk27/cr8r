@@ -2,7 +2,6 @@ use anyhow::Result;
 use colored::Colorize;
 
 use lib_interop::convert;
-use lib_interop::proto::controller::PWatchExperimentRequest;
 
 use crate::{spinner, System, ui};
 
@@ -13,7 +12,7 @@ pub async fn watch(mut system: System, id: String) -> Result<()> {
         system
             .client()
             .await?
-            .watch_experiment(PWatchExperimentRequest { id })
+            .watch_experiment(id)
             .await?
     };
 

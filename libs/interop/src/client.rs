@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use colored::Colorize;
 use hyper::header::HeaderValue;
 use hyper::Uri;
@@ -87,8 +87,9 @@ impl ControllerClient {
 
 /// Experiment-oriented impls
 impl ControllerClient {
-    pub async fn create_experiment(&mut self, request: PCreateExperimentRequest) -> Result<PCreateExperimentReply> {
-        let response = self.client.create_experiment(request)
+    pub async fn create_experiment(&mut self, definition: PExperimentDefinition) -> Result<PCreateExperimentReply> {
+        let response = self.client
+            .create_experiment(PCreateExperimentRequest { definition: Some(definition) })
             .await?;
 
         Ok(response.into_inner())
@@ -101,8 +102,9 @@ impl ControllerClient {
         Ok(response.into_inner())
     }
 
-    pub async fn watch_experiment(&mut self, request: PWatchExperimentRequest) -> Result<Streaming<PReport>> {
-        let response = self.client.watch_experiment(request)
+    pub async fn watch_experiment(&mut self, id: PExperimentId) -> Result<Streaming<PReport>> {
+        let response = self.client
+            .watch_experiment(PWatchExperimentRequest { id })
             .await?;
 
         Ok(response.into_inner())
