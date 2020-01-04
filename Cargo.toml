@@ -5,6 +5,7 @@ members = [
     "apps/runner",
     "libs/actor",
     "libs/compiler",
+    "libs/error",
     "libs/interop",
     "libs/log",
     "libs/lxd",

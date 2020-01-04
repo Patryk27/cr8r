@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 
 use crate::{Compiler, Environment, Project, ProjectName, Provider, ProviderName};
 
@@ -17,26 +17,30 @@ impl CompilerBuilder {
     }
 
     pub fn add_provider(&mut self, name: ProviderName, provider: Provider) -> Result<()> {
-        // @todo check for duplicates
-
-        self.providers.insert(name, provider);
-
-        Ok(())
+        if self.providers.contains_key(&name) {
+            Err(anyhow!("Provider `{}` has been already added into the compiler", name))
+        } else {
+            self.providers.insert(name, provider);
+            Ok(())
+        }
     }
 
     pub fn add_project(&mut self, name: ProjectName, project: Project) -> Result<()> {
-        // @todo check for duplicates
-
-        self.projects.insert(name, project);
-
-        Ok(())
+        if self.projects.contains_key(&name) {
+            Err(anyhow!("Project `{}` has been already added into the compiler", name))
+        } else {
+            self.projects.insert(name, project);
+            Ok(())
+        }
     }
 
     pub fn build(self) -> Result<Compiler> {
-        // @todo ensure projects <-> providers dependencies are met
+        let environment = self.environment.ok_or_else(|| {
+            anyhow!("Environment has not been configured")
+        })?;
 
         Ok(Compiler {
-            defaults: self.environment.unwrap(),
+            environment,
             providers: self.providers,
             projects: self.projects,
         })

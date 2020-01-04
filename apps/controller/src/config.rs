@@ -1,6 +1,6 @@
 use std::fs;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use serde::Deserialize;
 
 pub use self::{
@@ -20,8 +20,11 @@ pub struct Config {
 
 impl Config {
     pub fn load() -> Result<Self> {
-        let file = fs::read_to_string("controller.yaml")?;
-        let this = serde_yaml::from_str(&file)?;
+        let file = fs::read_to_string("controller.yaml")
+            .context("Could not open file")?;
+
+        let this = serde_yaml::from_str(&file)
+            .context("Could not parse file as YAML")?;
 
         Ok(this)
     }

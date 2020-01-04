@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use anyhow::Context;
 use tokio::time;
 
 use lib_lxd::{LxdContainerConfig, LxdDeviceDef, LxdListener};
@@ -15,19 +16,24 @@ pub async fn init(engine: &mut LxdEngine, mut listener: SandboxListener) -> Resu
     engine.listener = listener;
 
     delete_stale_container(engine)
-        .await?;
+        .await
+        .context("Could not delete stale container")?;
 
     launch_container(engine)
-        .await?;
+        .await
+        .context("Could not launch new container")?;
 
     forward_ssh_agent(engine)
-        .await?;
+        .await
+        .context("Could not forward SSH agent")?;
 
     wait_for_network(engine)
-        .await?;
+        .await
+        .context("Could not wait for network")?;
 
     install_rustup(engine)
-        .await?;
+        .await
+        .context("Could not install `rustup`")?;
 
     Ok(())
 }
@@ -69,8 +75,7 @@ async fn forward_ssh_agent(engine: &mut LxdEngine) -> Result<()> {
 
     engine.lxd.config(&engine.container, LxdContainerConfig::AddDevice {
         name: format!("{}-ssh-auth-sock", engine.container.as_str())
-            .parse()
-            .unwrap(),
+            .parse()?,
 
         def: LxdDeviceDef::Disk {
             source: ssh_sock,

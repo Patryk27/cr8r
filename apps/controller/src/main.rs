@@ -4,7 +4,11 @@
 #![feature(type_alias_impl_trait)]
 #![feature(type_ascription)]
 
-use anyhow::Result;
+use std::process::exit;
+
+use anyhow::{Context, Result};
+
+use lib_error::PrintableError;
 
 use self::config::*;
 
@@ -13,17 +17,24 @@ mod config;
 mod frontend;
 
 #[tokio::main]
-async fn main() -> Result<()> {
-    lib_log::init()?;
+async fn main() {
+    let result = try {
+        lib_log::init()
+            .context("Could not initialize logging facility")?;
 
-    let config = Config::load()?;
-    let system = backend::start(config.ecosystem)?;
+        let config = Config::load()
+            .context("Could not load configuration from `controller.yaml`")?;
 
-    frontend::start(
-        config.controller.listen,
-        config.controller.secret,
-        system,
-    ).await?;
+        let system = backend::start(config.ecosystem)
+            .context("Could not start controller's backend")?;
 
-    Ok(())
+        frontend::start(config.controller.listen, config.controller.secret, system)
+            .await
+            .context("Could not start controller's frontend")?
+    }: Result<()>;
+
+    if let Err(err) = result {
+        err.print();
+        exit(1);
+    }
 }

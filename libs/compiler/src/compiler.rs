@@ -8,7 +8,7 @@ mod compilers;
 
 #[derive(Debug)]
 pub struct Compiler {
-    crate defaults: Environment,
+    crate environment: Environment,
     crate providers: HashMap<ProviderName, Provider>,
     crate projects: HashMap<ProjectName, Project>,
 }

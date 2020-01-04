@@ -7,10 +7,11 @@ edition = "2018"
 [dependencies]
 anyhow = "1.0"
 chrono = "0.4"
-closure = "0.2.0"
+closure = "0.2"
 colored = "1.9"
 derivative = "1.0"
 lib_actor = { path = "../../libs/actor" }
+lib_error = { path = "../../libs/error" }
 lib_interop = { path = "../../libs/interop" }
 lib_log = { path = "../../libs/log" }
 lib_sandbox = { path = "../../libs/sandbox" }

@@ -18,15 +18,17 @@ pub struct ControllerClient {
 }
 
 impl ControllerClient {
-    pub async fn connect(address: String, secret: Option<String>) -> Result<Self> {
-        info!("Connecting to controller at: {}", address.green());
+    pub async fn connect(uri: String, secret: Option<String>) -> Result<Self> {
+        info!("Connecting to controller at: {}", uri.green());
+
+        let uri = Uri::from_str(&uri)
+            .context("Could not parse controller's URI")?;
 
         let auth = secret
             .map(|secret| format!("Bearer {}", secret))
             .map(|secret| HeaderValue::from_str(&secret))
-            .transpose()?;
-
-        let uri = Uri::from_str(&address)?;
+            .transpose()
+            .context("Could not parse controller's secret key")?;
 
         let channel = Channel::builder(uri)
             .intercept_headers(move |headers| {

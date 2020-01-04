@@ -6,12 +6,12 @@ use lib_interop::proto::controller::{PCreateExperimentReply, PCreateExperimentRe
 use crate::backend::{Result, System};
 
 pub async fn create_experiment(system: &System, request: PCreateExperimentRequest) -> Result<PCreateExperimentReply> {
-    let def = request.experiment_definition
+    let definition = request.definition
         .ok_or_else(|| anyhow!("No experiment definition has been provided"))?
         .try_into()?;
 
     let id = system
-        .create_experiment(def)
+        .create_experiment(definition)
         .await?;
 
     Ok(PCreateExperimentReply {

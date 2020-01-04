@@ -213,6 +213,7 @@ dependencies = [
  "chrono 0.4.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "colored 1.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "indicatif 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "lib_error 0.1.0",
  "lib_interop 0.1.0",
  "prettytable-rs 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.103 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -277,6 +278,7 @@ dependencies = [
  "hyper 0.13.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "lib_actor 0.1.0",
  "lib_compiler 0.1.0",
+ "lib_error 0.1.0",
  "lib_interop 0.1.0",
  "lib_log 0.1.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -601,6 +603,14 @@ version = "0.1.0"
 dependencies = [
  "anyhow 1.0.26 (registry+https://github.com/rust-lang/crates.io-index)",
  "lib_interop 0.1.0",
+]
+
+[[package]]
+name = "lib_error"
+version = "0.1.0"
+dependencies = [
+ "anyhow 1.0.26 (registry+https://github.com/rust-lang/crates.io-index)",
+ "colored 1.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -1077,6 +1087,7 @@ dependencies = [
  "colored 1.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derivative 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "lib_actor 0.1.0",
+ "lib_error 0.1.0",
  "lib_interop 0.1.0",
  "lib_log 0.1.0",
  "lib_sandbox 0.1.0",

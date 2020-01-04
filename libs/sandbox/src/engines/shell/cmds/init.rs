@@ -15,7 +15,7 @@ pub async fn init(engine: &mut ShellEngine, listener: SandboxListener) -> Result
 
         clean_root_dir(engine)
             .await?;
-    }: Result<_>).context("Could not prepare root directory")?;
+    }: Result<()>).context("Could not prepare root directory")?;
 
     Ok(())
 }

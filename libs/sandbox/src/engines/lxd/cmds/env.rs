@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Context, Result};
 
 use lib_lxd::LxdContainerConfig;
 
@@ -24,7 +24,8 @@ pub async fn get_env(engine: &mut LxdEngine, key: &str) -> Result<String> {
 }
 
 pub fn get_host_env(key: &str) -> Result<String> {
-    let value = std::env::var(key)?;
+    let value = std::env::var(key)
+        .with_context(|| format!("Could not read host environmental variable: {}", key))?;
 
     Ok(value)
 }
