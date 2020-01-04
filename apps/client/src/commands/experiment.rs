@@ -3,8 +3,6 @@ use structopt::StructOpt;
 
 use crate::System;
 
-pub use self::launch::*;
-
 mod abort;
 mod launch;
 mod show;
@@ -21,7 +19,7 @@ pub enum ExperimentCommand {
         watch: bool,
 
         #[structopt(flatten)]
-        cmd: LaunchExperimentCommand,
+        definition: launch::Definition,
     },
 
     Show {
@@ -50,9 +48,8 @@ impl ExperimentCommand {
                     .await
             }
 
-            ExperimentCommand::Launch { watch, cmd } => {
-                cmd.run(system, watch)
-                    .await
+            ExperimentCommand::Launch { watch, definition } => {
+                panic!("{:#?}", definition)
             }
 
             ExperimentCommand::Show { id, show_all, show_jobs, show_reports } => {

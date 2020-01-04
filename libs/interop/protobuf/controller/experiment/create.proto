@@ -2,10 +2,10 @@ syntax = "proto3";
 
 package cr8r.controller;
 
-import "core/experiment.proto";
+import "core/definition.proto";
 
 message PCreateExperimentRequest {
-    core.PExperimentDefinition definition = 1;
+    core.PDefinition definition = 1;
 }
 
 message PCreateExperimentReply {

@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package cr8r.core;
+
+message PDefinition {
+    message POverriddenToolchain {
+        string version = 1;
+    }
+
+    message POverriddenDependency {
+        string name = 1;
+        string version = 2;
+    }
+
+    message PPatchedDependency {
+        string name = 1;
+        string attachment_id = 2;
+    }
+
+    POverriddenToolchain overridden_toolchain = 1;
+    repeated POverriddenDependency overridden_dependencies = 2;
+    repeated PPatchedDependency patched_dependencies = 3;
+}

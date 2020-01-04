@@ -1,7 +1,7 @@
 use tokio::sync::mpsc;
 
 use lib_actor::ask;
-use lib_interop::domain::{DAssignment, DExperimentDefinition, DExperimentId, DRunnerId, DRunnerName};
+use lib_interop::domain::{DAssignment, DDefinition, DExperimentId, DRunnerId, DRunnerName};
 
 use crate::backend::{Compiler, Experiment, Result, Runner};
 
@@ -46,8 +46,8 @@ impl System {
 
 /// Experiment-oriented impls
 impl System {
-    pub async fn create_experiment(&self, def: DExperimentDefinition) -> Result<DExperimentId> {
-        ask!(self.tx, SystemMsg::CreateExperiment { def })
+    pub async fn create_experiment(&self, definition: DDefinition) -> Result<DExperimentId> {
+        ask!(self.tx, SystemMsg::CreateExperiment { definition })
     }
 
     pub async fn find_experiment(&self, id: DExperimentId) -> Result<Experiment> {

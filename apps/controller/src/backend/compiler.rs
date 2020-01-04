@@ -1,7 +1,7 @@
 use anyhow::Context;
 
 use lib_compiler::CompilerBuilder;
-use lib_interop::domain::{DExperimentDefinition, DJob};
+use lib_interop::domain::{DDefinition, DJob};
 
 use crate::backend::Result;
 use crate::config::{Ecosystem, Environment, Projects, Providers};
@@ -27,8 +27,8 @@ impl Compiler {
         })
     }
 
-    pub fn compile(&self, def: &DExperimentDefinition) -> Vec<DJob> {
-        self.compiler.compile(def)
+    pub fn compile(&self, definition: &DDefinition) -> Vec<DJob> {
+        self.compiler.compile(definition)
     }
 }
 

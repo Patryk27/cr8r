@@ -89,7 +89,7 @@ impl ControllerClient {
 
 /// Experiment-oriented impls
 impl ControllerClient {
-    pub async fn create_experiment(&mut self, definition: PExperimentDefinition) -> Result<PCreateExperimentReply> {
+    pub async fn create_experiment(&mut self, definition: PDefinition) -> Result<PCreateExperimentReply> {
         let response = self.client
             .create_experiment(PCreateExperimentRequest { definition: Some(definition) })
             .await?;

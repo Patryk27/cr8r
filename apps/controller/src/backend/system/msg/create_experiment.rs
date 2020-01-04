@@ -1,10 +1,10 @@
-use lib_interop::domain::{DExperimentDefinition, DExperimentId};
+use lib_interop::domain::{DDefinition, DExperimentId};
 
 use crate::backend::Result;
 use crate::backend::system::SystemActor;
 
-pub fn create_experiment(actor: &mut SystemActor, def: DExperimentDefinition) -> Result<DExperimentId> {
-    let jobs = actor.compiler.compile(&def);
+pub fn create_experiment(actor: &mut SystemActor, definition: DDefinition) -> Result<DExperimentId> {
+    let jobs = actor.compiler.compile(&definition);
     let id = actor.experiments.create(jobs);
 
     Ok(id)

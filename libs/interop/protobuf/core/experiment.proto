@@ -37,25 +37,3 @@ message PExperimentStatus {
         PZombie zombie = 4;
     }
 }
-
-message PExperimentDefinition {
-    message POverrideToolchain {
-        string toolchain = 1;
-    }
-
-    message POverrideCrate {
-        string name = 1;
-        string version = 2;
-    }
-
-    message PPatchCrate {
-        string name = 1;
-        string attachment_id = 2;
-    }
-
-    oneof ty {
-        POverrideToolchain override_toolchain = 1;
-        POverrideCrate override_crate = 2;
-        PPatchCrate patch_crate = 3;
-    }
-}

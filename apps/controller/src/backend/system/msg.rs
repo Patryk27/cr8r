@@ -2,7 +2,7 @@ use derivative::Derivative;
 use log::*;
 use tokio::sync::{mpsc, oneshot};
 
-use lib_interop::domain::{DAssignment, DExperimentDefinition, DExperimentId, DRunnerId, DRunnerName};
+use lib_interop::domain::{DAssignment, DDefinition, DExperimentId, DRunnerId, DRunnerName};
 
 use crate::backend::{Experiment, Result, Runner};
 use crate::backend::system::SystemActor;
@@ -15,6 +15,7 @@ pub type SystemRx = mpsc::UnboundedReceiver<SystemMsg>;
 pub enum SystemMsg {
     CreateRunner {
         name: DRunnerName,
+
         #[derivative(Debug = "ignore")]
         tx: oneshot::Sender<Result<DRunnerId>>,
     },
@@ -27,13 +28,15 @@ pub enum SystemMsg {
     // ---- //
 
     CreateExperiment {
-        def: DExperimentDefinition,
+        definition: DDefinition,
+
         #[derivative(Debug = "ignore")]
         tx: oneshot::Sender<Result<DExperimentId>>,
     },
 
     FindExperiment {
         id: DExperimentId,
+
         #[derivative(Debug = "ignore")]
         tx: oneshot::Sender<Result<Experiment>>,
     },
@@ -47,6 +50,7 @@ pub enum SystemMsg {
 
     GetAssignment {
         runner_id: DRunnerId,
+
         #[derivative(Debug = "ignore")]
         tx: oneshot::Sender<Result<Option<DAssignment>>>,
     },
@@ -76,8 +80,8 @@ impl SystemMsg {
 
             // ---- //
 
-            SystemMsg::CreateExperiment { def, tx } => {
-                let _ = tx.send(create_experiment::create_experiment(actor, def));
+            SystemMsg::CreateExperiment { definition, tx } => {
+                let _ = tx.send(create_experiment::create_experiment(actor, definition));
             }
 
             SystemMsg::FindExperiment { id, tx } => {

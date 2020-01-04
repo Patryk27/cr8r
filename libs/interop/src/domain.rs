@@ -1,6 +1,7 @@
 pub use self::{
     assignment::*,
     attachment::*,
+    definition::*,
     error::*,
     event::*,
     experiment::*,
@@ -13,6 +14,7 @@ mod macros;
 
 mod assignment;
 mod attachment;
+mod definition;
 mod error;
 mod event;
 mod experiment;

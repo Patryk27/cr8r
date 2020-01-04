@@ -7,12 +7,10 @@ use crate::domain::{DomainError, DomainResult};
 use crate::proto::core::PExperiment;
 
 pub use self::{
-    definition::*,
     id::*,
     status::*,
 };
 
-mod definition;
 mod id;
 mod status;
 
