@@ -25,7 +25,7 @@ pub async fn show(
         let experiment = convert!(experiment as _?);
 
         if show_jobs || show_reports {
-            print!("{}", ui::Header::new("Experiment"));
+            println!("{}", ui::Header::new("Experiment"));
         }
 
         print_experiment(&experiment);
@@ -48,11 +48,11 @@ pub async fn show(
 }
 
 fn print_experiment(experiment: &DExperiment) {
-    print!("{}", ui::ExperimentDetails::new(experiment));
+    println!("{}", ui::ExperimentDetails::new(experiment));
 }
 
 async fn print_reports(system: &mut System, id: &str) -> Result<()> {
-    print!("{}", ui::Header::new("Reports"));
+    println!("{}", ui::Header::new("Reports"));
 
     let reports = spinner! {
         system
@@ -65,7 +65,7 @@ async fn print_reports(system: &mut System, id: &str) -> Result<()> {
 
     let reports = convert!(reports as [_?]);
 
-    print!("{}", ui::ReportsTable::new(&reports));
+    println!("{}", ui::ReportsTable::new(&reports));
 
     Ok(())
 }
