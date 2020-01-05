@@ -4,29 +4,29 @@ use crate::convert;
 use crate::domain::{DAttachmentId, DomainError, DomainResult};
 use crate::proto::core::PDefinition;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct DDefinition {
-    pub overridden_toolchain: definition::DOverriddenToolchain,
-    pub overridden_dependencies: Vec<definition::DOverriddenDependency>,
-    pub patched_dependencies: Vec<definition::DPatchedDependency>,
+    pub overridden_toolchain: Option<definition_inner::DOverriddenToolchain>,
+    pub overridden_packages: Vec<definition_inner::DOverriddenPackage>,
+    pub patched_packages: Vec<definition_inner::DPatchedPackage>,
 }
 
-pub mod definition {
+pub mod definition_inner {
     use crate::domain::DAttachmentId;
 
-    #[derive(Clone, Debug)]
+    #[derive(Clone, Debug, Eq, PartialEq)]
     pub struct DOverriddenToolchain {
         pub toolchain: String,
     }
 
-    #[derive(Clone, Debug)]
-    pub struct DOverriddenDependency {
+    #[derive(Clone, Debug, Eq, PartialEq)]
+    pub struct DOverriddenPackage {
         pub name: String,
         pub version: String,
     }
 
-    #[derive(Clone, Debug)]
-    pub struct DPatchedDependency {
+    #[derive(Clone, Debug, Eq, PartialEq)]
+    pub struct DPatchedPackage {
         pub name: String,
         pub attachment_id: DAttachmentId,
     }

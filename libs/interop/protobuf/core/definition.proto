@@ -7,17 +7,17 @@ message PDefinition {
         string version = 1;
     }
 
-    message POverriddenDependency {
+    message POverriddenPackage {
         string name = 1;
         string version = 2;
     }
 
-    message PPatchedDependency {
+    message PPatchedPackage {
         string name = 1;
         string attachment_id = 2;
     }
 
     POverriddenToolchain overridden_toolchain = 1;
-    repeated POverriddenDependency overridden_dependencies = 2;
-    repeated PPatchedDependency patched_dependencies = 3;
+    repeated POverriddenPackage overridden_packages = 2;
+    repeated PPatchedPackage patched_package = 3;
 }

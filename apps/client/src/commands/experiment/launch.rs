@@ -10,7 +10,7 @@ mod definition;
 
 pub fn launch(system: System, watch: bool, definition: Definition) -> Result<()> {
     let definition = definition.parse()
-        .context("Could not understand experiment's definition")?;
+        .context("Could not parse experiment's definition")?;
 
     panic!("{:#?}", definition);
 }
