@@ -6,8 +6,6 @@ use lib_interop::convert;
 use crate::{spinner, System, ui};
 
 pub async fn watch(mut system: System, id: String) -> Result<()> {
-    println!("Attaching to experiment `{}`", id.cyan());
-
     let mut reply = spinner! {
         system
             .client()
