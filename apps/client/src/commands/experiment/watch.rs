@@ -19,13 +19,7 @@ pub async fn watch(mut system: System, id: String) -> Result<()> {
 
     while let Some(report) = spinner! { reply.message().await? } {
         let report = convert!(report as _?);
-
-        let report = ui::InlineReport::new(&report)
-            .to_string();
-
-        if !report.is_empty() {
-            println!("{}", report);
-        }
+        println!("{}", ui::InlineReport::new(&report));
     }
 
     println!();
