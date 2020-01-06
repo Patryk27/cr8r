@@ -1,6 +1,7 @@
 use std::fmt;
 
 use lib_interop::domain::DReport;
+use lib_ui::table;
 
 pub struct ReportsTable<'a> {
     reports: &'a [DReport],
@@ -14,7 +15,7 @@ impl<'a> ReportsTable<'a> {
 
 impl fmt::Display for ReportsTable<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use crate::{table, ui};
+        use crate::ui;
         use colored::Colorize;
         use prettytable::{cell, row};
 
@@ -27,7 +28,7 @@ impl fmt::Display for ReportsTable<'_> {
         };
 
         for report in self.reports {
-            let at = ui::DateTime::new(report.at)
+            let at = lib_ui::DateTime::new(report.at)
                 .to_string()
                 .dimmed();
 

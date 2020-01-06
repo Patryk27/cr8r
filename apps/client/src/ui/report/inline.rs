@@ -17,7 +17,7 @@ impl fmt::Display for InlineReport<'_> {
         use crate::ui;
         use colored::Colorize;
 
-        let at = ui::DateTime::new(self.report.at)
+        let at = lib_ui::DateTime::new(self.report.at)
             .to_string()
             .dimmed();
 

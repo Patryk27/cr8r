@@ -8,7 +8,6 @@ use anyhow::{Context, Result};
 use colored::Colorize;
 use log::*;
 
-use lib_error::PrintableError;
 use lib_interop::client::ControllerClient;
 use lib_sandbox::SandboxProvider;
 
@@ -51,7 +50,8 @@ async fn main() {
     }: Result<()>;
 
     if let Err(err) = result {
-        err.print();
+        eprintln!("{}", lib_ui::Error::new(&err));
+
         exit(1);
     }
 }

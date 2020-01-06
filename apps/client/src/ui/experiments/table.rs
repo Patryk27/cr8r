@@ -1,6 +1,7 @@
 use std::fmt;
 
 use lib_interop::domain::DExperiment;
+use lib_ui::table;
 
 pub struct ExperimentsTable<'a> {
     experiments: &'a [DExperiment],
@@ -14,7 +15,7 @@ impl<'a> ExperimentsTable<'a> {
 
 impl fmt::Display for ExperimentsTable<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use crate::{table, ui};
+        use crate::ui;
         use prettytable::{cell, row};
 
         if self.experiments.is_empty() {
@@ -29,7 +30,7 @@ impl fmt::Display for ExperimentsTable<'_> {
             table.add_row(row![
                 ui::ExperimentId::new(&experiment.id),
                 ui::ExperimentStatus::new(&experiment.status),
-                ui::DateTime::new(experiment.created_at),
+                lib_ui::DateTime::new(experiment.created_at),
             ]);
         }
 

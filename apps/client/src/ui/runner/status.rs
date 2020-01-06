@@ -14,27 +14,26 @@ impl<'a> RunnerStatus<'a> {
 
 impl fmt::Display for RunnerStatus<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use crate::ui;
         use colored::Colorize;
 
         write!(f, "{}", match self.status {
             DRunnerStatus::Idle { since } => {
                 let status = "idle / awaiting experiment".yellow();
-                let since = ui::DateTime::new(*since);
+                let since = lib_ui::DateTime::new(*since);
 
                 format!("{} (since {})", status, since)
             }
 
             DRunnerStatus::Working { since, .. } => {
                 let status = "working".green();
-                let since = ui::DateTime::new(*since);
+                let since = lib_ui::DateTime::new(*since);
 
                 format!("{} (since {})", status, since)
             }
 
             DRunnerStatus::Zombie { since } => {
                 let status = "zombie".red();
-                let since = ui::DateTime::new(*since);
+                let since = lib_ui::DateTime::new(*since);
 
                 format!("{} (since {})", status, since)
             }

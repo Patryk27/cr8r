@@ -1,9 +1,10 @@
 [package]
-name = "lib_error"
+name = "lib_ui"
 version = "0.1.0"
 authors = ["Patryk Wychowaniec <wychowaniec.patryk@gmail.com>"]
 edition = "2018"
 
 [dependencies]
 anyhow = "1.0"
+chrono = "0.4"
 colored = "1.9"

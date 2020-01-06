@@ -1,9 +1,9 @@
 use anyhow::Result;
-use colored::Colorize;
 
 use lib_interop::convert;
+use lib_ui::spinner;
 
-use crate::{spinner, System, ui};
+use crate::{System, ui};
 
 pub async fn watch(mut system: System, id: String) -> Result<()> {
     let mut reply = spinner! {
@@ -14,7 +14,7 @@ pub async fn watch(mut system: System, id: String) -> Result<()> {
             .await?
     };
 
-    println!("Attached, logs follow:");
+    println!("Attached to experiment, logs follow:");
     println!();
 
     while let Some(report) = spinner! { reply.message().await? } {
@@ -23,7 +23,7 @@ pub async fn watch(mut system: System, id: String) -> Result<()> {
     }
 
     println!();
-    println!("Stream closed");
+    println!("Experiment's stream closed");
 
     Ok(())
 }

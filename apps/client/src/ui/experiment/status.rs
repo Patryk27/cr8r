@@ -14,13 +14,12 @@ impl<'a> ExperimentStatus<'a> {
 
 impl fmt::Display for ExperimentStatus<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use crate::ui;
         use colored::Colorize;
 
         write!(f, "{}", match self.status {
             DExperimentStatus::Idle { since } => {
                 let state = "idle / awaiting runner".yellow();
-                let since = ui::DateTime::new(*since);
+                let since = lib_ui::DateTime::new(*since);
 
                 format!("{} (since {})", state, since)
             }
@@ -36,7 +35,7 @@ impl fmt::Display for ExperimentStatus<'_> {
                     .to_string()
                     .blue();
 
-                let since = ui::DateTime::new(*since);
+                let since = lib_ui::DateTime::new(*since);
 
                 format!("{} (completed {} out of {} jobs(s), since {})", state, completed_jobs, total_jobs, since)
             }
@@ -56,14 +55,14 @@ impl fmt::Display for ExperimentStatus<'_> {
                         .to_string()
                 };
 
-                let since = ui::DateTime::new(*since);
+                let since = lib_ui::DateTime::new(*since);
 
                 format!("{} ({}, since {})", state, result, since)
             }
 
             DExperimentStatus::Zombie { since } => {
                 let state = "zombie".red();
-                let since = ui::DateTime::new(*since);
+                let since = lib_ui::DateTime::new(*since);
 
                 format!("{} (since {})", state, since)
             }

@@ -24,7 +24,7 @@ impl fmt::Display for ExperimentDetails<'_> {
         ]);
 
         table.add_row(row![
-            "Created at", ui::DateTime::new(self.experiment.created_at),
+            "Created at", lib_ui::DateTime::new(self.experiment.created_at),
         ]);
 
         table.add_row(row![

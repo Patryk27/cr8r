@@ -9,8 +9,6 @@ use std::process::exit;
 use anyhow::{Context, Result};
 use structopt::StructOpt;
 
-use lib_error::PrintableError;
-
 use self::{
     commands::*,
     config::*,
@@ -39,7 +37,8 @@ async fn main() {
     }: Result<()>;
 
     if let Err(err) = result {
-        err.print();
+        ui::Error::print(err);
+
         exit(1);
     }
 }

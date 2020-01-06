@@ -2,11 +2,12 @@ use anyhow::Result;
 
 use lib_interop::convert;
 use lib_interop::proto::controller::PFindExperimentsRequest;
+use lib_ui::spinner;
 
-use crate::{spinner, System, ui};
+use crate::{System, ui};
 
 pub async fn print(system: &mut System) -> Result<()> {
-    println!("{}", ui::Header::new("Experiments"));
+    println!("{}", lib_ui::Header::new("Experiments"));
 
     let experiments = spinner! {
         system

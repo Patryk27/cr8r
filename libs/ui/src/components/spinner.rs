@@ -1,7 +1,7 @@
 #[macro_export]
 macro_rules! spinner {
     ($expr:expr) => {{
-        use $crate::Result;
+        use anyhow::Result;
         use indicatif::ProgressBar;
 
         let pb = ProgressBar::new_spinner();

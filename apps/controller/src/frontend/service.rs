@@ -130,5 +130,5 @@ impl Controller for ControllerService {
 
 fn transform_error(err: Error) -> Status {
     // @todo we could return more contextual status codes
-    Status::unknown(format!("{}", err))
+    Status::unknown(err.to_string())
 }

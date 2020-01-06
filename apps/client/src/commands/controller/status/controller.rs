@@ -3,10 +3,12 @@ use std::time::Duration;
 use anyhow::Result;
 use colored::Colorize;
 
-use crate::{spinner, System, ui};
+use lib_ui::spinner;
+
+use crate::System;
 
 pub async fn print(system: &mut System) -> Result<()> {
-    println!("{}", ui::Header::new("Controller"));
+    println!("{}", lib_ui::Header::new("Controller"));
 
     println!(
         "Address: {}",

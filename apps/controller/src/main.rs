@@ -8,8 +8,6 @@ use std::process::exit;
 
 use anyhow::{Context, Result};
 
-use lib_error::PrintableError;
-
 use self::config::*;
 
 mod backend;
@@ -34,7 +32,8 @@ async fn main() {
     }: Result<()>;
 
     if let Err(err) = result {
-        err.print();
+        eprintln!("{}", lib_ui::Error::new(&err));
+
         exit(1);
     }
 }

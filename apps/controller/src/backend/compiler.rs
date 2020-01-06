@@ -1,5 +1,3 @@
-use anyhow::Context;
-
 use lib_compiler::CompilerBuilder;
 use lib_interop::domain::{DDefinition, DJob};
 
@@ -15,12 +13,8 @@ impl Compiler {
         let mut compiler = lib_compiler::Compiler::builder();
 
         setup_environment(&mut compiler, ecosystem.environment);
-
-        setup_providers(&mut compiler, ecosystem.providers)
-            .context("Could not setup providers")?;
-
-        setup_projects(&mut compiler, ecosystem.projects)
-            .context("Could not setup projects")?;
+        setup_providers(&mut compiler, ecosystem.providers)?;
+        setup_projects(&mut compiler, ecosystem.projects)?;
 
         Ok(Self {
             compiler: compiler.build()?,

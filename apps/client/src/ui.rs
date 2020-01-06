@@ -1,5 +1,5 @@
 pub use self::{
-    core::*,
+    error::*,
     experiment::*,
     experiments::*,
     report::*,
@@ -8,7 +8,7 @@ pub use self::{
     runners::*,
 };
 
-mod core;
+mod error;
 mod experiment;
 mod experiments;
 mod report;

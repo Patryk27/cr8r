@@ -1,6 +1,7 @@
 use std::fmt;
 
 use lib_interop::domain::DRunner;
+use lib_ui::table;
 
 pub struct RunnersTable<'a> {
     runners: &'a [DRunner],
@@ -14,7 +15,7 @@ impl<'a> RunnersTable<'a> {
 
 impl fmt::Display for RunnersTable<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use crate::{table, ui};
+        use crate::ui;
         use prettytable::{cell, row};
 
         if self.runners.is_empty() {
@@ -29,8 +30,8 @@ impl fmt::Display for RunnersTable<'_> {
             table.add_row(row![
                 ui::RunnerName::new(&runner.name),
                 ui::RunnerStatus::new(&runner.status),
-                ui::DateTime::new(runner.joined_at),
-                ui::DateTime::new(runner.last_heartbeat_at),
+                lib_ui::DateTime::new(runner.joined_at),
+                lib_ui::DateTime::new(runner.last_heartbeat_at),
             ]);
         }
 

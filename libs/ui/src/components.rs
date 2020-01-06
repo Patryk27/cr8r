@@ -1,13 +1,17 @@
 pub use self::{
-    date::*,
+    datetime::*,
+    error::*,
     header::*,
     message::*,
-    progress::*,
+    spinner::*,
     table::*,
 };
 
-mod date;
+#[macro_use]
+mod spinner;
+
+mod datetime;
+mod error;
 mod header;
 mod message;
-mod progress;
 mod table;

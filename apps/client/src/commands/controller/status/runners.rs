@@ -2,11 +2,12 @@ use anyhow::Result;
 
 use lib_interop::convert;
 use lib_interop::proto::controller::PFindRunnersRequest;
+use lib_ui::spinner;
 
-use crate::{spinner, System, ui};
+use crate::{System, ui};
 
 pub async fn print(system: &mut System) -> Result<()> {
-    println!("{}", ui::Header::new("Runners"));
+    println!("{}", lib_ui::Header::new("Runners"));
 
     let runners = spinner! {
         system

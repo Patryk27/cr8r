@@ -3,8 +3,9 @@ use anyhow::Result;
 use lib_interop::convert;
 use lib_interop::domain::DExperiment;
 use lib_interop::proto::controller::{PFindExperimentsRequest, PFindReportsRequest};
+use lib_ui::spinner;
 
-use crate::{spinner, System, ui};
+use crate::{System, ui};
 
 pub async fn show(
     mut system: System,
@@ -25,7 +26,7 @@ pub async fn show(
         let experiment = convert!(experiment as _?);
 
         if show_jobs || show_reports {
-            println!("{}", ui::Header::new("Experiment"));
+            println!("{}", lib_ui::Header::new("Experiment"));
         }
 
         print_experiment(&experiment);
@@ -52,7 +53,7 @@ fn print_experiment(experiment: &DExperiment) {
 }
 
 async fn print_reports(system: &mut System, id: &str) -> Result<()> {
-    println!("{}", ui::Header::new("Reports"));
+    println!("{}", lib_ui::Header::new("Reports"));
 
     let reports = spinner! {
         system
