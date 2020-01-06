@@ -49,7 +49,8 @@ impl ExperimentCommand {
             }
 
             ExperimentCommand::Launch { watch, definition } => {
-                panic!("{:#?}", definition)
+                launch::launch(system, watch, definition)
+                    .await
             }
 
             ExperimentCommand::Show { id, show_all, show_jobs, show_reports } => {

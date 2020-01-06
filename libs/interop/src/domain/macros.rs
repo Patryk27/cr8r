@@ -33,6 +33,7 @@ macro_rules! newtype {
             }
         }
 
+        // @todo this should probably be `TryFrom<String>` for cases like `str.is_empty()`
         impl From<String> for $name {
             fn from(str: String) -> Self {
                 Self(str)
@@ -56,7 +57,7 @@ macro_rules! newtype {
 #[macro_export]
 macro_rules! convert {
     ($field:ident? $($tt:tt)*) => {{
-        use crate::domain::DomainError;
+        use $crate::domain::DomainError;
 
         let field = $field
             .ok_or_else(|| DomainError::MissingField { name: stringify!($field) })?;
@@ -64,8 +65,6 @@ macro_rules! convert {
         convert!(field $($tt)*)
     }};
 
-    // Having `convert!(x)` as a no-op is useful, because it nicely adapts with other conversion routines, e.g.
-    // `convert!(x?)`
     ($field:ident) => {
         $field
     };
@@ -95,12 +94,42 @@ macro_rules! convert {
             .into_iter()
             .map(TryInto::try_into)
             .collect(): DomainResult<Vec<_>>;
+                                    // we're always collecting into a `Vec`, so that the entire macro is more convenient
+                                    // to use; you can try getting rid of that `Vec` and see what happens
 
         field?
     }};
 
+    ($field:ident as { _ => _ }) => {{
+        $field
+            .into_iter()
+            .map(|(key, value)| {
+                let key = convert!(key as _);
+                let value = convert!(value as _);
+
+                (key, value)
+            })
+            .collect()
+    }};
+
+    ($field:ident as { _ => _? }) => {{
+        use $crate::domain::DomainResult;
+
+        let fields = $field
+            .into_iter()
+            .map(|(key, value)| {
+                let key = convert!(key as _);
+                let value = convert!(value as _?);
+
+                Ok((key, value))
+            })
+            .collect(): DomainResult<_>;
+
+        fields?
+    }};
+
     ($field:ident as DateTime) => {{
-        use crate::domain::DomainError;
+        use $crate::domain::DomainError;
         use chrono::{DateTime, Utc};
 
         DateTime::parse_from_rfc3339(&$field)

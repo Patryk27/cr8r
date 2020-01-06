@@ -1,47 +1,39 @@
+use std::collections::HashMap;
 use std::convert::TryFrom;
 
 use crate::convert;
-use crate::domain::{DAttachmentId, DomainError, DomainResult};
+use crate::domain::{DomainError, DomainResult};
 use crate::proto::core::PDefinition;
 
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
+pub mod definition_inner;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DDefinition {
-    pub overridden_toolchain: Option<definition_inner::DOverriddenToolchain>,
-    pub overridden_packages: Vec<definition_inner::DOverriddenPackage>,
-    pub patched_packages: Vec<definition_inner::DPatchedPackage>,
-}
-
-pub mod definition_inner {
-    use crate::domain::DAttachmentId;
-
-    #[derive(Clone, Debug, Eq, PartialEq)]
-    pub struct DOverriddenToolchain {
-        pub toolchain: String,
-    }
-
-    #[derive(Clone, Debug, Eq, PartialEq)]
-    pub struct DOverriddenPackage {
-        pub name: String,
-        pub version: String,
-    }
-
-    #[derive(Clone, Debug, Eq, PartialEq)]
-    pub struct DPatchedPackage {
-        pub name: String,
-        pub attachment_id: DAttachmentId,
-    }
+    pub toolchain: Option<definition_inner::DToolchain>,
+    pub packages: HashMap<String, definition_inner::DPackage>,
 }
 
 impl TryFrom<PDefinition> for DDefinition {
     type Error = DomainError;
 
-    fn try_from(value: PDefinition) -> DomainResult<Self> {
-        unimplemented!()
+    fn try_from(PDefinition { toolchain, packages }: PDefinition) -> DomainResult<Self> {
+        let toolchain = toolchain
+            .map(|toolchain| Ok(convert!(toolchain as _?)))
+            .transpose()?;
+
+        let packages = convert!(packages as { _ => _? });
+
+        Ok(Self { toolchain, packages })
     }
 }
 
 impl Into<PDefinition> for DDefinition {
     fn into(self) -> PDefinition {
-        unimplemented!()
+        let Self { toolchain, packages } = self;
+
+        let toolchain = toolchain.map(|toolchain| convert!(toolchain as _));
+        let packages = convert!(packages as { _ => _ });
+
+        PDefinition { toolchain, packages }
     }
 }
