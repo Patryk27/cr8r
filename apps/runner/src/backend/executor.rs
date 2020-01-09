@@ -9,13 +9,11 @@ use crate::core::ExperimentClient;
 
 pub(self) use self::{
     actor::*,
-    error::*,
     msg::*,
 };
 pub use self::status::*;
 
 mod actor;
-mod error;
 mod msg;
 mod status;
 

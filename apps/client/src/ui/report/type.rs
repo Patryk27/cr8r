@@ -18,9 +18,9 @@ impl fmt::Display for ReportType<'_> {
 
         //@formatter:off
         let ty = match self.ty {
-            DReportType::SystemMsg     => "sys ",
-            DReportType::UserMsg       => "msg ",
-            DReportType::ProcessOutput => "proc",
+            DReportType::SystemMsg  => "sys ",
+            DReportType::CustomMsg  => "msg ",
+            DReportType::ProcessMsg => "proc",
         };
         //@formatter:on
 

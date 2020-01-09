@@ -21,10 +21,10 @@ macro_rules! ask {
             if let Ok(rx) = rx.await {
                 rx
             } else {
-                panic!("Connection to actor lost (couldn't await response) - did it die prematurely?"); // @todo
+                panic!("Connection to actor lost (could not await response) - did it die prematurely?"); // @todo
             }
         } else {
-            panic!("Connection to actor lost (couldn't send message) - did it die prematurely?"); // @todo
+            panic!("Connection to actor lost (could not send message) - did it die prematurely?"); // @todo
         }
     }};
 }

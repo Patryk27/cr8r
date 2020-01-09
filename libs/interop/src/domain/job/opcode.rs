@@ -10,15 +10,27 @@ pub enum DJobOpcode {
         msg: String,
     },
 
-    LogUserMsg {
+    LogCustomMsg {
         msg: String,
     },
 
-    Exec {
+    InvokeCmd {
         cmd: String,
     },
 
-    PatchCrate {
+    OverrideToolchain {
+        project: String,
+        version: String,
+    },
+
+    OverridePackage {
+        project: String,
+        name: String,
+        version: String,
+    },
+
+    PatchPackage {
+        project: String,
         name: String,
         attachment_id: DAttachmentId,
     },
@@ -31,20 +43,44 @@ impl DJobOpcode {
         }
     }
 
-    pub fn log_user_msg(msg: impl Into<String>) -> Self {
-        DJobOpcode::LogUserMsg {
+    pub fn log_custom_msg(msg: impl Into<String>) -> Self {
+        DJobOpcode::LogCustomMsg {
             msg: msg.into(),
         }
     }
 
-    pub fn exec(cmd: impl Into<String>) -> Self {
-        DJobOpcode::Exec {
+    pub fn invoke_cmd(cmd: impl Into<String>) -> Self {
+        DJobOpcode::InvokeCmd {
             cmd: cmd.into(),
         }
     }
 
-    pub fn patch_crate(name: impl Into<String>, attachment_id: impl Into<DAttachmentId>) -> Self {
-        DJobOpcode::PatchCrate {
+    pub fn override_toolchain(project: impl Into<String>, version: impl Into<String>) -> Self {
+        DJobOpcode::OverrideToolchain {
+            project: project.into(),
+            version: version.into(),
+        }
+    }
+
+    pub fn override_package(
+        project: impl Into<String>,
+        name: impl Into<String>,
+        version: impl Into<String>,
+    ) -> Self {
+        DJobOpcode::OverridePackage {
+            project: project.into(),
+            name: name.into(),
+            version: version.into(),
+        }
+    }
+
+    pub fn patch_package(
+        project: impl Into<String>,
+        name: impl Into<String>,
+        attachment_id: impl Into<DAttachmentId>,
+    ) -> Self {
+        DJobOpcode::PatchPackage {
+            project: project.into(),
             name: name.into(),
             attachment_id: attachment_id.into(),
         }
@@ -62,12 +98,28 @@ impl TryFrom<PJobOpcode> for DJobOpcode {
                 DJobOpcode::LogSystemMsg { msg }
             }
 
-            Ty::LogUserMsg(PLogUserMsg { msg }) => {
-                DJobOpcode::LogUserMsg { msg }
+            Ty::LogCustomMsg(PLogCustomMsg { msg }) => {
+                DJobOpcode::LogCustomMsg { msg }
             }
 
-            Ty::Exec(PExec { cmd }) => {
-                DJobOpcode::Exec { cmd }
+            Ty::InvokeCmd(PInvokeCmd { cmd }) => {
+                DJobOpcode::InvokeCmd { cmd }
+            }
+
+            Ty::OverrideToolchain(POverrideToolchain { project, version }) => {
+                DJobOpcode::OverrideToolchain { project, version }
+            }
+
+            Ty::OverridePackage(POverridePackage { project, name, version }) => {
+                DJobOpcode::OverridePackage { project, name, version }
+            }
+
+            Ty::PatchPackage(PPatchPackage { project, name, attachment_id }) => {
+                DJobOpcode::PatchPackage {
+                    project,
+                    name,
+                    attachment_id: convert!(attachment_id as _),
+                }
             }
         })
     }
@@ -82,16 +134,28 @@ impl Into<PJobOpcode> for DJobOpcode {
                 Ty::LogSystemMsg(PLogSystemMsg { msg })
             }
 
-            DJobOpcode::LogUserMsg { msg } => {
-                Ty::LogUserMsg(PLogUserMsg { msg })
+            DJobOpcode::LogCustomMsg { msg } => {
+                Ty::LogCustomMsg(PLogCustomMsg { msg })
             }
 
-            DJobOpcode::Exec { cmd } => {
-                Ty::Exec(PExec { cmd })
+            DJobOpcode::InvokeCmd { cmd } => {
+                Ty::InvokeCmd(PInvokeCmd { cmd })
             }
 
-            DJobOpcode::PatchCrate { .. } => {
-                unimplemented!()
+            DJobOpcode::OverrideToolchain { project, version } => {
+                Ty::OverrideToolchain(POverrideToolchain { project, version })
+            }
+
+            DJobOpcode::OverridePackage { project, name, version } => {
+                Ty::OverridePackage(POverridePackage { project, name, version })
+            }
+
+            DJobOpcode::PatchPackage { project, name, attachment_id } => {
+                Ty::PatchPackage(PPatchPackage {
+                    project,
+                    name,
+                    attachment_id: convert!(attachment_id as _),
+                })
             }
         };
 

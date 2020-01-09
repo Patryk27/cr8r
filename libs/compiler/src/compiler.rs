@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use lib_interop::domain::{DDefinition, DJob, DJobOpcode};
+use lib_interop::domain::definition_inner::DPackage;
 
 use crate::{CompilerBuilder, Environment, Project, ProjectName, Provider, ProviderName};
 
@@ -17,32 +18,36 @@ impl Compiler {
     }
 
     pub fn compile(&self, definition: &DDefinition) -> Vec<DJob> {
-        let toolchain = definition.toolchain
-            .as_ref()
-            .map(|toolchain| &toolchain.version)
-            .unwrap_or(&self.environment.default_toolchain);
-
         let mut jobs = Vec::new();
 
         for (project_name, project) in &self.projects {
-            self.compile_project(toolchain, &mut jobs, project_name, project);
+            jobs.push(self.compile_project(
+                definition,
+                project_name,
+                project,
+            ));
         }
 
         jobs
     }
 
-    fn compile_project(&self, toolchain: &str, jobs: &mut Vec<DJob>, project_name: &ProjectName, project: &Project) {
+    fn compile_project(&self, definition: &DDefinition, project_name: &ProjectName, project: &Project) -> DJob {
         let mut opcodes = Vec::new();
 
-        for provider_name in project.requirements() {
-            let provider = &self.providers[provider_name];
+        let req_count = project.requirements().len();
 
-            opcodes.push(DJobOpcode::log_system_msg(
-                format!("Setting up requirement `{}`", provider_name)
-            ));
+        for (req_id, req_name) in project.requirements().iter().enumerate() {
+            let req_provider = &self.providers[req_name];
 
-            for command in provider.setup() {
-                opcodes.push(DJobOpcode::exec(
+            opcodes.push(DJobOpcode::log_system_msg(format!(
+                "Setting up requirement {}/{} `{}`",
+                req_id,
+                req_count,
+                req_name,
+            )));
+
+            for command in req_provider.setup() {
+                opcodes.push(DJobOpcode::invoke_cmd(
                     command.inner()
                 ));
             }
@@ -52,32 +57,49 @@ impl Compiler {
             format!("Cloning `{}`", project_name)
         ));
 
-        opcodes.push(DJobOpcode::exec(
+        opcodes.push(DJobOpcode::invoke_cmd(
             format!("git clone {} {}", project.repository(), project_name)
         ));
 
-        // @todo apply package overrides
+        for (package_name, package) in &definition.packages {
+            match package {
+                DPackage::Overridden { version } => {
+                    opcodes.push(DJobOpcode::override_package(
+                        project_name.to_owned(),
+                        package_name,
+                        version,
+                    ));
+                }
 
-        opcodes.push(DJobOpcode::log_system_msg(
-            format!("Testing `{}`", project_name)
-        ));
-
-        opcodes.push(DJobOpcode::exec(
-            format!("cd {} && cargo test", project_name)
-        ));
+                DPackage::Patched { attachment_id } => {
+                    opcodes.push(DJobOpcode::patch_package(
+                        project_name.to_owned(),
+                        project_name,
+                        attachment_id.to_owned(),
+                    ));
+                }
+            }
+        }
 
         opcodes.push(DJobOpcode::log_system_msg(
             format!("Building `{}`", project_name)
         ));
 
-        opcodes.push(DJobOpcode::exec(
+        opcodes.push(DJobOpcode::invoke_cmd(
             format!("cd {} && cargo build", project_name)
         ));
 
-        jobs.push(DJob {
+        opcodes.push(DJobOpcode::log_system_msg(
+            format!("Testing `{}`", project_name)
+        ));
+
+        opcodes.push(DJobOpcode::invoke_cmd(
+            format!("cd {} && cargo test", project_name)
+        ));
+
+        DJob {
             name: project_name.to_string(),
-            toolchain: toolchain.to_owned(),
             opcodes,
-        });
+        }
     }
 }

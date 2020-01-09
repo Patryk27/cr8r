@@ -9,8 +9,8 @@ use crate::proto::core::{PReport, PReportType};
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum DReportType {
     SystemMsg,
-    UserMsg,
-    ProcessOutput,
+    CustomMsg,
+    ProcessMsg,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -29,18 +29,18 @@ impl DReport {
         }
     }
 
-    pub fn user_msg(at: DateTime<Utc>, msg: impl Into<String>) -> Self {
+    pub fn custom_msg(at: DateTime<Utc>, msg: impl Into<String>) -> Self {
         Self {
             at,
-            ty: DReportType::UserMsg,
+            ty: DReportType::CustomMsg,
             msg: msg.into(),
         }
     }
 
-    pub fn process_output(at: DateTime<Utc>, msg: impl Into<String>) -> Self {
+    pub fn process_msg(at: DateTime<Utc>, msg: impl Into<String>) -> Self {
         Self {
             at,
-            ty: DReportType::ProcessOutput,
+            ty: DReportType::ProcessMsg,
             msg: msg.into(),
         }
     }
@@ -50,10 +50,10 @@ impl TryFrom<PReport> for DReport {
     type Error = DomainError;
 
     fn try_from(PReport { at, ty, msg }: PReport) -> DomainResult<Self> {
-        let ty = match PReportType::from_i32(ty).unwrap_or(PReportType::UserMsg) {
+        let ty = match PReportType::from_i32(ty).unwrap_or(PReportType::CustomMsg) {
             PReportType::SystemMsg => DReportType::SystemMsg,
-            PReportType::UserMsg => DReportType::UserMsg,
-            PReportType::ProcessOutput => DReportType::ProcessOutput,
+            PReportType::CustomMsg => DReportType::CustomMsg,
+            PReportType::ProcessMsg => DReportType::ProcessMsg,
         };
 
         Ok(Self {
@@ -68,8 +68,8 @@ impl Into<PReport> for &'_ DReport {
     fn into(self) -> PReport {
         let ty = match self.ty {
             DReportType::SystemMsg => PReportType::SystemMsg,
-            DReportType::UserMsg => PReportType::UserMsg,
-            DReportType::ProcessOutput => PReportType::ProcessOutput,
+            DReportType::CustomMsg => PReportType::CustomMsg,
+            DReportType::ProcessMsg => PReportType::ProcessMsg,
         } as _;
 
         PReport {

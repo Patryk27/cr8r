@@ -11,12 +11,12 @@ message PEvent {
         string msg = 1;
     }
 
-    message PUserMsg {
+    message PCustomMsg {
         string msg = 1;
     }
 
-    message PProcessOutput {
-        string line = 1;
+    message PProcessMsg {
+        string msg = 1;
     }
 
     message PExperimentStarted {
@@ -42,8 +42,8 @@ message PEvent {
         PPing ping = 100;
 
         PSystemMsg system_msg = 200;
-        PUserMsg user_msg = 201;
-        PProcessOutput process_output = 202;
+        PCustomMsg custom_msg = 201;
+        PProcessMsg process_msg = 202;
 
         PExperimentStarted experiment_started = 300;
         PExperimentCompleted experiment_completed = 301;

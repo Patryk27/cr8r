@@ -88,12 +88,12 @@ fn event_as_report(jobs: &[DJob], event: &DEvent) -> Option<DReport> {
             DReport::system_msg(event.at, msg)
         }
 
-        DEventType::UserMsg { msg } => {
-            DReport::user_msg(event.at, msg)
+        DEventType::CustomMsg { msg } => {
+            DReport::custom_msg(event.at, msg)
         }
 
-        DEventType::ProcessOutput { line } => {
-            DReport::process_output(event.at, line)
+        DEventType::ProcessMsg { msg } => {
+            DReport::process_msg(event.at, msg)
         }
 
         DEventType::ExperimentStarted => {

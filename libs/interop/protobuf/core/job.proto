@@ -4,26 +4,45 @@ package cr8r.core;
 
 message PJob {
     string name = 1;
-    string toolchain = 2;
     repeated PJobOpcode opcodes = 3;
 }
 
 message PJobOpcode {
-    message PExec {
-        string cmd = 1;
-    }
-
     message PLogSystemMsg {
         string msg = 1;
     }
 
-    message PLogUserMsg {
+    message PLogCustomMsg {
         string msg = 1;
     }
 
+    message PInvokeCmd {
+        string cmd = 1;
+    }
+
+    message POverrideToolchain {
+        string project = 1;
+        string version = 2;
+    }
+
+    message POverridePackage {
+        string project = 1;
+        string name = 2;
+        string version = 3;
+    }
+
+    message PPatchPackage {
+        string project = 1;
+        string name = 2;
+        string attachment_id = 3;
+    }
+
     oneof ty {
-        PExec exec = 1;
-        PLogSystemMsg log_system_msg = 2;
-        PLogUserMsg log_user_msg = 3;
+        PLogSystemMsg log_system_msg = 1;
+        PLogCustomMsg log_custom_msg = 2;
+        PInvokeCmd invoke_cmd = 3;
+        POverrideToolchain override_toolchain = 4;
+        POverridePackage override_package = 5;
+        PPatchPackage patch_package = 6;
     }
 }

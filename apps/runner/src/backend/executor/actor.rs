@@ -6,7 +6,7 @@ use lib_sandbox::Sandbox;
 use crate::backend::{ExecutorStatus, Journalist};
 use crate::backend::executor::ExecutorRx;
 
-mod perform_job;
+mod execute_job;
 mod process_messages;
 
 pub struct ExecutorActor {
@@ -49,8 +49,9 @@ impl ExecutorActor {
             self.journalist.dispatch(DEventType::JobStarted { id });
 
             let result = self
-                .perform_job(job)
-                .await;
+                .execute_job(job)
+                .await
+                .map_err(|err| err.to_string());
 
             self.journalist.dispatch(DEventType::JobCompleted { id, result });
         }

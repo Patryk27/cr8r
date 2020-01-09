@@ -23,11 +23,11 @@ impl fmt::Display for ReportMessage<'_> {
                 .blue()
                 .to_string(),
 
-            DReportType::UserMsg => msg
+            DReportType::CustomMsg => msg
                 .white()
                 .to_string(),
 
-            DReportType::ProcessOutput => msg
+            DReportType::ProcessMsg => msg
                 .white()
                 .dimmed()
                 .to_string(),

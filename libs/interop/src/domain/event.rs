@@ -21,12 +21,12 @@ pub enum DEventType {
         msg: String,
     },
 
-    UserMsg {
+    CustomMsg {
         msg: String,
     },
 
-    ProcessOutput {
-        line: String,
+    ProcessMsg {
+        msg: String,
     },
 
     ExperimentStarted,
@@ -58,12 +58,12 @@ impl TryFrom<PEvent> for DEvent {
                 DEventType::SystemMsg { msg }
             }
 
-            Ty::UserMsg(PUserMsg { msg }) => {
-                DEventType::UserMsg { msg }
+            Ty::CustomMsg(PCustomMsg { msg }) => {
+                DEventType::CustomMsg { msg }
             }
 
-            Ty::ProcessOutput(PProcessOutput { line }) => {
-                DEventType::ProcessOutput { line }
+            Ty::ProcessMsg(PProcessMsg { msg }) => {
+                DEventType::ProcessMsg { msg }
             }
 
             Ty::ExperimentStarted(_) => {
@@ -109,12 +109,12 @@ impl Into<PEvent> for DEvent {
                 Ty::SystemMsg(PSystemMsg { msg })
             }
 
-            DEventType::UserMsg { msg } => {
-                Ty::UserMsg(PUserMsg { msg })
+            DEventType::CustomMsg { msg } => {
+                Ty::CustomMsg(PCustomMsg { msg })
             }
 
-            DEventType::ProcessOutput { line } => {
-                Ty::ProcessOutput(PProcessOutput { line })
+            DEventType::ProcessMsg { msg } => {
+                Ty::ProcessMsg(PProcessMsg { msg })
             }
 
             DEventType::ExperimentStarted => {
