@@ -27,7 +27,7 @@ impl Compiler {
 }
 
 fn setup_environment(compiler: &mut CompilerBuilder, environment: Environment) {
-    compiler.environment(lib_compiler::Environment {
+    compiler.set_environment(lib_compiler::Environment {
         default_toolchain: environment.default_toolchain,
     });
 }
@@ -39,7 +39,7 @@ fn setup_providers(compiler: &mut CompilerBuilder, providers: Providers) -> Resu
             .map(lib_compiler::Command::new)
             .collect();
 
-        let provider = lib_compiler::Provider::new(setup);
+        let provider = lib_compiler::ProviderDef::new(setup);
 
         compiler.add_provider(provider_name, provider)?;
     }
@@ -49,7 +49,7 @@ fn setup_providers(compiler: &mut CompilerBuilder, providers: Providers) -> Resu
 
 fn setup_projects(compiler: &mut CompilerBuilder, projects: Projects) -> Result<()> {
     for (project_name, project) in projects {
-        let project = lib_compiler::Project::new(
+        let project = lib_compiler::ProjectDef::new(
             project.repository,
             project.requirements,
         );

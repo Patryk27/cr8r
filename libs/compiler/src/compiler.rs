@@ -3,13 +3,17 @@ use std::collections::HashMap;
 use lib_interop::domain::{DDefinition, DJob, DJobOpcode};
 use lib_interop::domain::definition_inner::DPackage;
 
-use crate::{CompilerBuilder, Environment, Project, ProjectName, Provider, ProviderName};
+use crate::{Environment, ProjectDef, ProjectName, ProviderDef, ProviderName};
 
-#[derive(Debug)]
+pub use self::builder::*;
+
+mod builder;
+
+#[derive(Debug, Eq, PartialEq)]
 pub struct Compiler {
     crate environment: Environment,
-    crate providers: HashMap<ProviderName, Provider>,
-    crate projects: HashMap<ProjectName, Project>,
+    crate providers: HashMap<ProviderName, ProviderDef>,
+    crate projects: HashMap<ProjectName, ProjectDef>,
 }
 
 impl Compiler {
@@ -31,12 +35,12 @@ impl Compiler {
         jobs
     }
 
-    fn compile_project(&self, definition: &DDefinition, project_name: &ProjectName, project: &Project) -> DJob {
+    fn compile_project(&self, definition: &DDefinition, project_name: &ProjectName, project: &ProjectDef) -> DJob {
         let mut opcodes = Vec::new();
 
-        let req_count = project.requirements().len();
+        let req_count = project.requirements.len();
 
-        for (req_id, req_name) in project.requirements().iter().enumerate() {
+        for (req_id, req_name) in project.requirements.iter().enumerate() {
             let req_provider = &self.providers[req_name];
 
             opcodes.push(DJobOpcode::log_system_msg(format!(
@@ -46,7 +50,7 @@ impl Compiler {
                 req_name,
             )));
 
-            for command in req_provider.setup() {
+            for command in &req_provider.setup {
                 opcodes.push(DJobOpcode::invoke_cmd(
                     command.inner()
                 ));
@@ -58,7 +62,7 @@ impl Compiler {
         ));
 
         opcodes.push(DJobOpcode::invoke_cmd(
-            format!("git clone {} {}", project.repository(), project_name)
+            format!("git clone {} {}", project.repository, project_name)
         ));
 
         for (package_name, package) in &definition.packages {

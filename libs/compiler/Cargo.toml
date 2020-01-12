@@ -7,3 +7,4 @@ edition = "2018"
 [dependencies]
 anyhow = "1.0"
 lib_interop = { path = "../interop" }
+thiserror = "1.0"
