@@ -27,9 +27,9 @@ impl Compiler {
 }
 
 fn setup_environment(compiler: &mut CompilerBuilder, environment: Environment) {
-    compiler.set_environment(lib_compiler::Environment {
-        default_toolchain: environment.default_toolchain,
-    });
+    let environment = lib_compiler::Environment::new(environment.default_toolchain);
+
+    compiler.set_environment(environment);
 }
 
 fn setup_providers(compiler: &mut CompilerBuilder, providers: Providers) -> Result<()> {
