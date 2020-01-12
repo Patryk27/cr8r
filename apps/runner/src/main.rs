@@ -11,16 +11,19 @@ use log::*;
 use lib_interop::client::ControllerClient;
 use lib_sandbox::SandboxProvider;
 
-use self::{
-    backend::*,
-    core::*,
-};
-
-mod backend;
 mod core;
+mod experiment;
+mod session;
+mod system;
 
 #[tokio::main]
 async fn main() {
+    use self::{
+        core::*,
+        session::*,
+        system::*,
+    };
+
     let result = try {
         lib_log::init()
             .context("Could not initialize logging facility")?;
@@ -34,19 +37,17 @@ async fn main() {
             .await
             .context("Could not connect to controller")?;
 
-        let client = SessionClient::start(config.runner.name, client)
+        let client = Session::open(client, config.runner.name)
             .await
             .context("Could not connect to controller")?;
 
         info!("{}", "🚀 We are ready to accept commands".green());
 
-        SystemHeartbeater::new(
-            client.clone()
-        );
-
-        SystemActor::new(config.sandbox, sandbox_provider, client)
-            .main()
-            .await?
+        System {
+            sandbox_config: config.sandbox,
+            sandbox_provider,
+            session: client,
+        }.start().await?
     }: Result<()>;
 
     if let Err(err) = result {

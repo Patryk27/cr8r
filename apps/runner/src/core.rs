@@ -1,7 +1,3 @@
-pub use self::{
-    clients::*,
-    config::*,
-};
+pub use self::config::*;
 
-mod clients;
 mod config;

@@ -30,7 +30,7 @@ impl ExperimentActor {
         }
     }
 
-    pub async fn main(mut self) {
+    pub async fn start(mut self) {
         debug!("Actor started");
         debug!("-> id: {}", self.id);
 

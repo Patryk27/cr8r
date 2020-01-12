@@ -29,7 +29,7 @@ impl Runner {
             system,
             id,
             name,
-        ).main());
+        ).start());
 
         Self { tx }
     }

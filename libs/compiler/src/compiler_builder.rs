@@ -1,3 +1,4 @@
+use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 
 use anyhow::{anyhow, Result};
@@ -17,20 +18,28 @@ impl CompilerBuilder {
     }
 
     pub fn add_provider(&mut self, name: ProviderName, provider: Provider) -> Result<()> {
-        if self.providers.contains_key(&name) {
-            Err(anyhow!("Provider `{}` has been already added into the compiler", name))
-        } else {
-            self.providers.insert(name, provider);
-            Ok(())
+        match self.providers.entry(name) {
+            Entry::Occupied(entry) => {
+                Err(anyhow!("Provider `{}` has been already added into the compiler", entry.key()))
+            }
+
+            Entry::Vacant(entry) => {
+                entry.insert(provider);
+                Ok(())
+            }
         }
     }
 
     pub fn add_project(&mut self, name: ProjectName, project: Project) -> Result<()> {
-        if self.projects.contains_key(&name) {
-            Err(anyhow!("Project `{}` has been already added into the compiler", name))
-        } else {
-            self.projects.insert(name, project);
-            Ok(())
+        match self.projects.entry(name) {
+            Entry::Occupied(entry) => {
+                Err(anyhow!("Project `{}` has been already added into the compiler", entry.key()))
+            }
+
+            Entry::Vacant(entry) => {
+                entry.insert(project);
+                Ok(())
+            }
         }
     }
 

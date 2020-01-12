@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use log::*;
 use tokio::stream::StreamExt;
 
-use lib_actor::ActorSpirit;
+use lib_actor::ActorWorkflow;
 use lib_interop::domain::{DRunnerId, DRunnerName};
 
 use crate::backend::runner::{RunnerRx, RunnerStatus};
@@ -31,18 +31,18 @@ impl RunnerActor {
         }
     }
 
-    pub async fn main(mut self) {
+    pub async fn start(mut self) {
         debug!("Actor started");
         debug!("-> id: {}", self.id);
         debug!("-> name: {}", self.name);
 
         while let Some(msg) = self.rx.next().await {
             match msg.handle(&mut self) {
-                ActorSpirit::KeepAlive => {
+                ActorWorkflow::Continue => {
                     //
                 }
 
-                ActorSpirit::Kill => {
+                ActorWorkflow::Stop => {
                     debug!("Actor killed");
                     return self.on_killed();
                 }

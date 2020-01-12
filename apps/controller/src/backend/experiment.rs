@@ -30,7 +30,7 @@ impl Experiment {
             rx,
             id,
             jobs,
-        ).main());
+        ).start());
 
         Self { tx }
     }

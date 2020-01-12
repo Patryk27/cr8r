@@ -27,7 +27,7 @@ impl SystemActor {
         Self { rx, compiler, runners, experiments }
     }
 
-    pub async fn main(mut self) {
+    pub async fn start(mut self) {
         debug!("Actor started");
 
         while let Some(msg) = self.rx.next().await {

@@ -27,7 +27,7 @@ impl System {
             rx,
             system.clone(),
             compiler,
-        ).main());
+        ).start());
 
         system
     }
