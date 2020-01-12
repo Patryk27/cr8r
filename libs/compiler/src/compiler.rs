@@ -35,12 +35,25 @@ impl Compiler {
         jobs
     }
 
-    fn compile_project(&self, definition: &DDefinition, project_name: &ProjectName, project: &ProjectDef) -> DJob {
+    fn compile_project(
+        &self,
+        definition: &DDefinition,
+        project_name: &ProjectName,
+        project_def: &ProjectDef,
+    ) -> DJob {
         let mut opcodes = Vec::new();
 
-        let req_count = project.requirements.len();
+        opcodes.push(DJobOpcode::log_system_msg(
+            format!("Cloning `{}`", project_name)
+        ));
 
-        for (req_id, req_name) in project.requirements.iter().enumerate() {
+        opcodes.push(DJobOpcode::invoke_cmd(
+            format!("git clone {} {}", project_def.repository, project_name)
+        ));
+
+        let req_count = project_def.requirements.len();
+
+        for (req_id, req_name) in project_def.requirements.iter().enumerate() {
             let req_provider = &self.providers[req_name];
 
             opcodes.push(DJobOpcode::log_system_msg(format!(
@@ -57,32 +70,43 @@ impl Compiler {
             }
         }
 
-        opcodes.push(DJobOpcode::log_system_msg(
-            format!("Cloning `{}`", project_name)
-        ));
+        if definition.toolchain.is_some() || !definition.packages.is_empty() {
+            opcodes.push(DJobOpcode::log_system_msg(
+                "Preparing the environment",
+            ));
+        }
 
-        opcodes.push(DJobOpcode::invoke_cmd(
-            format!("git clone {} {}", project.repository, project_name)
+        let toolchain = if let Some(toolchain) = &definition.toolchain {
+            &toolchain.version
+        } else {
+            &self.environment.default_toolchain
+        };
+
+        opcodes.push(DJobOpcode::override_toolchain(
+            project_name,
+            toolchain,
         ));
 
         for (package_name, package) in &definition.packages {
-            match package {
+            let opcode = match package {
                 DPackage::Overridden { version } => {
-                    opcodes.push(DJobOpcode::override_package(
-                        project_name.to_owned(),
+                    DJobOpcode::override_package(
+                        project_name,
                         package_name,
                         version,
-                    ));
+                    )
                 }
 
                 DPackage::Patched { attachment_id } => {
-                    opcodes.push(DJobOpcode::patch_package(
-                        project_name.to_owned(),
+                    DJobOpcode::patch_package(
+                        project_name,
                         project_name,
                         attachment_id.to_owned(),
-                    ));
+                    )
                 }
-            }
+            };
+
+            opcodes.push(opcode);
         }
 
         opcodes.push(DJobOpcode::log_system_msg(

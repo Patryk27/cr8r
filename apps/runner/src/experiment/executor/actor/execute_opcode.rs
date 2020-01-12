@@ -36,18 +36,18 @@ impl ExperimentExecutorActor {
                     .await?
             }
 
-            OverrideToolchain { project, version } => {
-                self.do_override_toolchain(project, version)
+            OverrideToolchain { project, tc_version } => {
+                self.do_override_toolchain(project, tc_version)
                     .await?
             }
 
-            OverridePackage { project, name, version } => {
-                self.do_override_package(project, name, version)
+            OverridePackage { project, pkg_name, pkg_version } => {
+                self.do_override_package(project, pkg_name, pkg_version)
                     .await?
             }
 
-            PatchPackage { project, name, attachment_id } => {
-                self.do_patch_package(project, name, attachment_id)
+            PatchPackage { project, pkg_name, pkg_attachment_id } => {
+                self.do_patch_package(project, pkg_name, pkg_attachment_id)
                     .await?
             }
         }

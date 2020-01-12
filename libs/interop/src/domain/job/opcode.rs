@@ -20,19 +20,19 @@ pub enum DJobOpcode {
 
     OverrideToolchain {
         project: String,
-        version: String,
+        tc_version: String,
     },
 
     OverridePackage {
         project: String,
-        name: String,
-        version: String,
+        pkg_name: String,
+        pkg_version: String,
     },
 
     PatchPackage {
         project: String,
-        name: String,
-        attachment_id: DAttachmentId,
+        pkg_name: String,
+        pkg_attachment_id: DAttachmentId,
     },
 }
 
@@ -55,34 +55,34 @@ impl DJobOpcode {
         }
     }
 
-    pub fn override_toolchain(project: impl Into<String>, version: impl Into<String>) -> Self {
+    pub fn override_toolchain(project: impl Into<String>, tc_version: impl Into<String>) -> Self {
         DJobOpcode::OverrideToolchain {
             project: project.into(),
-            version: version.into(),
+            tc_version: tc_version.into(),
         }
     }
 
     pub fn override_package(
         project: impl Into<String>,
-        name: impl Into<String>,
-        version: impl Into<String>,
+        pkg_name: impl Into<String>,
+        pkg_version: impl Into<String>,
     ) -> Self {
         DJobOpcode::OverridePackage {
             project: project.into(),
-            name: name.into(),
-            version: version.into(),
+            pkg_name: pkg_name.into(),
+            pkg_version: pkg_version.into(),
         }
     }
 
     pub fn patch_package(
         project: impl Into<String>,
-        name: impl Into<String>,
-        attachment_id: impl Into<DAttachmentId>,
+        pkg_name: impl Into<String>,
+        pkg_attachment_id: impl Into<DAttachmentId>,
     ) -> Self {
         DJobOpcode::PatchPackage {
             project: project.into(),
-            name: name.into(),
-            attachment_id: attachment_id.into(),
+            pkg_name: pkg_name.into(),
+            pkg_attachment_id: pkg_attachment_id.into(),
         }
     }
 }
@@ -106,19 +106,19 @@ impl TryFrom<PJobOpcode> for DJobOpcode {
                 DJobOpcode::InvokeCmd { cmd }
             }
 
-            Ty::OverrideToolchain(POverrideToolchain { project, version }) => {
-                DJobOpcode::OverrideToolchain { project, version }
+            Ty::OverrideToolchain(POverrideToolchain { project, tc_version }) => {
+                DJobOpcode::OverrideToolchain { project, tc_version }
             }
 
-            Ty::OverridePackage(POverridePackage { project, name, version }) => {
-                DJobOpcode::OverridePackage { project, name, version }
+            Ty::OverridePackage(POverridePackage { project, pkg_name, pkg_version }) => {
+                DJobOpcode::OverridePackage { project, pkg_name, pkg_version }
             }
 
-            Ty::PatchPackage(PPatchPackage { project, name, attachment_id }) => {
+            Ty::PatchPackage(PPatchPackage { project, pkg_name, pkg_attachment_id }) => {
                 DJobOpcode::PatchPackage {
                     project,
-                    name,
-                    attachment_id: convert!(attachment_id as _),
+                    pkg_name,
+                    pkg_attachment_id: convert!(pkg_attachment_id as _),
                 }
             }
         })
@@ -142,19 +142,19 @@ impl Into<PJobOpcode> for DJobOpcode {
                 Ty::InvokeCmd(PInvokeCmd { cmd })
             }
 
-            DJobOpcode::OverrideToolchain { project, version } => {
-                Ty::OverrideToolchain(POverrideToolchain { project, version })
+            DJobOpcode::OverrideToolchain { project, tc_version } => {
+                Ty::OverrideToolchain(POverrideToolchain { project, tc_version })
             }
 
-            DJobOpcode::OverridePackage { project, name, version } => {
-                Ty::OverridePackage(POverridePackage { project, name, version })
+            DJobOpcode::OverridePackage { project, pkg_name, pkg_version } => {
+                Ty::OverridePackage(POverridePackage { project, pkg_name, pkg_version })
             }
 
-            DJobOpcode::PatchPackage { project, name, attachment_id } => {
+            DJobOpcode::PatchPackage { project, pkg_name, pkg_attachment_id } => {
                 Ty::PatchPackage(PPatchPackage {
                     project,
-                    name,
-                    attachment_id: convert!(attachment_id as _),
+                    pkg_name,
+                    pkg_attachment_id: convert!(pkg_attachment_id as _),
                 })
             }
         };

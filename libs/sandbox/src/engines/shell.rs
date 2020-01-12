@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use anyhow::Result;
 
@@ -36,6 +36,16 @@ impl SandboxEngine for ShellEngine {
 
     async fn exec(&mut self, cmd: &str) -> Result<()> {
         cmds::exec(self, cmd)
+            .await
+    }
+
+    async fn fs_read(&mut self, path: &Path) -> Result<String> {
+        cmds::fs_read(self, path)
+            .await
+    }
+
+    async fn fs_write(&mut self, path: &Path, content: String) -> Result<()> {
+        cmds::fs_write(self, path, content)
             .await
     }
 }

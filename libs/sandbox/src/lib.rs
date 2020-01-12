@@ -3,6 +3,8 @@
 #![feature(try_blocks)]
 #![feature(type_ascription)]
 
+use std::path::Path;
+
 use anyhow::Result;
 
 pub use self::{
@@ -34,15 +36,27 @@ impl Sandbox {
             .await
     }
 
+    pub async fn destroy(&mut self) -> Result<()> {
+        self.engine
+            .destroy()
+            .await
+    }
+
     pub async fn exec(&mut self, cmd: &str) -> Result<()> {
         self.engine
             .exec(cmd)
             .await
     }
 
-    pub async fn destroy(&mut self) -> Result<()> {
+    pub async fn fs_read(&mut self, path: &Path) -> Result<String> {
         self.engine
-            .destroy()
+            .fs_read(path)
+            .await
+    }
+
+    pub async fn fs_write(&mut self, path: &Path, content: String) -> Result<()> {
+        self.engine
+            .fs_write(path, content)
             .await
     }
 }

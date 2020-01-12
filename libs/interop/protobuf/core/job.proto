@@ -22,19 +22,19 @@ message PJobOpcode {
 
     message POverrideToolchain {
         string project = 1;
-        string version = 2;
+        string tc_version = 2;
     }
 
     message POverridePackage {
         string project = 1;
-        string name = 2;
-        string version = 3;
+        string pkg_name = 2;
+        string pkg_version = 3;
     }
 
     message PPatchPackage {
         string project = 1;
-        string name = 2;
-        string attachment_id = 3;
+        string pkg_name = 2;
+        string pkg_attachment_id = 3;
     }
 
     oneof ty {

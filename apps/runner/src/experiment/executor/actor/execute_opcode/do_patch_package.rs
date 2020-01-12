@@ -8,8 +8,8 @@ impl ExperimentExecutorActor {
     pub(super) async fn do_patch_package(
         &mut self,
         project: String,
-        name: String,
-        attachment_id: DAttachmentId,
+        pkg_name: String,
+        pkg_attachment_id: DAttachmentId,
     ) -> Result<()> {
         unimplemented!()
     }
