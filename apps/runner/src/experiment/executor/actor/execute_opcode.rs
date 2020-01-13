@@ -8,9 +8,9 @@ use super::super::ExperimentExecutorActor;
 mod do_invoke_cmd;
 mod do_log_custom_msg;
 mod do_log_system_msg;
-mod do_override_package;
+mod do_override_dependency;
 mod do_override_toolchain;
-mod do_patch_package;
+mod do_patch_dependency;
 
 impl ExperimentExecutorActor {
     pub(super) async fn execute_opcode(&mut self, opcode: DJobOpcode) -> Result<ActorWorkflow> {
@@ -41,13 +41,13 @@ impl ExperimentExecutorActor {
                     .await?
             }
 
-            OverridePackage { project, pkg_name, pkg_version } => {
-                self.do_override_package(project, pkg_name, pkg_version)
+            OverrideDependency { project, dep_registry, dep_name, dep_version } => {
+                self.do_override_dependency(project, dep_registry, dep_name, dep_version)
                     .await?
             }
 
-            PatchPackage { project, pkg_name, pkg_attachment_id } => {
-                self.do_patch_package(project, pkg_name, pkg_attachment_id)
+            PatchDependency { project, dep_registry, dep_name, dep_source_attachment_id } => {
+                self.do_patch_dependency(project, dep_registry, dep_name, dep_source_attachment_id)
                     .await?
             }
         }

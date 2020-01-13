@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use structopt::StructOpt;
 
 use anyhow::{anyhow, Context, Result};
@@ -8,55 +6,46 @@ use lib_interop::domain::definition_inner::*;
 
 #[derive(Debug, StructOpt)]
 pub struct Definition {
-    #[structopt(long = "toolchain")]
+    #[structopt(long = "toolchain", short = "t")]
     toolchain: Option<String>,
 
-    #[structopt(long = "pkg")]
-    packages: Vec<String>,
+    #[structopt(long = "dependency", short = "d")]
+    dependencies: Vec<String>,
 }
 
 impl Definition {
     pub fn parse(self) -> Result<DDefinition> {
         let toolchain = parse_toolchain(self.toolchain);
-        let packages = parse_packages(self.packages)?;
+        let dependencies = parse_dependencies(self.dependencies)?;
 
         Ok(DDefinition {
             toolchain,
-            packages,
+            dependencies,
         })
     }
 }
 
 fn parse_toolchain(toolchain: Option<String>) -> Option<DToolchain> {
-    toolchain.map(|toolchain| {
-        DToolchain { version: toolchain }
+    toolchain.map(|version| {
+        DToolchain { version }
     })
 }
 
-fn parse_packages(packages: Vec<String>) -> Result<HashMap<String, DPackage>> {
-    let mut map = HashMap::new();
+fn parse_dependencies(dependencies: Vec<String>) -> Result<Vec<DDependency>> {
+    // @todo find duplicates
 
-    let list = packages
+    dependencies
         .into_iter()
-        .map(|package| {
-            parse_package(&package)
-                .with_context(|| format!("Could not parse `{}` as a package definition", package))
+        .map(|dependency| {
+            parse_dependency(&dependency)
+                .with_context(|| format!("Could not understand `{}` as a dependency definition", dependency))
         })
-        .collect(): Result<Vec<_>>;
-
-    for (pkg_name, pkg_model) in list? {
-        if map.contains_key(&pkg_name) {
-            return Err(anyhow!("Package `{}` has been defined many times", pkg_name));
-        }
-
-        map.insert(pkg_name, pkg_model);
-    }
-
-    Ok(map)
+        .collect()
 }
 
-fn parse_package(package: &str) -> Result<(String, DPackage)> {
-    let parts = package
+// @todo allow patching dependencies from outside `crates.io`
+fn parse_dependency(dependency: &str) -> Result<DDependency> {
+    let parts = dependency
         .splitn(2, '=')
         .map(str::trim)
         .collect(): Vec<_>;
@@ -65,13 +54,15 @@ fn parse_package(package: &str) -> Result<(String, DPackage)> {
         return Err(anyhow!("Invalid format - expected a key-value pair, e.g.: `anyhow = \"1.0\"`"));
     }
 
-    let pkg_name = parts[0].to_string();
+    let registry = "crates.io".to_string(); // @todo
 
-    let pkg_model = DPackage::Overridden {
+    let name = parts[0].to_string();
+
+    let action = DDependencyAction::Override {
         version: parts[1].to_string(),
     };
 
-    Ok((pkg_name, pkg_model))
+    Ok(DDependency { registry, name, action })
 }
 
 #[cfg(test)]
@@ -93,46 +84,66 @@ mod tests {
         fn test_nightly() {
             let input = "nightly".to_string();
 
-            let expected_output = DToolchain {
+            let expected = DToolchain {
                 version: "nightly".to_string(),
             };
 
-            assert_eq!(
-                parse_toolchain(Some(input)).unwrap(),
-                expected_output,
-            );
+            let actual = parse_toolchain(Some(input))
+                .unwrap();
+
+            assert_eq!(expected, actual);
         }
     }
 
-    mod parse_package {
+    mod parse_dependency {
         use super::*;
 
-        #[test]
-        fn test_overridden_simple() {
-            let input = "tokio = \"0.2\"";
+        mod crates_io {
+            use super::*;
 
-            let expected_output = ("tokio".to_string(), DPackage::Overridden {
-                version: "\"0.2\"".to_string(),
-            });
+            #[test]
+            fn test_basic() {
+                let input = "tokio = \"0.2\"";
 
-            assert_eq!(
-                parse_package(input).unwrap(),
-                expected_output,
-            );
+                let expected = DDependency {
+                    registry: "crates.io".to_string(),
+                    name: "tokio".to_string(),
+
+                    action: DDependencyAction::Override {
+                        version: "\"0.2\"".to_string(),
+                    },
+                };
+
+                let actual = parse_dependency(input)
+                    .unwrap();
+
+                assert_eq!(expected, actual);
+            }
+
+            #[test]
+            fn test_advanced() {
+                let input = "tokio = { version = \"0.2\", features = [\"full\"] }";
+
+                let expected = DDependency {
+                    registry: "crates.io".to_string(),
+                    name: "tokio".to_string(),
+
+                    action: DDependencyAction::Override {
+                        version: "{ version = \"0.2\", features = [\"full\"] }".to_string(),
+                    },
+                };
+
+                let actual = parse_dependency(input)
+                    .unwrap();
+
+                assert_eq!(expected, actual);
+            }
         }
 
-        #[test]
-        fn test_overridden_advanced() {
-            let input = "tokio = { version = \"0.2\", features = [\"full\"] }";
+        mod git {
+            use super::*;
 
-            let expected_output = ("tokio".to_string(), DPackage::Overridden {
-                version: "{ version = \"0.2\", features = [\"full\"] }".to_string(),
-            });
-
-            assert_eq!(
-                parse_package(input).unwrap(),
-                expected_output,
-            );
+// @todo
         }
     }
 }

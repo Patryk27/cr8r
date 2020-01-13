@@ -23,16 +23,18 @@ pub enum DJobOpcode {
         tc_version: String,
     },
 
-    OverridePackage {
+    OverrideDependency {
         project: String,
-        pkg_name: String,
-        pkg_version: String,
+        dep_registry: String,
+        dep_name: String,
+        dep_version: String,
     },
 
-    PatchPackage {
+    PatchDependency {
         project: String,
-        pkg_name: String,
-        pkg_attachment_id: DAttachmentId,
+        dep_registry: String,
+        dep_name: String,
+        dep_source_attachment_id: DAttachmentId,
     },
 }
 
@@ -62,27 +64,31 @@ impl DJobOpcode {
         }
     }
 
-    pub fn override_package(
+    pub fn override_dependency(
         project: impl Into<String>,
-        pkg_name: impl Into<String>,
-        pkg_version: impl Into<String>,
+        dep_registry: impl Into<String>,
+        dep_name: impl Into<String>,
+        dep_version: impl Into<String>,
     ) -> Self {
-        DJobOpcode::OverridePackage {
+        DJobOpcode::OverrideDependency {
             project: project.into(),
-            pkg_name: pkg_name.into(),
-            pkg_version: pkg_version.into(),
+            dep_registry: dep_registry.into(),
+            dep_name: dep_name.into(),
+            dep_version: dep_version.into(),
         }
     }
 
-    pub fn patch_package(
+    pub fn patch_dependency(
         project: impl Into<String>,
-        pkg_name: impl Into<String>,
-        pkg_attachment_id: impl Into<DAttachmentId>,
+        dep_registry: impl Into<String>,
+        dep_name: impl Into<String>,
+        dep_source_attachment_id: impl Into<DAttachmentId>,
     ) -> Self {
-        DJobOpcode::PatchPackage {
+        DJobOpcode::PatchDependency {
             project: project.into(),
-            pkg_name: pkg_name.into(),
-            pkg_attachment_id: pkg_attachment_id.into(),
+            dep_registry: dep_registry.into(),
+            dep_name: dep_name.into(),
+            dep_source_attachment_id: dep_source_attachment_id.into(),
         }
     }
 }
@@ -110,15 +116,16 @@ impl TryFrom<PJobOpcode> for DJobOpcode {
                 DJobOpcode::OverrideToolchain { project, tc_version }
             }
 
-            Ty::OverridePackage(POverridePackage { project, pkg_name, pkg_version }) => {
-                DJobOpcode::OverridePackage { project, pkg_name, pkg_version }
+            Ty::OverrideDependency(POverrideDependency { project, dep_registry, dep_name, dep_version }) => {
+                DJobOpcode::OverrideDependency { project, dep_registry, dep_name, dep_version }
             }
 
-            Ty::PatchPackage(PPatchPackage { project, pkg_name, pkg_attachment_id }) => {
-                DJobOpcode::PatchPackage {
+            Ty::PatchDependency(PPatchDependency { project, dep_registry, dep_name, dep_source_attachment_id }) => {
+                DJobOpcode::PatchDependency {
                     project,
-                    pkg_name,
-                    pkg_attachment_id: convert!(pkg_attachment_id as _),
+                    dep_registry,
+                    dep_name,
+                    dep_source_attachment_id: convert!(dep_source_attachment_id as _),
                 }
             }
         })
@@ -146,15 +153,16 @@ impl Into<PJobOpcode> for DJobOpcode {
                 Ty::OverrideToolchain(POverrideToolchain { project, tc_version })
             }
 
-            DJobOpcode::OverridePackage { project, pkg_name, pkg_version } => {
-                Ty::OverridePackage(POverridePackage { project, pkg_name, pkg_version })
+            DJobOpcode::OverrideDependency { project, dep_registry, dep_name, dep_version } => {
+                Ty::OverrideDependency(POverrideDependency { project, dep_registry, dep_name, dep_version })
             }
 
-            DJobOpcode::PatchPackage { project, pkg_name, pkg_attachment_id } => {
-                Ty::PatchPackage(PPatchPackage {
+            DJobOpcode::PatchDependency { project, dep_registry, dep_name, dep_source_attachment_id } => {
+                Ty::PatchDependency(PPatchDependency {
                     project,
-                    pkg_name,
-                    pkg_attachment_id: convert!(pkg_attachment_id as _),
+                    dep_registry,
+                    dep_name,
+                    dep_source_attachment_id: convert!(dep_source_attachment_id as _),
                 })
             }
         };

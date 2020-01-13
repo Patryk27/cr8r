@@ -1,7 +1,7 @@
 pub use self::{
-    package::*,
+    dependency::*,
     toolchain::*,
 };
 
-mod package;
+mod dependency;
 mod toolchain;

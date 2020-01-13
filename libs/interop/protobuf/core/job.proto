@@ -25,16 +25,18 @@ message PJobOpcode {
         string tc_version = 2;
     }
 
-    message POverridePackage {
+    message POverrideDependency {
         string project = 1;
-        string pkg_name = 2;
-        string pkg_version = 3;
+        string dep_registry = 2;
+        string dep_name = 3;
+        string dep_version = 4;
     }
 
-    message PPatchPackage {
+    message PPatchDependency {
         string project = 1;
-        string pkg_name = 2;
-        string pkg_attachment_id = 3;
+        string dep_registry = 2;
+        string dep_name = 3;
+        string dep_source_attachment_id = 4;
     }
 
     oneof ty {
@@ -42,7 +44,7 @@ message PJobOpcode {
         PLogCustomMsg log_custom_msg = 2;
         PInvokeCmd invoke_cmd = 3;
         POverrideToolchain override_toolchain = 4;
-        POverridePackage override_package = 5;
-        PPatchPackage patch_package = 6;
+        POverrideDependency override_dependency = 5;
+        PPatchDependency patch_dependency = 6;
     }
 }

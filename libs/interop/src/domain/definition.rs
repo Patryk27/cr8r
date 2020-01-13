@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::convert::TryFrom;
 
 use crate::convert;
@@ -10,30 +9,30 @@ pub mod definition_inner;
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DDefinition {
     pub toolchain: Option<definition_inner::DToolchain>,
-    pub packages: HashMap<String, definition_inner::DPackage>,
+    pub dependencies: Vec<definition_inner::DDependency>,
 }
 
 impl TryFrom<PDefinition> for DDefinition {
     type Error = DomainError;
 
-    fn try_from(PDefinition { toolchain, packages }: PDefinition) -> DomainResult<Self> {
+    fn try_from(PDefinition { toolchain, dependencies }: PDefinition) -> DomainResult<Self> {
         let toolchain = toolchain
             .map(|toolchain| Ok(convert!(toolchain as _?)))
             .transpose()?;
 
-        let packages = convert!(packages as { _ => _? });
+        let dependencies = convert!(dependencies as [_?]);
 
-        Ok(Self { toolchain, packages })
+        Ok(Self { toolchain, dependencies })
     }
 }
 
 impl Into<PDefinition> for DDefinition {
     fn into(self) -> PDefinition {
-        let Self { toolchain, packages } = self;
+        let Self { toolchain, dependencies } = self;
 
         let toolchain = toolchain.map(|toolchain| convert!(toolchain as _));
-        let packages = convert!(packages as { _ => _ });
+        let dependencies = convert!(dependencies as [_]);
 
-        PDefinition { toolchain, packages }
+        PDefinition { toolchain, dependencies }
     }
 }

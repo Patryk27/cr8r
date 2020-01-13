@@ -7,21 +7,24 @@ message PDefinition {
         string version = 1;
     }
 
-    message PPackage {
-        message POverridden {
-            string version = 2;
+    message PDependency {
+        message POverride {
+            string version = 1;
         }
 
-        message PPatched {
-            string attachment_id = 2;
+        message PPatch {
+            string source_attachment_id = 1;
         }
 
-        oneof ty {
-            POverridden overridden = 1;
-            PPatched patched = 2;
+        string registry = 1;
+        string name = 2;
+
+        oneof action {
+            POverride override = 10;
+            PPatch patch = 11;
         }
     }
 
     PToolchain toolchain = 1;
-    map<string, PPackage> packages = 2;
+    repeated PDependency dependencies = 2;
 }

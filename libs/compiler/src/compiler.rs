@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use lib_interop::domain::{DDefinition, DJob, DJobOpcode};
-use lib_interop::domain::definition_inner::DPackage;
+use lib_interop::domain::definition_inner::DDependencyAction;
 
 use crate::{Environment, ProjectDef, ProjectName, ProviderDef, ProviderName};
 
@@ -70,7 +70,7 @@ impl Compiler {
             }
         }
 
-        if definition.toolchain.is_some() || !definition.packages.is_empty() {
+        if definition.toolchain.is_some() || !definition.dependencies.is_empty() {
             opcodes.push(DJobOpcode::log_system_msg(
                 "Preparing the environment",
             ));
@@ -87,21 +87,23 @@ impl Compiler {
             toolchain,
         ));
 
-        for (package_name, package) in &definition.packages {
-            let opcode = match package {
-                DPackage::Overridden { version } => {
-                    DJobOpcode::override_package(
+        for dependency in &definition.dependencies {
+            let opcode = match &dependency.action {
+                DDependencyAction::Override { version } => {
+                    DJobOpcode::override_dependency(
                         project_name,
-                        package_name,
+                        &dependency.registry,
+                        &dependency.name,
                         version,
                     )
                 }
 
-                DPackage::Patched { attachment_id } => {
-                    DJobOpcode::patch_package(
+                DDependencyAction::Patch { source_attachment_id } => {
+                    DJobOpcode::patch_dependency(
                         project_name,
-                        project_name,
-                        attachment_id.to_owned(),
+                        &dependency.registry,
+                        &dependency.name,
+                        source_attachment_id.to_owned(),
                     )
                 }
             };
