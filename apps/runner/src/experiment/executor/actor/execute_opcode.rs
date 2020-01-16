@@ -10,7 +10,6 @@ mod do_log_custom_msg;
 mod do_log_system_msg;
 mod do_override_dependency;
 mod do_override_toolchain;
-mod do_patch_dependency;
 
 impl ExperimentExecutorActor {
     pub(super) async fn execute_opcode(&mut self, opcode: DJobOpcode) -> Result<ActorWorkflow> {
@@ -36,18 +35,13 @@ impl ExperimentExecutorActor {
                     .await?
             }
 
-            OverrideToolchain { project, tc_version } => {
+            OverrideToolchain { project, toolchain: tc_version } => {
                 self.do_override_toolchain(project, tc_version)
                     .await?
             }
 
-            OverrideDependency { project, dep_registry, dep_name, dep_version } => {
-                self.do_override_dependency(project, dep_registry, dep_name, dep_version)
-                    .await?
-            }
-
-            PatchDependency { project, dep_registry, dep_name, dep_source_attachment_id } => {
-                self.do_patch_dependency(project, dep_registry, dep_name, dep_source_attachment_id)
+            OverrideDependency { project, registry, name, action } => {
+                self.do_override_dependency(project, registry, name, action)
                     .await?
             }
         }

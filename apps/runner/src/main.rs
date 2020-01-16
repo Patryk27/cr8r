@@ -11,6 +11,7 @@ use log::*;
 use lib_interop::client::ControllerClient;
 use lib_sandbox::SandboxProvider;
 
+mod cargo;
 mod core;
 mod experiment;
 mod session;

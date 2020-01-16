@@ -1,8 +1,12 @@
 use std::convert::TryFrom;
 
 use crate::convert;
-use crate::domain::{DAttachmentId, DomainError, DomainResult};
+use crate::domain::{DomainError, DomainResult};
 use crate::proto::core::PJobOpcode;
+
+pub use self::override_dependency_action::*;
+
+mod override_dependency_action;
 
 #[derive(Clone, Debug)]
 pub enum DJobOpcode {
@@ -20,21 +24,14 @@ pub enum DJobOpcode {
 
     OverrideToolchain {
         project: String,
-        tc_version: String,
+        toolchain: String,
     },
 
     OverrideDependency {
         project: String,
-        dep_registry: String,
-        dep_name: String,
-        dep_version: String,
-    },
-
-    PatchDependency {
-        project: String,
-        dep_registry: String,
-        dep_name: String,
-        dep_source_attachment_id: DAttachmentId,
+        registry: String,
+        name: String,
+        action: DOverrideDependencyAction,
     },
 }
 
@@ -57,38 +54,24 @@ impl DJobOpcode {
         }
     }
 
-    pub fn override_toolchain(project: impl Into<String>, tc_version: impl Into<String>) -> Self {
+    pub fn override_toolchain(project: impl Into<String>, toolchain: impl Into<String>) -> Self {
         DJobOpcode::OverrideToolchain {
             project: project.into(),
-            tc_version: tc_version.into(),
+            toolchain: toolchain.into(),
         }
     }
 
     pub fn override_dependency(
         project: impl Into<String>,
-        dep_registry: impl Into<String>,
-        dep_name: impl Into<String>,
-        dep_version: impl Into<String>,
+        registry: impl Into<String>,
+        name: impl Into<String>,
+        action: DOverrideDependencyAction,
     ) -> Self {
         DJobOpcode::OverrideDependency {
             project: project.into(),
-            dep_registry: dep_registry.into(),
-            dep_name: dep_name.into(),
-            dep_version: dep_version.into(),
-        }
-    }
-
-    pub fn patch_dependency(
-        project: impl Into<String>,
-        dep_registry: impl Into<String>,
-        dep_name: impl Into<String>,
-        dep_source_attachment_id: impl Into<DAttachmentId>,
-    ) -> Self {
-        DJobOpcode::PatchDependency {
-            project: project.into(),
-            dep_registry: dep_registry.into(),
-            dep_name: dep_name.into(),
-            dep_source_attachment_id: dep_source_attachment_id.into(),
+            registry: registry.into(),
+            name: name.into(),
+            action,
         }
     }
 }
@@ -112,20 +95,16 @@ impl TryFrom<PJobOpcode> for DJobOpcode {
                 DJobOpcode::InvokeCmd { cmd }
             }
 
-            Ty::OverrideToolchain(POverrideToolchain { project, tc_version }) => {
-                DJobOpcode::OverrideToolchain { project, tc_version }
+            Ty::OverrideToolchain(POverrideToolchain { project, toolchain }) => {
+                DJobOpcode::OverrideToolchain { project, toolchain }
             }
 
-            Ty::OverrideDependency(POverrideDependency { project, dep_registry, dep_name, dep_version }) => {
-                DJobOpcode::OverrideDependency { project, dep_registry, dep_name, dep_version }
-            }
-
-            Ty::PatchDependency(PPatchDependency { project, dep_registry, dep_name, dep_source_attachment_id }) => {
-                DJobOpcode::PatchDependency {
+            Ty::OverrideDependency(POverrideDependency { project, registry, name, action }) => {
+                DJobOpcode::OverrideDependency {
                     project,
-                    dep_registry,
-                    dep_name,
-                    dep_source_attachment_id: convert!(dep_source_attachment_id as _),
+                    registry,
+                    name,
+                    action: convert!(action? as _?),
                 }
             }
         })
@@ -149,20 +128,16 @@ impl Into<PJobOpcode> for DJobOpcode {
                 Ty::InvokeCmd(PInvokeCmd { cmd })
             }
 
-            DJobOpcode::OverrideToolchain { project, tc_version } => {
-                Ty::OverrideToolchain(POverrideToolchain { project, tc_version })
+            DJobOpcode::OverrideToolchain { project, toolchain } => {
+                Ty::OverrideToolchain(POverrideToolchain { project, toolchain })
             }
 
-            DJobOpcode::OverrideDependency { project, dep_registry, dep_name, dep_version } => {
-                Ty::OverrideDependency(POverrideDependency { project, dep_registry, dep_name, dep_version })
-            }
-
-            DJobOpcode::PatchDependency { project, dep_registry, dep_name, dep_source_attachment_id } => {
-                Ty::PatchDependency(PPatchDependency {
+            DJobOpcode::OverrideDependency { project, registry, name, action } => {
+                Ty::OverrideDependency(POverrideDependency {
                     project,
-                    dep_registry,
-                    dep_name,
-                    dep_source_attachment_id: convert!(dep_source_attachment_id as _),
+                    registry,
+                    name,
+                    action: Some(convert!(action as _)),
                 })
             }
         };

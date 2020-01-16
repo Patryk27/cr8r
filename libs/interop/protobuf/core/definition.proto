@@ -8,20 +8,20 @@ message PDefinition {
     }
 
     message PDependency {
-        message POverride {
-            string version = 1;
+        message POverrideUsingAttachment {
+            string attachment_id = 1;
         }
 
-        message PPatch {
-            string source_attachment_id = 1;
+        message POverrideUsingVersion {
+            string version = 1;
         }
 
         string registry = 1;
         string name = 2;
 
         oneof action {
-            POverride override = 10;
-            PPatch patch = 11;
+            POverrideUsingAttachment override_using_attachment = 10;
+            POverrideUsingVersion override_using_version = 11;
         }
     }
 

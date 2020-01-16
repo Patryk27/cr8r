@@ -12,12 +12,12 @@ pub use self::{
 
 mod macros;
 
-mod assignment;
-mod attachment;
-mod definition;
-mod error;
-mod event;
-mod experiment;
-mod job;
-mod report;
-mod runner;
+pub mod assignment;
+pub mod attachment;
+pub mod definition;
+pub mod error;
+pub mod event;
+pub mod experiment;
+pub mod job;
+pub mod report;
+pub mod runner;

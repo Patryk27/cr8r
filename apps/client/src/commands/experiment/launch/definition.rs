@@ -54,11 +54,11 @@ fn parse_dependency(dependency: &str) -> Result<DDependency> {
         return Err(anyhow!("Invalid format - expected a key-value pair, e.g.: `anyhow = \"1.0\"`"));
     }
 
-    let registry = "crates.io".to_string(); // @todo
+    let registry = "crates-io".to_string(); // @todo
 
     let name = parts[0].to_string();
 
-    let action = DDependencyAction::Override {
+    let action = DDependencyAction::OverrideUsingVersion {
         version: parts[1].to_string(),
     };
 
@@ -70,10 +70,12 @@ mod tests {
     use super::*;
 
     mod parse_toolchain {
+        use pretty_assertions::assert_eq;
+
         use super::*;
 
         #[test]
-        fn test_none() {
+        fn none() {
             assert_eq!(
                 parse_toolchain(None),
                 None,
@@ -81,7 +83,7 @@ mod tests {
         }
 
         #[test]
-        fn test_nightly() {
+        fn nightly() {
             let input = "nightly".to_string();
 
             let expected = DToolchain {
@@ -99,17 +101,19 @@ mod tests {
         use super::*;
 
         mod crates_io {
+            use pretty_assertions::assert_eq;
+
             use super::*;
 
             #[test]
-            fn test_basic() {
+            fn simple() {
                 let input = "tokio = \"0.2\"";
 
                 let expected = DDependency {
-                    registry: "crates.io".to_string(),
+                    registry: "crates-io".to_string(),
                     name: "tokio".to_string(),
 
-                    action: DDependencyAction::Override {
+                    action: DDependencyAction::OverrideUsingVersion {
                         version: "\"0.2\"".to_string(),
                     },
                 };
@@ -121,14 +125,14 @@ mod tests {
             }
 
             #[test]
-            fn test_advanced() {
+            fn detailed() {
                 let input = "tokio = { version = \"0.2\", features = [\"full\"] }";
 
                 let expected = DDependency {
-                    registry: "crates.io".to_string(),
+                    registry: "crates-io".to_string(),
                     name: "tokio".to_string(),
 
-                    action: DDependencyAction::Override {
+                    action: DDependencyAction::OverrideUsingVersion {
                         version: "{ version = \"0.2\", features = [\"full\"] }".to_string(),
                     },
                 };
@@ -141,6 +145,8 @@ mod tests {
         }
 
         mod git {
+            use pretty_assertions::assert_eq;
+
             use super::*;
 
 // @todo

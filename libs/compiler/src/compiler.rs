@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use lib_interop::domain::{DDefinition, DJob, DJobOpcode};
 use lib_interop::domain::definition_inner::DDependencyAction;
+use lib_interop::domain::job::opcode::DOverrideDependencyAction;
 
 use crate::{Environment, ProjectDef, ProjectName, ProviderDef, ProviderName};
 
@@ -88,27 +89,26 @@ impl Compiler {
         ));
 
         for dependency in &definition.dependencies {
-            let opcode = match &dependency.action {
-                DDependencyAction::Override { version } => {
-                    DJobOpcode::override_dependency(
-                        project_name,
-                        &dependency.registry,
-                        &dependency.name,
-                        version,
-                    )
+            let action = match &dependency.action {
+                DDependencyAction::OverrideUsingAttachment { attachment_id } => {
+                    DOverrideDependencyAction::UseAttachment {
+                        attachment_id: attachment_id.to_owned(),
+                    }
                 }
 
-                DDependencyAction::Patch { source_attachment_id } => {
-                    DJobOpcode::patch_dependency(
-                        project_name,
-                        &dependency.registry,
-                        &dependency.name,
-                        source_attachment_id.to_owned(),
-                    )
+                DDependencyAction::OverrideUsingVersion { version } => {
+                    DOverrideDependencyAction::UseVersion {
+                        version: version.to_owned(),
+                    }
                 }
             };
 
-            opcodes.push(opcode);
+            opcodes.push(DJobOpcode::override_dependency(
+                project_name,
+                &dependency.registry,
+                &dependency.name,
+                action,
+            ));
         }
 
         opcodes.push(DJobOpcode::log_system_msg(

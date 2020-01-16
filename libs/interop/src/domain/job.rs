@@ -4,9 +4,9 @@ use crate::convert;
 use crate::domain::{DomainError, DomainResult};
 use crate::proto::core::PJob;
 
-pub use self::opcode::*;
+pub use self::opcode::DJobOpcode;
 
-mod opcode;
+pub mod opcode;
 
 #[derive(Clone, Debug)]
 pub struct DJob {

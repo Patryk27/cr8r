@@ -13,12 +13,12 @@ pub struct DDependency {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DDependencyAction {
-    Override {
-        version: String,
+    OverrideUsingAttachment {
+        attachment_id: DAttachmentId,
     },
 
-    Patch {
-        source_attachment_id: DAttachmentId,
+    OverrideUsingVersion {
+        version: String,
     },
 }
 
@@ -29,14 +29,14 @@ impl TryFrom<PDependency> for DDependency {
         use p_dependency::*;
 
         let action = match convert!(action?) {
-            Action::Override(POverride { version }) => {
-                DDependencyAction::Override { version }
+            Action::OverrideUsingAttachment(POverrideUsingAttachment { attachment_id }) => {
+                DDependencyAction::OverrideUsingAttachment {
+                    attachment_id: convert!(attachment_id as _),
+                }
             }
 
-            Action::Patch(PPatch { source_attachment_id }) => {
-                DDependencyAction::Patch {
-                    source_attachment_id: convert!(source_attachment_id as _),
-                }
+            Action::OverrideUsingVersion(POverrideUsingVersion { version }) => {
+                DDependencyAction::OverrideUsingVersion { version }
             }
         };
 
@@ -51,14 +51,14 @@ impl Into<PDependency> for DDependency {
         let Self { registry, name, action } = self;
 
         let action = Some(match action {
-            DDependencyAction::Override { version } => {
-                Action::Override(POverride { version })
+            DDependencyAction::OverrideUsingAttachment { attachment_id } => {
+                Action::OverrideUsingAttachment(POverrideUsingAttachment {
+                    attachment_id: convert!(attachment_id as _),
+                })
             }
 
-            DDependencyAction::Patch { source_attachment_id } => {
-                Action::Patch(PPatch {
-                    source_attachment_id: convert!(source_attachment_id as _),
-                })
+            DDependencyAction::OverrideUsingVersion { version } => {
+                Action::OverrideUsingVersion(POverrideUsingVersion { version })
             }
         });
 

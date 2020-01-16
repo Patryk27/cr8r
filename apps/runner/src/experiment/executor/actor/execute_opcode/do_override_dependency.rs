@@ -2,33 +2,47 @@ use std::path::PathBuf;
 
 use anyhow::{Context, Result};
 
+use lib_interop::domain::job::opcode::DOverrideDependencyAction;
+
+use crate::cargo::CargoManifestEditor;
+
 use super::super::ExperimentExecutorActor;
 
 impl ExperimentExecutorActor {
     pub(super) async fn do_override_dependency(
         &mut self,
         project: String,
-        dep_registry: String,
-        dep_name: String,
-        dep_version: String,
+        registry: String,
+        name: String,
+        action: DOverrideDependencyAction,
     ) -> Result<()> {
-        let cargo_path = PathBuf::from(project)
+        let manifest_path = PathBuf::from(project)
             .join("Cargo.toml");
 
-        let cargo = self.sandbox
-            .fs_read(&cargo_path)
+        let manifest = self.sandbox
+            .fs_read(&manifest_path)
             .await
             .context("Could not read `Cargo.toml`")?;
 
-        let mut manifest = cargo_toml::Manifest::from_str(&cargo)
-            .context("Could not parse `Cargo.toml`")?;
+        let manifest = {
+            let mut editor = CargoManifestEditor::from_str(&manifest)?;
 
-        let patches = manifest.patch
-            .entry(dep_registry)
-            .or_default();
+            match action {
+                DOverrideDependencyAction::UseVersion { version } => {
+                    editor.patch_dependency(&registry, &name, &version)?;
+                }
 
-        patches.insert(dep_name, cargo_toml::Dependency::Simple(dep_version));
+                _ => {
+                    unimplemented!();
+                }
+            };
 
-        panic!("{}", toml::to_string(&manifest)?);
+            editor.finish()?
+        };
+
+        self.sandbox
+            .fs_write(&manifest_path, manifest)
+            .await
+            .context("Could not write `Cargo.toml`")
     }
 }

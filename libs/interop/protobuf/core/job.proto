@@ -22,21 +22,18 @@ message PJobOpcode {
 
     message POverrideToolchain {
         string project = 1;
-        string tc_version = 2;
+        string toolchain = 2;
     }
 
     message POverrideDependency {
         string project = 1;
-        string dep_registry = 2;
-        string dep_name = 3;
-        string dep_version = 4;
-    }
+        string registry = 2;
+        string name = 3;
 
-    message PPatchDependency {
-        string project = 1;
-        string dep_registry = 2;
-        string dep_name = 3;
-        string dep_source_attachment_id = 4;
+        oneof action {
+            string use_attachment_id = 5;
+            string use_version = 4;
+        }
     }
 
     oneof ty {
@@ -45,6 +42,5 @@ message PJobOpcode {
         PInvokeCmd invoke_cmd = 3;
         POverrideToolchain override_toolchain = 4;
         POverrideDependency override_dependency = 5;
-        PPatchDependency patch_dependency = 6;
     }
 }
