@@ -58,7 +58,7 @@ fn parse_dependency(dependency: &str) -> Result<DDependency> {
 
     let name = parts[0].to_string();
 
-    let action = DDependencyAction::OverrideUsingVersion {
+    let action = DDependencyAction::VersionOverride {
         version: parts[1].to_string(),
     };
 
@@ -113,7 +113,7 @@ mod tests {
                     registry: "crates-io".to_string(),
                     name: "tokio".to_string(),
 
-                    action: DDependencyAction::OverrideUsingVersion {
+                    action: DDependencyAction::VersionOverride {
                         version: "\"0.2\"".to_string(),
                     },
                 };
@@ -132,7 +132,7 @@ mod tests {
                     registry: "crates-io".to_string(),
                     name: "tokio".to_string(),
 
-                    action: DDependencyAction::OverrideUsingVersion {
+                    action: DDependencyAction::VersionOverride {
                         version: "{ version = \"0.2\", features = [\"full\"] }".to_string(),
                     },
                 };

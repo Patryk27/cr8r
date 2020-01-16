@@ -13,11 +13,11 @@ pub struct DDependency {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DDependencyAction {
-    OverrideUsingAttachment {
+    AttachmentOverride {
         attachment_id: DAttachmentId,
     },
 
-    OverrideUsingVersion {
+    VersionOverride {
         version: String,
     },
 }
@@ -29,14 +29,14 @@ impl TryFrom<PDependency> for DDependency {
         use p_dependency::*;
 
         let action = match convert!(action?) {
-            Action::OverrideUsingAttachment(POverrideUsingAttachment { attachment_id }) => {
-                DDependencyAction::OverrideUsingAttachment {
+            Action::AttachmentOverride(PAttachmentOverride { attachment_id }) => {
+                DDependencyAction::AttachmentOverride {
                     attachment_id: convert!(attachment_id as _),
                 }
             }
 
-            Action::OverrideUsingVersion(POverrideUsingVersion { version }) => {
-                DDependencyAction::OverrideUsingVersion { version }
+            Action::VersionOverride(PVersionOverride { version }) => {
+                DDependencyAction::VersionOverride { version }
             }
         };
 
@@ -51,14 +51,14 @@ impl Into<PDependency> for DDependency {
         let Self { registry, name, action } = self;
 
         let action = Some(match action {
-            DDependencyAction::OverrideUsingAttachment { attachment_id } => {
-                Action::OverrideUsingAttachment(POverrideUsingAttachment {
+            DDependencyAction::AttachmentOverride { attachment_id } => {
+                Action::AttachmentOverride(PAttachmentOverride {
                     attachment_id: convert!(attachment_id as _),
                 })
             }
 
-            DDependencyAction::OverrideUsingVersion { version } => {
-                Action::OverrideUsingVersion(POverrideUsingVersion { version })
+            DDependencyAction::VersionOverride { version } => {
+                Action::VersionOverride(PVersionOverride { version })
             }
         });
 

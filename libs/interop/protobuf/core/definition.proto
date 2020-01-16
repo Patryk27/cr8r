@@ -8,11 +8,11 @@ message PDefinition {
     }
 
     message PDependency {
-        message POverrideUsingAttachment {
+        message PAttachmentOverride {
             string attachment_id = 1;
         }
 
-        message POverrideUsingVersion {
+        message PVersionOverride {
             string version = 1;
         }
 
@@ -20,8 +20,8 @@ message PDefinition {
         string name = 2;
 
         oneof action {
-            POverrideUsingAttachment override_using_attachment = 10;
-            POverrideUsingVersion override_using_version = 11;
+            PAttachmentOverride attachment_override = 10;
+            PVersionOverride version_override = 11;
         }
     }
 
