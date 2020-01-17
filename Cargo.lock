@@ -677,6 +677,7 @@ dependencies = [
  "async-trait 0.1.19 (registry+https://github.com/rust-lang/crates.io-index)",
  "lib_lxd 0.1.0",
  "lib_process 0.1.0",
+ "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "tokio 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
