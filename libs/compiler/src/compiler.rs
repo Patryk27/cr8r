@@ -90,13 +90,13 @@ impl Compiler {
 
         for dependency in &definition.dependencies {
             let action = match &dependency.action {
-                DDependencyAction::OverrideUsingAttachment { attachment_id } => {
+                DDependencyAction::AttachmentOverride { attachment_id } => {
                     DOverrideDependencyAction::UseAttachment {
                         attachment_id: attachment_id.to_owned(),
                     }
                 }
 
-                DDependencyAction::OverrideUsingVersion { version } => {
+                DDependencyAction::VersionOverride { version } => {
                     DOverrideDependencyAction::UseVersion {
                         version: version.to_owned(),
                     }
