@@ -41,7 +41,7 @@ impl ExperimentExecutorActor {
         };
 
         self.sandbox
-            .fs_write(&manifest_path, manifest)
+            .fs_write(manifest_path, manifest)
             .await
             .context("Could not write `Cargo.toml`")
     }
