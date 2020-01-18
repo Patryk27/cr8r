@@ -51,6 +51,26 @@ impl LxdClient {
             .await
     }
 
+    pub async fn file_pull(
+        &self,
+        container: &LxdContainerName,
+        container_file: impl AsRef<Path>,
+        host_file: impl AsRef<Path>,
+    ) -> Result<()> {
+        cmds::file_pull(self, container, container_file.as_ref(), host_file.as_ref())
+            .await
+    }
+
+    pub async fn file_push(
+        &self,
+        container: &LxdContainerName,
+        host_file: impl AsRef<Path>,
+        container_file: impl AsRef<Path>,
+    ) -> Result<()> {
+        cmds::file_push(self, container, host_file.as_ref(), container_file.as_ref())
+            .await
+    }
+
     pub async fn launch(&self, image: &LxdImageName, container: &LxdContainerName) -> Result<()> {
         cmds::launch(self, image, container)
             .await
