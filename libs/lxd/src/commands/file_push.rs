@@ -2,7 +2,7 @@ use std::path::Path;
 
 use anyhow::Result;
 
-use crate::{cmds, LxdClient, LxdContainerName};
+use crate::{commands, LxdClient, LxdContainerName};
 
 pub async fn file_push(
     lxd: &LxdClient,
@@ -22,7 +22,7 @@ pub async fn file_push(
         format!("{}/{}", container, file)
     };
 
-    cmds::invoke(lxd, &[
+    commands::invoke(lxd, &[
         "file".to_string(),
         "push".to_string(),
         from,

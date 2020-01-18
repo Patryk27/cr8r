@@ -2,7 +2,7 @@ use std::path::Path;
 
 use anyhow::Result;
 
-use crate::{cmds, LxdClient, LxdContainerName};
+use crate::{commands, LxdClient, LxdContainerName};
 
 pub async fn file_pull(
     lxd: &LxdClient,
@@ -22,7 +22,7 @@ pub async fn file_pull(
         .display()
         .to_string();
 
-    cmds::invoke(lxd, &[
+    commands::invoke(lxd, &[
         "file".to_string(),
         "pull".to_string(),
         from,

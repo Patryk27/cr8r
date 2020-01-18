@@ -1,4 +1,4 @@
-use crate::{cmds, LxdClient, LxdContainerConfig, LxdContainerName, Result};
+use crate::{commands, LxdClient, LxdContainerConfig, LxdContainerName, Result};
 
 pub async fn config(lxd: &LxdClient, container: &LxdContainerName, config: LxdContainerConfig) -> Result<()> {
     let mut args = vec![
@@ -7,7 +7,7 @@ pub async fn config(lxd: &LxdClient, container: &LxdContainerName, config: LxdCo
 
     args.extend(config.into_args(container));
 
-    cmds::invoke(lxd, &args)
+    commands::invoke(lxd, &args)
         .await?;
 
     Ok(())

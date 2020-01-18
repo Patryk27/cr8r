@@ -31,7 +31,7 @@ impl fmt::Display for LxdIdent {
     }
 }
 
-
+// @todo deserialize should validate whether the identifier is actually valid
 #[macro_export]
 macro_rules! newtype {
     ($name:ident) => {

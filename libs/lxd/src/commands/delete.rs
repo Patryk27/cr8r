@@ -1,7 +1,7 @@
-use crate::{cmds, LxdClient, LxdContainerName, Result};
+use crate::{commands, LxdClient, LxdContainerName, Result};
 
 pub async fn delete(lxd: &LxdClient, container: &LxdContainerName) -> Result<()> {
-    cmds::invoke(lxd, &[
+    commands::invoke(lxd, &[
         "delete".to_string(),
         container.to_string(),
         "--force".to_string(),

@@ -1,4 +1,4 @@
-use crate::{cmds, LxdClient, LxdContainerName, Result};
+use crate::{commands, LxdClient, LxdContainerName, Result};
 
 pub async fn exec(lxd: &LxdClient, container: &LxdContainerName, args: &[&str]) -> Result<String> {
     let mut invoke_args = vec![
@@ -11,6 +11,6 @@ pub async fn exec(lxd: &LxdClient, container: &LxdContainerName, args: &[&str]) 
         invoke_args.push((*arg).to_string());
     }
 
-    cmds::invoke(lxd, &invoke_args)
+    commands::invoke(lxd, &invoke_args)
         .await
 }

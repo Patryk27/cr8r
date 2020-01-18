@@ -2,8 +2,9 @@ use std::fmt;
 use std::str::FromStr;
 
 use anyhow::{Error, Result};
+use serde::Deserialize;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct LxdImageName(String);
 
 impl LxdImageName {

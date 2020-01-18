@@ -10,7 +10,7 @@ pub use self::{
     models::*,
 };
 
-mod cmds;
+mod commands;
 mod listener;
 mod models;
 
@@ -28,7 +28,7 @@ impl LxdClient {
     }
 
     pub async fn autodetect() -> Result<Self> {
-        cmds::autodetect()
+        commands::autodetect()
             .await
     }
 
@@ -37,47 +37,79 @@ impl LxdClient {
     }
 
     pub async fn config(&self, container: &LxdContainerName, config: LxdContainerConfig) -> Result<()> {
-        cmds::config(self, container, config)
+        commands::config(self, container, config)
             .await
     }
 
     pub async fn delete(&self, container: &LxdContainerName) -> Result<()> {
-        cmds::delete(self, container)
+        commands::delete(self, container)
             .await
     }
 
     pub async fn exec(&self, container: &LxdContainerName, args: &[&str]) -> Result<String> {
-        cmds::exec(self, container, args)
+        commands::exec(self, container, args)
             .await
     }
 
+    /// Models the `lxc file pull` command, allowing one to copy a single file from container into the host.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use lib_lxd::LxdClient;
+    ///
+    /// let lxd = LxdClient::autodetect()
+    ///     .await?;
+    ///
+    /// lxc.file_pull(
+    ///   "my-container".parse()?,
+    ///   "/home/ubuntu/hello-world.txt",
+    ///   "/tmp/hello-world.txt",
+    /// ).await?;
+    /// ```
     pub async fn file_pull(
         &self,
         container: &LxdContainerName,
         container_file: impl AsRef<Path>,
         host_file: impl AsRef<Path>,
     ) -> Result<()> {
-        cmds::file_pull(self, container, container_file.as_ref(), host_file.as_ref())
+        commands::file_pull(self, container, container_file.as_ref(), host_file.as_ref())
             .await
     }
 
+    /// Models the `lxc file push` command, allowing one to copy a single file from host into the container.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use lib_lxd::LxdClient;
+    ///
+    /// let lxd = LxdClient::autodetect()
+    ///     .await?;
+    ///
+    /// lxc.file_push(
+    ///   "my-container".parse(),
+    ///   "/tmp/hello-world.txt",
+    ///   "/home/ubuntu/hello-world.txt",
+    /// ).await?;
+    /// ```
     pub async fn file_push(
         &self,
         container: &LxdContainerName,
         host_file: impl AsRef<Path>,
         container_file: impl AsRef<Path>,
     ) -> Result<()> {
-        cmds::file_push(self, container, host_file.as_ref(), container_file.as_ref())
+        commands::file_push(self, container, host_file.as_ref(), container_file.as_ref())
             .await
     }
 
     pub async fn launch(&self, image: &LxdImageName, container: &LxdContainerName) -> Result<()> {
-        cmds::launch(self, image, container)
+        commands::launch(self, image, container)
             .await
     }
 
     pub async fn list(&self) -> Result<Vec<LxdContainer>> {
-        cmds::list(self)
+        commands::list(self)
             .await
     }
 }

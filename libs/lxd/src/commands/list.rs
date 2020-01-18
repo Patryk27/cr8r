@@ -1,9 +1,9 @@
 use anyhow::{Context, Result};
 
-use crate::{cmds, LxdClient, LxdContainer};
+use crate::{commands, LxdClient, LxdContainer};
 
 pub async fn list(lxd: &LxdClient) -> Result<Vec<LxdContainer>> {
-    let output = cmds::invoke(lxd, &[
+    let output = commands::invoke(lxd, &[
         "list".to_string(),
         "--format=json".to_string(),
     ]).await?;

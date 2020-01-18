@@ -1,7 +1,7 @@
-use crate::{cmds, LxdClient, LxdContainerName, LxdImageName, Result};
+use crate::{commands, LxdClient, LxdContainerName, LxdImageName, Result};
 
 pub async fn launch(lxd: &LxdClient, image: &LxdImageName, container: &LxdContainerName) -> Result<()> {
-    cmds::invoke(lxd, &[
+    commands::invoke(lxd, &[
         "launch".to_string(),
         image.to_string(),
         container.to_string(),
