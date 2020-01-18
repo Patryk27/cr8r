@@ -143,13 +143,5 @@ mod tests {
                 assert_eq!(expected, actual);
             }
         }
-
-        mod git {
-            use pretty_assertions::assert_eq;
-
-            use super::*;
-
-// @todo
-        }
     }
 }
