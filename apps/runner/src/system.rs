@@ -1,9 +1,8 @@
 use anyhow::Result;
 use log::*;
 
-use lib_sandbox::SandboxProvider;
+use lib_sandbox::{SandboxConfig, SandboxProvider};
 
-use crate::core::SandboxConfig;
 use crate::session::Session;
 
 mod conduct_assignment;

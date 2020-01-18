@@ -1,9 +1,13 @@
 use anyhow::{Context, Result};
+use log::*;
 use tokio::fs;
 
-use crate::{SandboxListener, ShellEngine};
+use crate::engines::ShellEngine;
+use crate::SandboxListener;
 
 pub async fn init(engine: &mut ShellEngine, listener: SandboxListener) -> Result<()> {
+    debug!("init");
+
     engine.listener = listener;
 
     (try {
@@ -22,6 +26,8 @@ pub async fn init(engine: &mut ShellEngine, listener: SandboxListener) -> Result
 
 async fn create_root_dir_if_not_exists(engine: &ShellEngine) -> Result<()> {
     if !engine.root.exists() {
+        debug!("Root directory does not exist, creating one");
+
         fs::create_dir(&engine.root)
             .await?;
     }

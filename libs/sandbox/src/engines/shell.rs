@@ -6,7 +6,14 @@ use async_trait::async_trait;
 
 use crate::{SandboxEngine, SandboxListener};
 
-mod cmds;
+pub use self::{
+    config::*,
+    error::*,
+};
+
+mod commands;
+mod config;
+mod error;
 
 pub struct ShellEngine {
     root: PathBuf,
@@ -14,7 +21,7 @@ pub struct ShellEngine {
 }
 
 impl ShellEngine {
-    pub async fn create(root: PathBuf) -> Result<Self> {
+    pub async fn create(ShellConfig { root }: ShellConfig) -> Result<Self> {
         Ok(Self {
             root,
             listener: SandboxListener::default(),
@@ -25,27 +32,27 @@ impl ShellEngine {
 #[async_trait]
 impl SandboxEngine for ShellEngine {
     async fn init(&mut self, listener: SandboxListener) -> Result<()> {
-        cmds::init(self, listener)
+        commands::init(self, listener)
             .await
     }
 
     async fn destroy(&mut self) -> Result<()> {
-        cmds::destroy(self)
+        commands::destroy(self)
             .await
     }
 
     async fn exec(&mut self, cmd: &str) -> Result<()> {
-        cmds::exec(self, cmd)
+        commands::exec(self, cmd)
             .await
     }
 
     async fn fs_read(&mut self, path: &Path) -> Result<String> {
-        cmds::fs_read(self, path)
+        commands::fs_read(self, path)
             .await
     }
 
     async fn fs_write(&mut self, path: &Path, content: String) -> Result<()> {
-        cmds::fs_write(self, path, content)
+        commands::fs_write(self, path, content)
             .await
     }
 }

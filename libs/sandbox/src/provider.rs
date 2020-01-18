@@ -1,4 +1,4 @@
-use crate::{Result, Sandbox, SandboxDef};
+use crate::{Result, Sandbox, SandboxConfig};
 
 pub struct SandboxProvider;
 
@@ -7,17 +7,17 @@ impl SandboxProvider {
         Self
     }
 
-    pub async fn create(&self, def: SandboxDef) -> Result<Sandbox> {
+    pub async fn create(&self, definition: SandboxConfig) -> Result<Sandbox> {
         use crate::engines::*;
 
-        let engine = match def {
-            SandboxDef::Lxd { container, image } => {
-                box LxdEngine::create(container, image)
+        let engine = match definition {
+            SandboxConfig::Lxd(definition) => {
+                box LxdEngine::create(definition)
                     .await? as _
             }
 
-            SandboxDef::Shell { root } => {
-                box ShellEngine::create(root)
+            SandboxConfig::Shell(definition) => {
+                box ShellEngine::create(definition)
                     .await? as _
             }
         };

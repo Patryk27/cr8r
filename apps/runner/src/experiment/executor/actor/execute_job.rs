@@ -60,7 +60,7 @@ impl ExperimentExecutorActor {
         };
 
         self.sandbox
-            .init(Some(listener))
+            .init(listener)
             .await
     }
 

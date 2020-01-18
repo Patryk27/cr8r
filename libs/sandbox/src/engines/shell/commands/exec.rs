@@ -1,9 +1,13 @@
+use log::*;
+
 use anyhow::{anyhow, Result};
 use lib_process::Process;
 
-use crate::ShellEngine;
+use crate::engines::ShellEngine;
 
 pub async fn exec(engine: &mut ShellEngine, cmd: &str) -> Result<()> {
+    debug!("exec :: cmd={}", cmd);
+
     if let Some(handler) = &engine.listener.on_command_executed {
         handler(cmd.to_string());
     }

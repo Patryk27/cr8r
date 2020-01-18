@@ -6,7 +6,8 @@ controller:
   secret: 'top-secret'
 
 sandbox:
-  type: shell
-  root: /tmp/runner
-#  type: lxd
-#  container-name: 'cr8r-experiment'
+#  type: shell
+#  root: /tmp/runner
+  type: lxd
+  container: 'foo'
+  image: 'ubuntu:18.04'
