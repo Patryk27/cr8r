@@ -1,10 +1,10 @@
 use log::*;
 
-use crate::engines::ShellEngine;
+use crate::engines::ShellSandboxEngine;
 use crate::Result;
 
-pub async fn destroy(_: &mut ShellEngine) -> Result<()> {
-    debug!("destroy");
+pub async fn destroy(_: &mut ShellSandboxEngine) -> Result<()> {
+    debug!("Executing: destroy()");
 
     Ok(())
 }

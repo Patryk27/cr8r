@@ -6,8 +6,7 @@ controller:
   secret: 'top-secret'
 
 sandbox:
-#  type: shell
-#  root: /tmp/runner
   type: lxd
-  container: 'foo'
-  image: 'ubuntu:18.04'
+  config:
+    container: 'foo'
+    image: 'ubuntu:18.04'

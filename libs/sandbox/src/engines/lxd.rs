@@ -3,7 +3,7 @@ use std::path::Path;
 use anyhow::Result;
 
 use async_trait::async_trait;
-use lib_lxd::{LxdClient, LxdContainerName, LxdImageName};
+use lib_lxd::LxdClient;
 
 use crate::{SandboxEngine, SandboxListener};
 
@@ -16,26 +16,24 @@ mod commands;
 mod config;
 mod error;
 
-pub struct LxdEngine {
+pub struct LxdSandboxEngine {
+    config: LxdSandboxConfig,
     client: LxdClient,
-    container: LxdContainerName,
-    image: LxdImageName,
     listener: SandboxListener,
 }
 
-impl LxdEngine {
-    pub async fn create(LxdConfig { container, image }: LxdConfig) -> Result<Self> {
+impl LxdSandboxEngine {
+    pub async fn create(config: LxdSandboxConfig) -> Result<Self> {
         Ok(Self {
+            config,
             client: LxdClient::autodetect().await?,
-            container,
-            image,
             listener: SandboxListener::default(),
         })
     }
 }
 
 #[async_trait]
-impl SandboxEngine for LxdEngine {
+impl SandboxEngine for LxdSandboxEngine {
     async fn init(&mut self, listener: SandboxListener) -> Result<()> {
         commands::init(self, listener)
             .await

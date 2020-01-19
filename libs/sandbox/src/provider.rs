@@ -12,12 +12,12 @@ impl SandboxProvider {
 
         let engine = match definition {
             SandboxConfig::Lxd(definition) => {
-                box LxdEngine::create(definition)
+                box LxdSandboxEngine::create(definition)
                     .await? as _
             }
 
             SandboxConfig::Shell(definition) => {
-                box ShellEngine::create(definition)
+                box ShellSandboxEngine::create(definition)
                     .await? as _
             }
         };

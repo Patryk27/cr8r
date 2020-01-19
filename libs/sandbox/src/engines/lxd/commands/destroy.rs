@@ -1,13 +1,13 @@
 use anyhow::Result;
 use log::*;
 
-use crate::engines::LxdEngine;
+use crate::engines::LxdSandboxEngine;
 
-pub async fn destroy(engine: &mut LxdEngine) -> Result<()> {
-    debug!("destroy");
+pub async fn destroy(engine: &mut LxdSandboxEngine) -> Result<()> {
+    debug!("Executing: destroy()");
 
     engine.client
-        .delete(&engine.container)
+        .delete(&engine.config.container)
         .await?;
 
     Ok(())

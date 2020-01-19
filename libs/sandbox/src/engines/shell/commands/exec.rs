@@ -3,17 +3,17 @@ use log::*;
 use anyhow::{anyhow, Result};
 use lib_process::Process;
 
-use crate::engines::ShellEngine;
+use crate::engines::ShellSandboxEngine;
 
-pub async fn exec(engine: &mut ShellEngine, cmd: &str) -> Result<()> {
-    debug!("exec :: cmd={}", cmd);
+pub async fn exec(engine: &mut ShellSandboxEngine, cmd: &str) -> Result<()> {
+    debug!("Executing: exec(cmd=`{}`)", cmd);
 
     if let Some(handler) = &engine.listener.on_command_executed {
         handler(cmd.to_string());
     }
 
     let status = Process::new("/usr/bin/bash")
-        .current_dir(&engine.root)
+        .current_dir(&engine.config.root)
         .args(&["-c", cmd])
         .listener(box |line| {
             if let Some(handler) = &engine.listener.on_command_output {

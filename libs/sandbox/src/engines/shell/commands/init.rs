@@ -2,18 +2,15 @@ use anyhow::{Context, Result};
 use log::*;
 use tokio::fs;
 
-use crate::engines::ShellEngine;
+use crate::engines::ShellSandboxEngine;
 use crate::SandboxListener;
 
-pub async fn init(engine: &mut ShellEngine, listener: SandboxListener) -> Result<()> {
-    debug!("init");
+pub async fn init(engine: &mut ShellSandboxEngine, listener: SandboxListener) -> Result<()> {
+    debug!("Executing: init()");
 
     engine.listener = listener;
 
     (try {
-        create_root_dir_if_not_exists(engine)
-            .await?;
-
         ensure_root_dir_is_writable(engine)
             .await?;
 
@@ -24,19 +21,10 @@ pub async fn init(engine: &mut ShellEngine, listener: SandboxListener) -> Result
     Ok(())
 }
 
-async fn create_root_dir_if_not_exists(engine: &ShellEngine) -> Result<()> {
-    if !engine.root.exists() {
-        debug!("Root directory does not exist, creating one");
+async fn ensure_root_dir_is_writable(engine: &ShellSandboxEngine) -> Result<()> {
+    debug!(".. ensuring root directory is writable");
 
-        fs::create_dir(&engine.root)
-            .await?;
-    }
-
-    Ok(())
-}
-
-async fn ensure_root_dir_is_writable(engine: &ShellEngine) -> Result<()> {
-    let file = engine.root.join(".test");
+    let file = engine.config.root.join(".test");
 
     fs::write(&file, "Hello World!")
         .await?;
@@ -44,18 +32,29 @@ async fn ensure_root_dir_is_writable(engine: &ShellEngine) -> Result<()> {
     fs::remove_file(&file)
         .await?;
 
+    debug!(".. .. ok");
+
     Ok(())
 }
 
-async fn clean_root_dir(engine: &ShellEngine) -> Result<()> {
-    let mut entries = fs::read_dir(&engine.root).await?;
+async fn clean_root_dir(engine: &ShellSandboxEngine) -> Result<()> {
+    debug!(".. cleaning root directory");
+
+    let mut entries = fs::read_dir(&engine.config.root).await?;
 
     while let Some(entry) = entries.next_entry().await? {
-        if entry.metadata().await?.is_dir() {
-            fs::remove_dir_all(entry.path())
+        let entry_meta = entry.metadata().await?;
+        let entry_path = entry.path();
+
+        if entry_meta.is_dir() {
+            debug!(".. .. removing directory: {}", entry_path.display());
+
+            fs::remove_dir_all(entry_path)
                 .await?;
         } else {
-            fs::remove_file(entry.path())
+            debug!(".. .. removing file: {}", entry_path.display());
+
+            fs::remove_file(entry_path)
                 .await?;
         }
     }

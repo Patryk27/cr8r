@@ -1,18 +1,22 @@
-use std::fs;
 use std::path::Path;
 
 use anyhow::Result;
 use log::*;
+use tokio::fs;
 
-use crate::engines::ShellEngine;
+use crate::engines::ShellSandboxEngine;
 
-pub async fn fs_read(engine: &mut ShellEngine, path: &Path) -> Result<String> {
-    debug!("fs_read :: path={}", path.display());
+pub async fn fs_read(engine: &mut ShellSandboxEngine, path: &Path) -> Result<String> {
+    debug!("Executing: fs_read(path=`{}`)", path.display());
 
-    let path = engine.root.join(path);
-    let content = fs::read_to_string(path)?;
+    let path = engine.config.root.join(path);
 
-    debug!("... = {} bytes", content.len());
+    debug!(".. actual path = {}", path.display());
+
+    let content = fs::read_to_string(path)
+        .await?;
+
+    debug!(".. ok, {} bytes read", content.len());
 
     Ok(content)
 }

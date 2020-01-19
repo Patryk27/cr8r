@@ -1,12 +1,12 @@
 use serde::Deserialize;
 
-use crate::engines::{LxdConfig, ShellConfig};
+use crate::engines::{LxdSandboxConfig, ShellSandboxConfig};
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "kebab-case")]
-#[serde(tag = "type")]
+#[serde(tag = "type", content = "config")]
 pub enum SandboxConfig {
-    Lxd(LxdConfig),
-    Shell(ShellConfig),
+    Lxd(LxdSandboxConfig),
+    Shell(ShellSandboxConfig),
 }

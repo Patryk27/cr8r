@@ -1,4 +1,4 @@
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use anyhow::Result;
 
@@ -15,22 +15,22 @@ mod commands;
 mod config;
 mod error;
 
-pub struct ShellEngine {
-    root: PathBuf,
+pub struct ShellSandboxEngine {
+    config: ShellSandboxConfig,
     listener: SandboxListener,
 }
 
-impl ShellEngine {
-    pub async fn create(ShellConfig { root }: ShellConfig) -> Result<Self> {
+impl ShellSandboxEngine {
+    pub async fn create(config: ShellSandboxConfig) -> Result<Self> {
         Ok(Self {
-            root,
+            config,
             listener: SandboxListener::default(),
         })
     }
 }
 
 #[async_trait]
-impl SandboxEngine for ShellEngine {
+impl SandboxEngine for ShellSandboxEngine {
     async fn init(&mut self, listener: SandboxListener) -> Result<()> {
         commands::init(self, listener)
             .await

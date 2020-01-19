@@ -4,17 +4,17 @@ use tokio::time;
 
 use lib_lxd::{LxdContainerConfig, LxdDeviceDef, LxdListener};
 
-use crate::engines::LxdEngine;
+use crate::engines::LxdSandboxEngine;
 use crate::SandboxListener;
 
-pub async fn init(engine: &mut LxdEngine, mut listener: SandboxListener) -> Result<()> {
-    debug!("init");
+pub async fn init(engine: &mut LxdSandboxEngine, listener: SandboxListener) -> Result<()> {
+    debug!("Executing: init()");
 
     engine.client.set_listener(LxdListener {
-        on_output: listener.on_command_output.take(),
+        on_output: listener.on_command_output,
     });
 
-    engine.listener = listener;
+    engine.listener = SandboxListener::default();
 
     delete_stale_container(engine)
         .await
@@ -24,13 +24,17 @@ pub async fn init(engine: &mut LxdEngine, mut listener: SandboxListener) -> Resu
         .await
         .context("Could not launch new container")?;
 
-    forward_ssh_agent(engine)
-        .await
-        .context("Could not forward SSH agent")?;
+    if engine.config.forward_ssh {
+        forward_ssh_agent(engine)
+            .await
+            .context("Could not forward SSH agent")?;
+    }
 
-    wait_for_network(engine)
-        .await
-        .context("Could not wait for network")?;
+    if engine.config.wait_for_network {
+        wait_for_network(engine)
+            .await
+            .context("Could not wait for network")?;
+    }
 
     install_rustup(engine)
         .await
@@ -39,35 +43,47 @@ pub async fn init(engine: &mut LxdEngine, mut listener: SandboxListener) -> Resu
     Ok(())
 }
 
-async fn delete_stale_container(engine: &mut LxdEngine) -> Result<()> {
+async fn delete_stale_container(engine: &mut LxdSandboxEngine) -> Result<()> {
+    debug!(".. checking for a stale container");
+
     let found_stale_container = engine.client
         .list()
         .await?
         .into_iter()
-        .any(|container| container.name == engine.container);
+        .any(|container| container.name == engine.config.container);
 
     if found_stale_container {
+        debug!(".. .. ok, found - deleting it");
+
         engine.client
-            .delete(&engine.container)
+            .delete(&engine.config.container)
             .await?;
+    } else {
+        debug!(".. .. ok, not found");
     }
 
     Ok(())
 }
 
-async fn launch_container(engine: &mut LxdEngine) -> Result<()> {
+async fn launch_container(engine: &mut LxdSandboxEngine) -> Result<()> {
+    debug!(".. launching new container");
+
     engine.client
-        .launch(&engine.image, &engine.container)
+        .launch(&engine.config.image, &engine.config.container)
         .await?;
 
     Ok(())
 }
 
-async fn forward_ssh_agent(engine: &mut LxdEngine) -> Result<()> {
+async fn forward_ssh_agent(engine: &mut LxdSandboxEngine) -> Result<()> {
+    debug!(".. forwarding SSH agent");
+
     let ssh_sock = super::get_host_env("SSH_AUTH_SOCK")?;
 
-    engine.client.config(&engine.container, LxdContainerConfig::AddDevice {
-        name: format!("{}-ssh-auth-sock", engine.container.as_str())
+    debug!(".. .. SSH_SOCK = {}", ssh_sock);
+
+    engine.client.config(&engine.config.container, LxdContainerConfig::AddDevice {
+        name: format!("{}-ssh-auth-sock", engine.config.container.as_str())
             .parse()?,
 
         def: LxdDeviceDef::Disk {
@@ -80,7 +96,9 @@ async fn forward_ssh_agent(engine: &mut LxdEngine) -> Result<()> {
         .await
 }
 
-async fn wait_for_network(engine: &mut LxdEngine) -> Result<()> {
+async fn wait_for_network(engine: &mut LxdSandboxEngine) -> Result<()> {
+    debug!(".. waiting for network");
+
     // Wait a bit before systemd gets initialized; otherwise we won't be able to invoke `systemctl`
     time::delay_for(time::Duration::from_millis(1000))
         .await;
@@ -89,7 +107,9 @@ async fn wait_for_network(engine: &mut LxdEngine) -> Result<()> {
         .await
 }
 
-async fn install_rustup(engine: &mut LxdEngine) -> Result<()> {
+async fn install_rustup(engine: &mut LxdSandboxEngine) -> Result<()> {
+    debug!(".. installing `rustup`");
+
     // LXD's default Ubuntu images do not contain `cc`, so compiling any Cargo program would fail if we didn't pull
     // `cmake`
     super::exec(engine, "apt update && apt install cmake -y")
