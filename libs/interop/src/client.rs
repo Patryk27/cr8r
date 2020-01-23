@@ -2,11 +2,10 @@ use std::str::FromStr;
 
 use anyhow::{Context, Result};
 use colored::Colorize;
-use hyper::header::HeaderValue;
-use hyper::Uri;
 use log::*;
-use tonic::Streaming;
-use tonic::transport::Channel;
+use tonic::{Request, Streaming};
+use tonic::metadata::MetadataValue;
+use tonic::transport::{Channel, Uri};
 
 use crate::proto::controller::*;
 use crate::proto::controller::controller_client::ControllerClient as InnerControllerClient;
@@ -18,32 +17,33 @@ pub struct ControllerClient {
 }
 
 impl ControllerClient {
-    pub async fn connect(uri: String, secret: Option<String>) -> Result<Self> {
-        info!("Connecting to controller at: {}", uri.green());
+    pub async fn connect(address: String, secret: Option<String>) -> Result<Self> {
+        info!("Connecting to controller at: {}", address.green());
 
-        let uri = Uri::from_str(&uri)
-            .context("Could not parse controller's URI")?;
+        let uri = Uri::from_str(&address)
+            .context("Could not parse controller's address")?;
 
         let auth = secret
             .map(|secret| format!("Bearer {}", secret))
-            .map(|secret| HeaderValue::from_str(&secret))
+            .map(|secret| MetadataValue::from_str(&secret))
             .transpose()
-            .context("Could not parse controller's secret key")?;
+            .context("Could not parse controller's secret")?;
 
         let channel = Channel::builder(uri)
-            .intercept_headers(move |headers| {
-                if let Some(auth) = &auth {
-                    headers.insert("authorization", auth.to_owned());
-                }
-            })
             .connect()
             .await?;
 
+        let client = InnerControllerClient::with_interceptor(channel, move |mut req: Request<()>| {
+            if let Some(auth) = &auth {
+                req.metadata_mut().insert("authorization", auth.clone());
+            }
+
+            Ok(req)
+        });
+
         info!("Connection acquired");
 
-        Ok(Self {
-            client: InnerControllerClient::new(channel),
-        })
+        Ok(Self { client })
     }
 }
 

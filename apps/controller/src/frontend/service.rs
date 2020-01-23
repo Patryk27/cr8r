@@ -1,6 +1,6 @@
 use anyhow::Error;
 use tokio::stream::Stream;
-use tonic::{Request, Response, Status};
+use tonic::{Request, Response, Status, Streaming};
 
 use lib_interop::proto::controller::*;
 use lib_interop::proto::controller::controller_server::Controller;
@@ -53,6 +53,20 @@ impl Controller for ControllerService {
             .await
             .map(Response::new)
             .map_err(transform_error)
+    }
+
+    async fn create_attachment(
+        &self,
+        request: Request<Streaming<PCreateAttachmentRequest>>,
+    ) -> Result<Response<PCreateAttachmentReply>, Status> {
+        unimplemented!()
+    }
+
+    async fn abort_experiment(
+        &self,
+        request: Request<PAbortExperimentRequest>,
+    ) -> Result<Response<PAbortExperimentReply>, Status> {
+        unimplemented!()
     }
 
     async fn create_experiment(

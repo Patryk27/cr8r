@@ -46,11 +46,11 @@ impl<'a> Process<'a> {
         let (tx, mut rx) = mpsc::unbounded_channel();
 
         if let Some(mut listener) = self.listener {
-            if let Some(stdout) = child.stdout().take() {
+            if let Some(stdout) = child.stdout.take() {
                 spawn_stream(tx.clone(), stdout);
             }
 
-            if let Some(stderr) = child.stderr().take() {
+            if let Some(stderr) = child.stderr.take() {
                 spawn_stream(tx, stderr);
             }
 
