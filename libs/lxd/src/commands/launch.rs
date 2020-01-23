@@ -5,6 +5,7 @@ pub async fn launch(lxd: &LxdClient, image: &LxdImageName, container: &LxdContai
         "launch".to_string(),
         image.to_string(),
         container.to_string(),
+        "--ephemeral".to_string(),
         "-csecurity.nesting=true".to_string(),
         "-csecurity.privileged=true".to_string(),
     ]).await?;
