@@ -24,7 +24,7 @@ pub async fn get_env(engine: &mut LxdSandboxEngine, key: &str) -> Result<String>
         .exec(&engine.config.container, &["bash", "-c", &format!("echo ${}", key)])
         .await?;
 
-    debug!("... = {}", value);
+    debug!(".. ok: {}", value);
 
     Ok(value)
 }
@@ -35,7 +35,7 @@ pub fn get_host_env(key: &str) -> Result<String> {
     let value = std::env::var(key)
         .with_context(|| format!("Could not read host environmental variable: {}", key))?;
 
-    debug!("... = {}", value);
+    debug!(".. ok: {}", value);
 
     Ok(value)
 }
