@@ -7,14 +7,10 @@ use lib_lxd::LxdClient;
 
 use crate::{SandboxEngine, SandboxListener};
 
-pub use self::{
-    config::*,
-    error::*,
-};
+pub use self::config::*;
 
 mod commands;
 mod config;
-mod error;
 
 pub struct LxdSandboxEngine {
     config: LxdSandboxConfig,

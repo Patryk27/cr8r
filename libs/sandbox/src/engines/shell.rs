@@ -6,14 +6,10 @@ use async_trait::async_trait;
 
 use crate::{SandboxEngine, SandboxListener};
 
-pub use self::{
-    config::*,
-    error::*,
-};
+pub use self::config::*;
 
 mod commands;
 mod config;
-mod error;
 
 pub struct ShellSandboxEngine {
     config: ShellSandboxConfig,
