@@ -3,7 +3,7 @@ use anyhow::{Context, Result};
 use crate::{commands, LxdClient, LxdContainer};
 
 pub async fn list(lxd: &LxdClient) -> Result<Vec<LxdContainer>> {
-    let output = commands::invoke(lxd, &[
+    let output = commands::invoke_silent(lxd, &[
         "list".to_string(),
         "--format=json".to_string(),
     ]).await?;

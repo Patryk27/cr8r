@@ -1,3 +1,5 @@
+#![feature(box_syntax)]
+
 use std::ffi::OsStr;
 use std::io;
 use std::path::Path;
@@ -32,8 +34,8 @@ impl<'a> Process<'a> {
         self
     }
 
-    pub fn listener(mut self, listener: Box<dyn FnMut(String) + Send + 'a>) -> Self {
-        self.listener = Some(listener);
+    pub fn listener(mut self, listener: impl FnMut(String) + Send + 'a) -> Self {
+        self.listener = Some(box listener);
         self
     }
 

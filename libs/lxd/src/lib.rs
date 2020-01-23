@@ -1,4 +1,3 @@
-#![feature(box_syntax)]
 #![feature(crate_visibility_modifier)]
 
 use std::path::{Path, PathBuf};
