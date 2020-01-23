@@ -51,22 +51,6 @@ impl LxdClient {
             .await
     }
 
-    /// Models the `lxc file pull` command, allowing one to copy a single file from container into the host.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use lib_lxd::LxdClient;
-    ///
-    /// let lxd = LxdClient::autodetect()
-    ///     .await?;
-    ///
-    /// lxc.file_pull(
-    ///   "my-container".parse()?,
-    ///   "/home/ubuntu/hello-world.txt",
-    ///   "/tmp/hello-world.txt",
-    /// ).await?;
-    /// ```
     pub async fn file_pull(
         &self,
         container: &LxdContainerName,
@@ -77,22 +61,6 @@ impl LxdClient {
             .await
     }
 
-    /// Models the `lxc file push` command, allowing one to copy a single file from host into the container.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use lib_lxd::LxdClient;
-    ///
-    /// let lxd = LxdClient::autodetect()
-    ///     .await?;
-    ///
-    /// lxc.file_push(
-    ///   "my-container".parse(),
-    ///   "/tmp/hello-world.txt",
-    ///   "/home/ubuntu/hello-world.txt",
-    /// ).await?;
-    /// ```
     pub async fn file_push(
         &self,
         container: &LxdContainerName,
