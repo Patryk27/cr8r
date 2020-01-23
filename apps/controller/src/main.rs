@@ -26,7 +26,7 @@ async fn main() {
         let system = backend::start(config.ecosystem)
             .context("Could not start controller's backend")?;
 
-        frontend::start(config.controller.listen, config.controller.secret, system)
+        frontend::start(config.controller.address, config.controller.secret, system)
             .await
             .context("Could not start controller's frontend")?
     }: Result<()>;
