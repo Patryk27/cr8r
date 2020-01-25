@@ -6,7 +6,7 @@ use lib_process::Process;
 use crate::engines::ShellSandboxEngine;
 
 pub async fn exec(engine: &mut ShellSandboxEngine, cmd: &str) -> Result<()> {
-    debug!("Executing: exec(cmd=`{}`)", cmd);
+    trace!("Executing: exec(cmd=`{}`)", cmd);
 
     if let Some(handler) = &engine.listener.on_command_executed {
         handler(cmd.to_string());

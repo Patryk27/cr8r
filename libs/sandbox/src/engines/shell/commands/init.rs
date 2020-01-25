@@ -6,7 +6,7 @@ use crate::engines::ShellSandboxEngine;
 use crate::SandboxListener;
 
 pub async fn init(engine: &mut ShellSandboxEngine, listener: SandboxListener) -> Result<()> {
-    debug!("Executing: init()");
+    trace!("Executing: init()");
 
     engine.listener = listener;
 
@@ -22,7 +22,7 @@ pub async fn init(engine: &mut ShellSandboxEngine, listener: SandboxListener) ->
 }
 
 async fn ensure_root_dir_is_writable(engine: &ShellSandboxEngine) -> Result<()> {
-    debug!(".. ensuring root directory is writable");
+    trace!(".. ensuring root directory is writable");
 
     let file = engine.config.root.join(".test");
 
@@ -32,13 +32,13 @@ async fn ensure_root_dir_is_writable(engine: &ShellSandboxEngine) -> Result<()> 
     fs::remove_file(&file)
         .await?;
 
-    debug!(".. .. ok");
+    trace!(".. .. ok");
 
     Ok(())
 }
 
 async fn clean_root_dir(engine: &ShellSandboxEngine) -> Result<()> {
-    debug!(".. cleaning root directory");
+    trace!(".. cleaning root directory");
 
     let mut entries = fs::read_dir(&engine.config.root).await?;
 
@@ -47,12 +47,12 @@ async fn clean_root_dir(engine: &ShellSandboxEngine) -> Result<()> {
         let entry_path = entry.path();
 
         if entry_meta.is_dir() {
-            debug!(".. .. removing directory: {}", entry_path.display());
+            trace!(".. .. removing directory: {}", entry_path.display());
 
             fs::remove_dir_all(entry_path)
                 .await?;
         } else {
-            debug!(".. .. removing file: {}", entry_path.display());
+            trace!(".. .. removing file: {}", entry_path.display());
 
             fs::remove_file(entry_path)
                 .await?;

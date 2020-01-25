@@ -8,7 +8,7 @@ use crate::engines::LxdSandboxEngine;
 use crate::SandboxListener;
 
 pub async fn init(engine: &mut LxdSandboxEngine, listener: SandboxListener) -> Result<()> {
-    debug!("Executing: init()");
+    trace!("Executing: init()");
 
     engine.client.set_listener(LxdListener {
         on_output: listener.on_command_output,
@@ -44,7 +44,7 @@ pub async fn init(engine: &mut LxdSandboxEngine, listener: SandboxListener) -> R
 }
 
 async fn delete_stale_container(engine: &mut LxdSandboxEngine) -> Result<()> {
-    debug!(".. checking for a stale container");
+    trace!(".. checking for a stale container");
 
     let found_stale_container = engine.client
         .list()
@@ -53,20 +53,20 @@ async fn delete_stale_container(engine: &mut LxdSandboxEngine) -> Result<()> {
         .any(|container| container.name == engine.config.container);
 
     if found_stale_container {
-        debug!(".. .. ok, found - deleting it");
+        trace!(".. .. ok, found - deleting it");
 
         engine.client
             .delete(&engine.config.container)
             .await?;
     } else {
-        debug!(".. .. ok, not found");
+        trace!(".. .. ok, not found");
     }
 
     Ok(())
 }
 
 async fn launch_container(engine: &mut LxdSandboxEngine) -> Result<()> {
-    debug!(".. launching new container");
+    trace!(".. launching new container");
 
     engine.client
         .launch(&engine.config.image, &engine.config.container)
@@ -76,11 +76,11 @@ async fn launch_container(engine: &mut LxdSandboxEngine) -> Result<()> {
 }
 
 async fn forward_ssh_agent(engine: &mut LxdSandboxEngine) -> Result<()> {
-    debug!(".. forwarding SSH agent");
+    trace!(".. forwarding SSH agent");
 
     let ssh_sock = super::get_host_env("SSH_AUTH_SOCK")?;
 
-    debug!(".. .. SSH_SOCK = {}", ssh_sock);
+    trace!(".. .. SSH_SOCK = {}", ssh_sock);
 
     engine.client.config(&engine.config.container, LxdContainerConfig::AddDevice {
         name: format!("{}-ssh-auth-sock", engine.config.container.as_str())
@@ -97,7 +97,7 @@ async fn forward_ssh_agent(engine: &mut LxdSandboxEngine) -> Result<()> {
 }
 
 async fn wait_for_network(engine: &mut LxdSandboxEngine) -> Result<()> {
-    debug!(".. waiting for network");
+    trace!(".. waiting for network");
 
     // Wait a bit before systemd gets initialized; otherwise we won't be able to invoke `systemctl`
     time::delay_for(time::Duration::from_millis(1000))
@@ -108,7 +108,7 @@ async fn wait_for_network(engine: &mut LxdSandboxEngine) -> Result<()> {
 }
 
 async fn install_rustup(engine: &mut LxdSandboxEngine) -> Result<()> {
-    debug!(".. installing `rustup`");
+    trace!(".. installing `rustup`");
 
     // LXD's default Ubuntu images do not contain `cc`, so compiling any Cargo program would fail if we didn't pull
     // `cmake`

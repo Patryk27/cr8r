@@ -9,18 +9,18 @@ use tokio::{fs, task};
 use crate::engines::LxdSandboxEngine;
 
 pub async fn fs_read(engine: &mut LxdSandboxEngine, path: &Path) -> Result<String> {
-    debug!("Executing: fs_read(path=`{}`)", path.display());
+    trace!("Executing: fs_read(path=`{}`)", path.display());
 
     let path = engine.config.root.join(path);
 
-    debug!(".. actual path: {}", path.display());
+    trace!(".. actual path: {}", path.display());
 
     let proxy_file = create_proxy_file()
         .await?;
 
     let proxy_path = proxy_file.path();
 
-    debug!(".. using proxy file: {}", proxy_path.display());
+    trace!(".. using proxy file: {}", proxy_path.display());
 
     engine
         .client
@@ -36,31 +36,31 @@ pub async fn fs_read(engine: &mut LxdSandboxEngine, path: &Path) -> Result<Strin
         drop(proxy_file);
     });
 
-    debug!(".. ok, {} bytes read", content.len());
+    trace!(".. ok, {} bytes read", content.len());
 
     Ok(content)
 }
 
 pub async fn fs_write(engine: &mut LxdSandboxEngine, path: &Path, content: String) -> Result<()> {
-    debug!("Executing: fs_write(path=`{}`, content=`{} bytes`", path.display(), content.len());
+    trace!("Executing: fs_write(path=`{}`, content=`{} bytes`", path.display(), content.len());
 
     let path = engine.config.root.join(path);
 
-    debug!(".. actual path: {}", path.display());
+    trace!(".. actual path: {}", path.display());
 
     let proxy_file = create_proxy_file()
         .await?;
 
     let proxy_path = proxy_file.path();
 
-    debug!(".. using proxy file: {}", proxy_path.display());
+    trace!(".. using proxy file: {}", proxy_path.display());
 
     fs::write(proxy_path, content)
         .await?;
 
     engine
         .client
-        .file_push(&engine.config.container, path, &proxy_file)
+        .file_push(&engine.config.container, &proxy_file, path)
         .await?;
 
     // `NamedTempFile` has a custom `Drop` implementation that's blocking, so it must be sent to some other thread not
@@ -69,7 +69,7 @@ pub async fn fs_write(engine: &mut LxdSandboxEngine, path: &Path, content: Strin
         drop(proxy_file);
     });
 
-    debug!(".. ok");
+    trace!(".. ok");
 
     Ok(())
 }

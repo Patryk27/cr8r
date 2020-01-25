@@ -7,16 +7,16 @@ use tokio::fs;
 use crate::engines::ShellSandboxEngine;
 
 pub async fn fs_write(engine: &mut ShellSandboxEngine, path: &Path, content: String) -> Result<()> {
-    debug!("Executing: fs_write(path=`{}`, content=`{} bytes`)", path.display(), content.len());
+    trace!("Executing: fs_write(path=`{}`, content=`{} bytes`)", path.display(), content.len());
 
     let path = engine.config.root.join(path);
 
-    debug!(".. actual path: {}", path.display());
+    trace!(".. actual path: {}", path.display());
 
     fs::write(path, content)
         .await?;
 
-    debug!(".. ok");
+    trace!(".. ok");
 
     Ok(())
 }
