@@ -1,6 +1,6 @@
+use anyhow::*;
 use structopt::StructOpt;
 
-use anyhow::{anyhow, Context, Result};
 use lib_interop::domain::DDefinition;
 use lib_interop::domain::definition_inner::*;
 

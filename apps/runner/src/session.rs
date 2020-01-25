@@ -1,6 +1,6 @@
 use std::future::Future;
 
-use anyhow::Result;
+use anyhow::*;
 use log::*;
 
 use lib_interop::client::ControllerClient;

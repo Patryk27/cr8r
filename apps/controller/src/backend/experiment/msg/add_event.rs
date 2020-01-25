@@ -1,13 +1,12 @@
 use std::sync::Arc;
 
+use anyhow::*;
 use chrono::Utc;
 use log::*;
 
-use anyhow::anyhow;
 use lib_interop::domain::{DEvent, DEventType, DJob, DReport, DRunnerId};
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
-use crate::backend::Result;
 
 pub fn add_event(actor: &mut ExperimentActor, runner: DRunnerId, event: DEvent) -> Result<()> {
     match &mut actor.status {

@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::*;
 use structopt::StructOpt;
 
 use crate::System;

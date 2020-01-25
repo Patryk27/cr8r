@@ -1,9 +1,10 @@
 use std::convert::TryInto;
 
-use anyhow::anyhow;
+use anyhow::*;
+
 use lib_interop::proto::controller::{PAddEventReply, PAddEventRequest};
 
-use crate::backend::{Result, System};
+use crate::backend::System;
 
 pub async fn add_event(
     system: &System,

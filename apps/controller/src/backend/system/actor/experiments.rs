@@ -1,9 +1,10 @@
 use std::collections::{HashMap, VecDeque};
 
-use anyhow::anyhow;
+use anyhow::*;
+
 use lib_interop::domain::{DExperimentId, DJob};
 
-use crate::backend::{Experiment, Result};
+use crate::backend::Experiment;
 
 pub struct Experiments {
     experiments: HashMap<DExperimentId, Experiment>,

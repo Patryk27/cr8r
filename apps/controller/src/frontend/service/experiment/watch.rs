@@ -1,5 +1,6 @@
 use std::result;
 
+use anyhow::*;
 use tokio::stream::{Stream, StreamExt};
 use tokio::sync::mpsc;
 use tonic::Status;
@@ -7,7 +8,7 @@ use tonic::Status;
 use lib_interop::proto::controller::PWatchExperimentRequest;
 use lib_interop::proto::core::PReport;
 
-use crate::backend::{Result, System};
+use crate::backend::System;
 
 pub async fn watch_experiment(
     system: &System,

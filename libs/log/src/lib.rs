@@ -1,6 +1,6 @@
 use std::io;
 
-use anyhow::Result;
+use anyhow::*;
 use fern::colors::{Color, ColoredLevelConfig};
 use fern::Dispatch;
 use log::LevelFilter;

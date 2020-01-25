@@ -1,10 +1,9 @@
+use anyhow::*;
 use chrono::Utc;
 
-use anyhow::anyhow;
 use lib_interop::domain::{DAssignment, DRunnerId};
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
-use crate::backend::Result;
 
 pub fn start(actor: &mut ExperimentActor, runner: DRunnerId) -> Result<DAssignment> {
     match &actor.status {

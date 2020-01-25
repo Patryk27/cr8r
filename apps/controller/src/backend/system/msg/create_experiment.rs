@@ -1,6 +1,7 @@
+use anyhow::*;
+
 use lib_interop::domain::{DDefinition, DExperimentId};
 
-use crate::backend::Result;
 use crate::backend::system::SystemActor;
 
 pub fn create_experiment(actor: &mut SystemActor, definition: DDefinition) -> Result<DExperimentId> {

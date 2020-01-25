@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use anyhow::{Context, Result};
+use anyhow::*;
 use colored::Colorize;
 use log::*;
 use tonic::{Request, Streaming};

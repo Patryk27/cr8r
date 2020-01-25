@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use anyhow::Result;
+use anyhow::*;
 use log::*;
 use tokio::fs;
 

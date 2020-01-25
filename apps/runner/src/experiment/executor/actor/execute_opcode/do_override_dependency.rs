@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use anyhow::{Context, Result};
+use anyhow::*;
 
 use lib_interop::domain::job::opcode::DOverrideDependencyAction;
 

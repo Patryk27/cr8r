@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 
+use anyhow::*;
 use bimap::BiMap;
 
-use anyhow::anyhow;
 use lib_interop::domain::{DRunnerId, DRunnerName};
 
-use crate::backend::{Result, Runner, System};
+use crate::backend::{Runner, System};
 
 pub struct Runners {
     system: System,

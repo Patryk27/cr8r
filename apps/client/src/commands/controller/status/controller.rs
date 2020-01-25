@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use anyhow::Result;
+use anyhow::*;
 use colored::Colorize;
 
 use lib_ui::spinner;

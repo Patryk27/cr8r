@@ -1,4 +1,4 @@
-use anyhow::Error;
+use anyhow::*;
 use tokio::stream::Stream;
 use tonic::{Request, Response, Status, Streaming};
 

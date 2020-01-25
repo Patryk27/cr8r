@@ -1,8 +1,10 @@
 use std::path::Path;
 
+use anyhow::*;
+
 use async_trait::async_trait;
 
-use crate::{Result, SandboxListener};
+use crate::SandboxListener;
 
 #[async_trait]
 pub trait SandboxEngine: Send {

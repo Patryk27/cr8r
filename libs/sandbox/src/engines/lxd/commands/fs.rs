@@ -1,7 +1,7 @@
 use std::path::Path;
 use std::thread;
 
-use anyhow::Result;
+use anyhow::*;
 use log::*;
 use tempfile::NamedTempFile;
 use tokio::{fs, task};

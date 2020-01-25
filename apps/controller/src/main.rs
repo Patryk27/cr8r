@@ -6,7 +6,7 @@
 
 use std::process::exit;
 
-use anyhow::{Context, Result};
+use anyhow::*;
 
 use self::config::*;
 

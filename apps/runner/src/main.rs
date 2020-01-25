@@ -4,7 +4,7 @@
 
 use std::process::exit;
 
-use anyhow::{Context, Result};
+use anyhow::*;
 use colored::Colorize;
 use log::*;
 

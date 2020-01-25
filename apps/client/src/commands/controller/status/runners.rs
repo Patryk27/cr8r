@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::*;
 
 use lib_interop::convert;
 use lib_interop::proto::controller::PFindRunnersRequest;

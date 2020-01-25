@@ -1,6 +1,6 @@
 use std::net::SocketAddr;
 
-use anyhow::{Context, Result};
+use anyhow::*;
 use colored::Colorize;
 use log::*;
 use tonic::transport::Server;

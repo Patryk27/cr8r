@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use anyhow::Result;
+use anyhow::*;
 
 use async_trait::async_trait;
 use lib_lxd::LxdClient;

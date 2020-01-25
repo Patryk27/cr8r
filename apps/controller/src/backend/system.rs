@@ -1,9 +1,10 @@
+use anyhow::*;
 use tokio::sync::mpsc;
 
 use lib_actor::ask;
 use lib_interop::domain::{DAssignment, DDefinition, DExperimentId, DRunnerId, DRunnerName};
 
-use crate::backend::{Compiler, Experiment, Result, Runner};
+use crate::backend::{Compiler, Experiment, Runner};
 
 pub(self) use self::{
     actor::*,

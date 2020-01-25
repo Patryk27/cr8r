@@ -1,6 +1,8 @@
+use anyhow::*;
+
 use lib_interop::proto::controller::{PFindReportsReply, PFindReportsRequest};
 
-use crate::backend::{Result, System};
+use crate::backend::System;
 
 pub async fn find_reports(
     system: &System,

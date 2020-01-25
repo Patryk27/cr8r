@@ -1,4 +1,6 @@
-use crate::{Result, Sandbox, SandboxConfig};
+use anyhow::*;
+
+use crate::{Sandbox, SandboxConfig};
 
 pub struct SandboxProvider;
 

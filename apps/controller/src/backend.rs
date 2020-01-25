@@ -1,17 +1,15 @@
-use anyhow::Context;
+use anyhow::*;
 
 use crate::config::Ecosystem;
 
 pub use self::{
     compiler::Compiler,
-    error::Result,
     experiment::Experiment,
     runner::Runner,
     system::System,
 };
 
 mod compiler;
-mod error;
 mod experiment;
 mod runner;
 mod system;

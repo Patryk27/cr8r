@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use anyhow::*;
 use derivative::Derivative;
 use log::*;
 use tokio::sync::{mpsc, oneshot};
@@ -7,7 +8,6 @@ use tokio::sync::{mpsc, oneshot};
 use lib_interop::domain::{DAssignment, DEvent, DExperiment, DReport, DRunnerId};
 
 use crate::backend::experiment::ExperimentActor;
-use crate::backend::Result;
 
 pub type ExperimentTx = mpsc::UnboundedSender<ExperimentMsg>;
 pub type ExperimentRx = mpsc::UnboundedReceiver<ExperimentMsg>;

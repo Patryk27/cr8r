@@ -1,10 +1,11 @@
+use anyhow::*;
 use derivative::Derivative;
 use log::*;
 use tokio::sync::{mpsc, oneshot};
 
 use lib_interop::domain::{DAssignment, DDefinition, DExperimentId, DRunnerId, DRunnerName};
 
-use crate::backend::{Experiment, Result, Runner};
+use crate::backend::{Experiment, Runner};
 use crate::backend::system::SystemActor;
 
 pub type SystemTx = mpsc::UnboundedSender<SystemMsg>;

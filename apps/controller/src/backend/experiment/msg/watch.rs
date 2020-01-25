@@ -1,12 +1,11 @@
 use std::sync::Arc;
 
+use anyhow::*;
 use tokio::sync::mpsc;
 
-use anyhow::anyhow;
 use lib_interop::domain::DReport;
 
 use crate::backend::experiment::{ExperimentActor, ExperimentStatus};
-use crate::backend::Result;
 
 pub fn watch(actor: &mut ExperimentActor) -> Result<mpsc::UnboundedReceiver<Arc<DReport>>> {
     match actor.status {

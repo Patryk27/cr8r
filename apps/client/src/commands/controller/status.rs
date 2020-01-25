@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::*;
 use colored::Colorize;
 
 use crate::System;

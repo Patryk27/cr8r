@@ -1,6 +1,6 @@
+use anyhow::*;
 use tonic::Status;
 
-use anyhow::anyhow;
 use lib_ui::Message;
 
 pub struct Error;

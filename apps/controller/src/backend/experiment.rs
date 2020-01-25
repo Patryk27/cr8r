@@ -1,11 +1,10 @@
 use std::sync::Arc;
 
+use anyhow::*;
 use tokio::sync::mpsc;
 
 use lib_actor::{ask, tell};
 use lib_interop::domain::{DAssignment, DEvent, DExperiment, DExperimentId, DJob, DReport, DRunnerId};
-
-use crate::backend::Result;
 
 pub(self) use self::{
     actor::*,

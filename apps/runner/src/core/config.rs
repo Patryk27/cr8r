@@ -1,6 +1,6 @@
 use std::fs;
 
-use anyhow::{Context, Result};
+use anyhow::*;
 use serde::Deserialize;
 
 use lib_sandbox::SandboxConfig;

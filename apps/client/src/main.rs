@@ -6,7 +6,7 @@
 
 use std::process::exit;
 
-use anyhow::{Context, Result};
+use anyhow::*;
 use structopt::StructOpt;
 
 use self::{

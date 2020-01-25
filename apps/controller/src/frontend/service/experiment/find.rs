@@ -1,6 +1,8 @@
+use anyhow::*;
+
 use lib_interop::proto::controller::{PFindExperimentsReply, PFindExperimentsRequest};
 
-use crate::backend::{Result, System};
+use crate::backend::System;
 
 // @todo filtering should happen inside `system`, not here
 pub async fn find_experiments(system: &System, request: PFindExperimentsRequest) -> Result<PFindExperimentsReply> {

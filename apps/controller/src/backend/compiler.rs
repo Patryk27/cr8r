@@ -1,7 +1,8 @@
+use anyhow::*;
+
 use lib_compiler::CompilerBuilder;
 use lib_interop::domain::{DDefinition, DJob};
 
-use crate::backend::Result;
 use crate::config::{Ecosystem, Environment, Projects, Providers};
 
 pub struct Compiler {

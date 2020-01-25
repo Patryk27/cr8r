@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::*;
 use colored::Colorize;
 
 use lib_ui::{Message, spinner};

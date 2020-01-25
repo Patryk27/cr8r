@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::*;
 use log::*;
 
 use lib_lxd::LxdContainerConfig;
