@@ -6,7 +6,7 @@ pub mod utils;
 #[tokio::test]
 #[ignore]
 async fn containers_can_be_launched_and_destroyed() {
-    let lxd = utils::lxd()
+    let lxd = utils::client()
         .await;
 
     utils::run(&lxd, async {

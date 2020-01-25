@@ -1,14 +1,14 @@
-use anyhow::{Context, Result};
+use anyhow::*;
 
-use crate::{commands, LxdClient, LxdContainer};
+use crate::{LxdConnector, LxdContainer};
 
-pub async fn list(lxd: &LxdClient) -> Result<Vec<LxdContainer>> {
-    let output = commands::invoke_silent(lxd, &[
+pub async fn list(conn: &LxdConnector) -> Result<Vec<LxdContainer>> {
+    let containers = conn.invoke_silent(&[
         "list".to_string(),
         "--format=json".to_string(),
     ]).await?;
 
-    let containers = serde_json::from_str(&output)
+    let containers = serde_json::from_str(&containers)
         .context("Could not parse response from LXD")?;
 
     Ok(containers)

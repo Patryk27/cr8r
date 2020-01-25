@@ -1,7 +1,6 @@
-use std::fmt;
-use std::str::FromStr;
+use std::{fmt, str};
 
-use anyhow::{Error, Result};
+use anyhow::*;
 use serde::Deserialize;
 
 #[derive(Clone, Debug, Deserialize)]
@@ -13,18 +12,18 @@ impl LxdImageName {
     }
 }
 
-impl FromStr for LxdImageName {
+impl fmt::Display for LxdImageName {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl str::FromStr for LxdImageName {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self> {
         Ok(Self(
             s.to_string()
         ))
-    }
-}
-
-impl fmt::Display for LxdImageName {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
     }
 }

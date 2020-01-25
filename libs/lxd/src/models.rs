@@ -1,6 +1,5 @@
 pub use self::{
     container::*,
-    container_config::*,
     container_name::*,
     device_def::*,
     device_name::*,
@@ -9,7 +8,6 @@ pub use self::{
 };
 
 mod container;
-mod container_config;
 mod container_name;
 mod device_def;
 mod device_name;

@@ -5,7 +5,7 @@ pub mod utils;
 #[tokio::test]
 #[ignore]
 async fn executing_bash_returns_hello_world() {
-    let lxd = utils::lxd()
+    let lxd = utils::client()
         .await;
 
     utils::run(&lxd, async {
@@ -21,7 +21,7 @@ async fn executing_bash_returns_hello_world() {
 #[tokio::test]
 #[ignore]
 async fn executing_uname_returns_gnu_linux() {
-    let lxd = utils::lxd()
+    let lxd = utils::client()
         .await;
 
     utils::run(&lxd, async {

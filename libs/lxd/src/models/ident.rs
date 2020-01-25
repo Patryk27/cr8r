@@ -1,7 +1,6 @@
-use std::fmt;
-use std::str::FromStr;
+use std::{fmt, str};
 
-use anyhow::{Error, Result};
+use anyhow::*;
 use serde::Deserialize;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
@@ -13,7 +12,13 @@ impl LxdIdent {
     }
 }
 
-impl FromStr for LxdIdent {
+impl fmt::Display for LxdIdent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl str::FromStr for LxdIdent {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self> {
@@ -25,20 +30,13 @@ impl FromStr for LxdIdent {
     }
 }
 
-impl fmt::Display for LxdIdent {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
 // @todo deserialize should validate whether the identifier is actually valid
 #[macro_export]
 macro_rules! newtype {
     ($name:ident) => {
-        use anyhow::{Error, Result};
+        use anyhow::*;
         use serde::Deserialize;
-        use std::fmt;
-        use std::str::FromStr;
+        use std::{fmt, str};
 
         use crate::LxdIdent;
 
@@ -51,17 +49,17 @@ macro_rules! newtype {
             }
         }
 
-        impl FromStr for $name {
+        impl fmt::Display for $name {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                write!(f, "{}", self.0)
+            }
+        }
+
+        impl str::FromStr for $name {
             type Err = Error;
 
             fn from_str(s: &str) -> Result<Self> {
                 Ok(Self(s.parse()?))
-            }
-        }
-
-        impl fmt::Display for $name {
-            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-                write!(f, "{}", self.0)
             }
         }
     }

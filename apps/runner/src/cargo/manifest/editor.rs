@@ -66,7 +66,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn no_changes() {
+    fn making_no_changes_does_not_modify_the_manifest() {
         let editor = CargoManifestEditor::from_str(r#"
             [package]
             name = 'hello-world'

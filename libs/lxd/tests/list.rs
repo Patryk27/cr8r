@@ -3,7 +3,7 @@ pub mod utils;
 #[tokio::test]
 #[ignore]
 async fn listing_all_containers_returns_our_container() {
-    let lxd = utils::lxd()
+    let lxd = utils::client()
         .await;
 
     utils::run(&lxd, async {

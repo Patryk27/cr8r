@@ -1,10 +1,16 @@
-use crate::{commands, LxdClient, LxdContainerName, LxdImageName, Result};
+use anyhow::*;
 
-pub async fn launch(lxd: &LxdClient, image: &LxdImageName, container: &LxdContainerName) -> Result<()> {
-    commands::invoke(lxd, &[
+use crate::{LxdConnector, LxdContainerName, LxdImageName};
+
+pub async fn launch(
+    conn: &LxdConnector,
+    cimage: &LxdImageName,
+    cname: &LxdContainerName,
+) -> Result<()> {
+    conn.invoke(&[
         "launch".to_string(),
-        image.to_string(),
-        container.to_string(),
+        cimage.to_string(),
+        cname.to_string(),
         "--ephemeral".to_string(),
         "-csecurity.nesting=true".to_string(),
         "-csecurity.privileged=true".to_string(),

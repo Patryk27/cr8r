@@ -2,7 +2,7 @@ use anyhow::*;
 use log::*;
 use tokio::time;
 
-use lib_lxd::{LxdContainerConfig, LxdDeviceDef, LxdListener};
+use lib_lxd::{LxdDeviceDef, LxdListener};
 
 use crate::engines::LxdSandboxEngine;
 use crate::SandboxListener;
@@ -82,15 +82,16 @@ async fn forward_ssh_agent(engine: &mut LxdSandboxEngine) -> Result<()> {
 
     trace!(".. .. SSH_SOCK = {}", ssh_sock);
 
-    engine.client.config(&engine.config.container, LxdContainerConfig::AddDevice {
-        name: format!("{}-ssh-auth-sock", engine.config.container.as_str())
-            .parse()?,
-
-        def: LxdDeviceDef::Disk {
-            source: ssh_sock,
-            path: "/tmp/ssh-agent".to_string(),
-        },
-    }).await?;
+    engine.client
+        .config_device_add(
+            &engine.config.container,
+            format!("{}-ssh-auth-sock", engine.config.container.as_str()).parse()?,
+            LxdDeviceDef::Disk {
+                source: ssh_sock,
+                path: "/tmp/ssh-agent".to_string(),
+            },
+        )
+        .await?;
 
     super::set_env(engine, "SSH_AUTH_SOCK", "/tmp/ssh-agent")
         .await

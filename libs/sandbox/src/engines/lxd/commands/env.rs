@@ -1,17 +1,14 @@
 use anyhow::*;
 use log::*;
 
-use lib_lxd::LxdContainerConfig;
-
 use crate::engines::LxdSandboxEngine;
 
 pub async fn set_env(engine: &mut LxdSandboxEngine, key: &str, value: &str) -> Result<()> {
     trace!("Executing: set_env(key=`{}`, value=`{}`)", key, value);
 
-    engine.client.config(&engine.config.container, LxdContainerConfig::Set {
-        key: format!("environment.{}", key),
-        value: value.to_string(),
-    }).await?;
+    engine.client
+        .config_set(&engine.config.container, format!("environment.{}", key), value.to_string())
+        .await?;
 
     Ok(())
 }
