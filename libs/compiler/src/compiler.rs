@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 
 use lib_interop::domain::{DDefinition, DJob, DJobOpcode};
-use lib_interop::domain::definition_inner::DDependencyAction;
-use lib_interop::domain::job::opcode::DOverrideDependencyAction;
+use lib_interop::domain::definition::definition_inner::DToolchainDef;
 
 use crate::{Environment, ProjectDef, ProjectName, ProviderDef, ProviderName};
 
@@ -48,7 +47,7 @@ impl Compiler {
             format!("Cloning `{}`", project_name)
         ));
 
-        opcodes.push(DJobOpcode::invoke_cmd(
+        opcodes.push(DJobOpcode::execute(
             format!("git clone {} {}", project_def.repository, project_name)
         ));
 
@@ -65,7 +64,7 @@ impl Compiler {
             )));
 
             for command in &req_provider.setup {
-                opcodes.push(DJobOpcode::invoke_cmd(
+                opcodes.push(DJobOpcode::execute(
                     command.inner()
                 ));
             }
@@ -78,36 +77,22 @@ impl Compiler {
         }
 
         let toolchain = if let Some(toolchain) = &definition.toolchain {
-            &toolchain.version
+            &toolchain.toolchain
         } else {
             &self.environment.default_toolchain
         };
 
-        opcodes.push(DJobOpcode::override_toolchain(
+        opcodes.push(DJobOpcode::alter_toolchain(
             project_name,
-            toolchain,
+            DToolchainDef {
+                toolchain: toolchain.to_string(),
+            },
         ));
 
         for dependency in &definition.dependencies {
-            let action = match &dependency.action {
-                DDependencyAction::AttachmentOverride { attachment_id } => {
-                    DOverrideDependencyAction::UseAttachment {
-                        attachment_id: attachment_id.to_owned(),
-                    }
-                }
-
-                DDependencyAction::VersionOverride { version } => {
-                    DOverrideDependencyAction::UseVersion {
-                        version: version.to_owned(),
-                    }
-                }
-            };
-
-            opcodes.push(DJobOpcode::override_dependency(
+            opcodes.push(DJobOpcode::patch_dependency(
                 project_name,
-                &dependency.registry,
-                &dependency.name,
-                action,
+                dependency.to_owned(),
             ));
         }
 
@@ -115,7 +100,7 @@ impl Compiler {
             format!("Building `{}`", project_name)
         ));
 
-        opcodes.push(DJobOpcode::invoke_cmd(
+        opcodes.push(DJobOpcode::execute(
             format!("cd {} && cargo build", project_name)
         ));
 
@@ -123,7 +108,7 @@ impl Compiler {
             format!("Testing `{}`", project_name)
         ));
 
-        opcodes.push(DJobOpcode::invoke_cmd(
+        opcodes.push(DJobOpcode::execute(
             format!("cd {} && cargo test", project_name)
         ));
 

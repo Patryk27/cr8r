@@ -95,7 +95,7 @@ macro_rules! convert {
             .map(TryInto::try_into)
             .collect(): DomainResult<Vec<_>>;
                                     // we're always collecting into a `Vec`, so that the entire macro is more convenient
-                                    // to use; you can try getting rid of that `Vec` and see what happens
+                                    // to use; you can try getting rid of that `Vec` and see what happens for yourself
 
         field?
     }};

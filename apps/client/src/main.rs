@@ -4,40 +4,34 @@
 #![feature(try_blocks)]
 #![feature(type_ascription)]
 
-use std::process::exit;
-
-use anyhow::*;
-use structopt::StructOpt;
-
-use self::{
-    commands::*,
-    config::*,
-    system::*,
-};
-
-mod commands;
-mod config;
-mod system;
-
-#[macro_use]
-mod ui;
+mod app;
+mod controller;
+mod definition;
+mod experiment;
+mod report;
+mod runner;
 
 #[tokio::main]
 async fn main() {
-    let result = try {
-        let cmd = Command::from_args();
+    use anyhow::*;
+    use app::*;
+    use structopt::StructOpt;
+    use std::process::exit;
 
-        let config = Config::load()
+    let result = try {
+        let cmd = AppCommand::from_args();
+
+        let config = AppConfig::load()
             .context("Could not load configuration from `client.yaml`")?;
 
-        let system = System::new(config);
+        let mut ctxt = AppContext::new(config);
 
-        cmd.run(system)
+        cmd.run(&mut ctxt)
             .await?
     }: Result<()>;
 
     if let Err(err) = result {
-        ui::Error::print(err);
+        AppErrorWidget::print(err);
 
         exit(1);
     }

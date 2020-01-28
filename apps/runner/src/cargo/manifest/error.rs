@@ -1,31 +1,27 @@
 use thiserror::*;
 
 #[derive(Debug, Error, Eq, PartialEq)]
-pub enum CargoManifestError {
-    #[error("Manifest is malformed")]
-    Malformed(
-        #[from]
-        #[source] CargoManifestMalformedError
-    ),
+pub enum CargoManifestMalformedError {
+    #[error("Section `{name}` is missing")]
+    MissingSection {
+        name: String,
+    },
+
+    #[error("Property `{name}` was expected to be `{expected_type}`")]
+    InvalidPropertyType {
+        name: String,
+        expected_type: String,
+    },
 
     #[error("Manifest could not be serialized")]
-    SerializerError(
+    CannotBeSerialized(
         #[from]
-        #[source] toml::ser::Error
+        #[source] toml::ser::Error,
     ),
 
     #[error("Manifest could not be deserialized")]
-    DeserializerError(
+    CannotBeUnserialized(
         #[from]
-        #[source] toml::de::Error
+        #[source] toml::de::Error,
     ),
-}
-
-#[derive(Debug, Error, Eq, PartialEq)]
-pub enum CargoManifestMalformedError {
-    #[error("Section `{name}` was expected to be `{expected}`")]
-    InvalidSectionType {
-        name: String,
-        expected: String,
-    }
 }

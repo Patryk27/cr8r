@@ -3,65 +3,95 @@ use std::convert::TryFrom;
 use crate::convert;
 use crate::domain::{DAttachmentId, DomainError, DomainResult};
 use crate::proto::core::p_definition::*;
+use crate::proto::core::p_definition::p_dependency_def::PDependencyDefSource;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct DDependency {
-    pub registry: String,
+pub struct DDependencyDef {
     pub name: String,
-    pub action: DDependencyAction,
+    pub source: DDependencyDefSource,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum DDependencyAction {
-    AttachmentOverride {
-        attachment_id: DAttachmentId,
+pub enum DDependencyDefSource {
+    Branch {
+        branch: String,
     },
 
-    VersionOverride {
+    Tag {
+        tag: String,
+    },
+
+    Version {
         version: String,
     },
+
+    Patch {
+        attachment_id: DAttachmentId,
+    },
 }
 
-impl TryFrom<PDependency> for DDependency {
+impl TryFrom<PDependencyDef> for DDependencyDef {
     type Error = DomainError;
 
-    fn try_from(PDependency { registry, name, action }: PDependency) -> DomainResult<Self> {
-        use p_dependency::*;
+    fn try_from(PDependencyDef { name, source }: PDependencyDef) -> DomainResult<Self> {
+        use p_dependency_def::p_dependency_def_source::*;
 
-        let action = match convert!(action?) {
-            Action::AttachmentOverride(PAttachmentOverride { attachment_id }) => {
-                DDependencyAction::AttachmentOverride {
+        let source_ty = convert!(source?).ty;
+
+        let source = match convert!(source_ty?) {
+            Ty::Branch(PBranchSource { branch }) => {
+                DDependencyDefSource::Branch { branch }
+            }
+
+            Ty::Tag(PTagSource { tag }) => {
+                DDependencyDefSource::Tag { tag }
+            }
+
+            Ty::Version(PVersionSource { version }) => {
+                DDependencyDefSource::Version { version }
+            }
+
+            Ty::Patch(PPatch { attachment_id }) => {
+                DDependencyDefSource::Patch {
                     attachment_id: convert!(attachment_id as _),
                 }
             }
-
-            Action::VersionOverride(PVersionOverride { version }) => {
-                DDependencyAction::VersionOverride { version }
-            }
         };
 
-        Ok(Self { registry, name, action })
+        Ok(Self { name, source })
     }
 }
 
-impl Into<PDependency> for DDependency {
-    fn into(self) -> PDependency {
-        use p_dependency::*;
+impl Into<PDependencyDef> for DDependencyDef {
+    fn into(self) -> PDependencyDef {
+        use p_dependency_def::p_dependency_def_source::*;
 
-        let Self { registry, name, action } = self;
+        let Self { name, source } = self;
 
-        let action = Some(match action {
-            DDependencyAction::AttachmentOverride { attachment_id } => {
-                Action::AttachmentOverride(PAttachmentOverride {
+        let source_ty = Some(match source {
+            DDependencyDefSource::Branch { branch } => {
+                Ty::Branch(PBranchSource { branch })
+            }
+
+            DDependencyDefSource::Tag { tag } => {
+                Ty::Tag(PTagSource { tag })
+            }
+
+            DDependencyDefSource::Patch { attachment_id } => {
+                Ty::Patch(PPatch {
                     attachment_id: convert!(attachment_id as _),
                 })
             }
 
-            DDependencyAction::VersionOverride { version } => {
-                Action::VersionOverride(PVersionOverride { version })
+            DDependencyDefSource::Version { version } => {
+                Ty::Version(PVersionSource { version })
             }
         });
 
-        PDependency { registry, name, action }
+        let source = Some(PDependencyDefSource {
+            ty: source_ty,
+        });
+
+        PDependencyDef { name, source }
     }
 }

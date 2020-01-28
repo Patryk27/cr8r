@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package cr8r.core;
 
+import "core/definition.proto";
+
 message PJob {
     string name = 1;
     repeated PJobOpcode opcodes = 3;
@@ -16,31 +18,25 @@ message PJobOpcode {
         string msg = 1;
     }
 
-    message PInvokeCmd {
+    message PExecute {
         string cmd = 1;
     }
 
-    message POverrideToolchain {
+    message PAlterToolchain {
         string project = 1;
-        string toolchain = 2;
+        PDefinition.PToolchainDef toolchain = 2;
     }
 
-    message POverrideDependency {
+    message PAlterDependency {
         string project = 1;
-        string registry = 2;
-        string name = 3;
-
-        oneof action {
-            string use_attachment_id = 5;
-            string use_version = 4;
-        }
+        PDefinition.PDependencyDef dependency = 2;
     }
 
     oneof ty {
         PLogSystemMsg log_system_msg = 1;
         PLogCustomMsg log_custom_msg = 2;
-        PInvokeCmd invoke_cmd = 3;
-        POverrideToolchain override_toolchain = 4;
-        POverrideDependency override_dependency = 5;
+        PExecute execute = 3;
+        PAlterToolchain alter_toolchain = 4;
+        PAlterDependency alter_dependency = 5;
     }
 }

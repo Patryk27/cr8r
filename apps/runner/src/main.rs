@@ -52,7 +52,7 @@ async fn main() {
     }: Result<()>;
 
     if let Err(err) = result {
-        eprintln!("{}", lib_ui::Error::new(&err));
+        eprintln!("{}", lib_ui::ErrorWidget::new(&err));
 
         exit(1);
     }

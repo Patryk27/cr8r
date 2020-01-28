@@ -1,25 +1,25 @@
 use std::convert::TryFrom;
 
 use crate::domain::{DomainError, DomainResult};
-use crate::proto::core::p_definition::PToolchain;
+use crate::proto::core::p_definition::PToolchainDef;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct DToolchain {
-    pub version: String,
+pub struct DToolchainDef {
+    pub toolchain: String,
 }
 
-impl TryFrom<PToolchain> for DToolchain {
+impl TryFrom<PToolchainDef> for DToolchainDef {
     type Error = DomainError;
 
-    fn try_from(PToolchain { version }: PToolchain) -> DomainResult<Self> {
-        Ok(Self { version })
+    fn try_from(PToolchainDef { toolchain }: PToolchainDef) -> DomainResult<Self> {
+        Ok(Self { toolchain })
     }
 }
 
-impl Into<PToolchain> for DToolchain {
-    fn into(self) -> PToolchain {
-        PToolchain {
-            version: self.version,
+impl Into<PToolchainDef> for DToolchainDef {
+    fn into(self) -> PToolchainDef {
+        PToolchainDef {
+            toolchain: self.toolchain,
         }
     }
 }

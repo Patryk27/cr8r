@@ -5,11 +5,11 @@ use lib_interop::domain::DJobOpcode;
 
 use super::super::ExperimentExecutorActor;
 
-mod do_invoke_cmd;
+mod do_alter_dependency;
+mod do_execute;
 mod do_log_custom_msg;
 mod do_log_system_msg;
-mod do_override_dependency;
-mod do_override_toolchain;
+mod do_alter_toolchain;
 
 impl ExperimentExecutorActor {
     pub(super) async fn execute_opcode(&mut self, opcode: DJobOpcode) -> Result<ActorWorkflow> {
@@ -30,18 +30,18 @@ impl ExperimentExecutorActor {
                     .await?
             }
 
-            InvokeCmd { cmd } => {
-                self.do_invoke_cmd(cmd)
+            Execute { cmd } => {
+                self.do_execute(cmd)
                     .await?
             }
 
-            OverrideToolchain { project, toolchain: tc_version } => {
-                self.do_override_toolchain(project, tc_version)
+            AlterToolchain { project, toolchain } => {
+                self.do_alter_toolchain(project, toolchain)
                     .await?
             }
 
-            OverrideDependency { project, registry, name, action } => {
-                self.do_override_dependency(project, registry, name, action)
+            AlterDependency { project, dependency } => {
+                self.do_alter_dependency(project, dependency)
                     .await?
             }
         }

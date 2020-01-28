@@ -8,8 +8,8 @@ pub mod definition_inner;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DDefinition {
-    pub toolchain: Option<definition_inner::DToolchain>,
-    pub dependencies: Vec<definition_inner::DDependency>,
+    pub toolchain: Option<definition_inner::DToolchainDef>,
+    pub dependencies: Vec<definition_inner::DDependencyDef>,
 }
 
 impl TryFrom<PDefinition> for DDefinition {

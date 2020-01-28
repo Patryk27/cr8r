@@ -2,11 +2,8 @@ use std::convert::TryFrom;
 
 use crate::convert;
 use crate::domain::{DomainError, DomainResult};
+use crate::domain::definition::definition_inner::{DDependencyDef, DToolchainDef};
 use crate::proto::core::PJobOpcode;
-
-pub use self::override_dependency_action::*;
-
-mod override_dependency_action;
 
 #[derive(Clone, Debug)]
 pub enum DJobOpcode {
@@ -18,20 +15,18 @@ pub enum DJobOpcode {
         msg: String,
     },
 
-    InvokeCmd {
+    Execute {
         cmd: String,
     },
 
-    OverrideToolchain {
+    AlterToolchain {
         project: String,
-        toolchain: String,
+        toolchain: DToolchainDef,
     },
 
-    OverrideDependency {
+    AlterDependency {
         project: String,
-        registry: String,
-        name: String,
-        action: DOverrideDependencyAction,
+        dependency: DDependencyDef,
     },
 }
 
@@ -48,30 +43,23 @@ impl DJobOpcode {
         }
     }
 
-    pub fn invoke_cmd(cmd: impl Into<String>) -> Self {
-        DJobOpcode::InvokeCmd {
+    pub fn execute(cmd: impl Into<String>) -> Self {
+        DJobOpcode::Execute {
             cmd: cmd.into(),
         }
     }
 
-    pub fn override_toolchain(project: impl Into<String>, toolchain: impl Into<String>) -> Self {
-        DJobOpcode::OverrideToolchain {
+    pub fn alter_toolchain(project: impl Into<String>, toolchain: DToolchainDef) -> Self {
+        DJobOpcode::AlterToolchain {
             project: project.into(),
-            toolchain: toolchain.into(),
+            toolchain,
         }
     }
 
-    pub fn override_dependency(
-        project: impl Into<String>,
-        registry: impl Into<String>,
-        name: impl Into<String>,
-        action: DOverrideDependencyAction,
-    ) -> Self {
-        DJobOpcode::OverrideDependency {
+    pub fn patch_dependency(project: impl Into<String>, dependency: DDependencyDef) -> Self {
+        DJobOpcode::AlterDependency {
             project: project.into(),
-            registry: registry.into(),
-            name: name.into(),
-            action,
+            dependency,
         }
     }
 }
@@ -91,20 +79,21 @@ impl TryFrom<PJobOpcode> for DJobOpcode {
                 DJobOpcode::LogCustomMsg { msg }
             }
 
-            Ty::InvokeCmd(PInvokeCmd { cmd }) => {
-                DJobOpcode::InvokeCmd { cmd }
+            Ty::Execute(PExecute { cmd }) => {
+                DJobOpcode::Execute { cmd }
             }
 
-            Ty::OverrideToolchain(POverrideToolchain { project, toolchain }) => {
-                DJobOpcode::OverrideToolchain { project, toolchain }
-            }
-
-            Ty::OverrideDependency(POverrideDependency { project, registry, name, action }) => {
-                DJobOpcode::OverrideDependency {
+            Ty::AlterToolchain(PAlterToolchain { project, toolchain }) => {
+                DJobOpcode::AlterToolchain {
                     project,
-                    registry,
-                    name,
-                    action: convert!(action? as _?),
+                    toolchain: convert!(toolchain? as _?),
+                }
+            }
+
+            Ty::AlterDependency(PAlterDependency { project, dependency }) => {
+                DJobOpcode::AlterDependency {
+                    project,
+                    dependency: convert!(dependency? as _?),
                 }
             }
         })
@@ -124,20 +113,21 @@ impl Into<PJobOpcode> for DJobOpcode {
                 Ty::LogCustomMsg(PLogCustomMsg { msg })
             }
 
-            DJobOpcode::InvokeCmd { cmd } => {
-                Ty::InvokeCmd(PInvokeCmd { cmd })
+            DJobOpcode::Execute { cmd } => {
+                Ty::Execute(PExecute { cmd })
             }
 
-            DJobOpcode::OverrideToolchain { project, toolchain } => {
-                Ty::OverrideToolchain(POverrideToolchain { project, toolchain })
-            }
-
-            DJobOpcode::OverrideDependency { project, registry, name, action } => {
-                Ty::OverrideDependency(POverrideDependency {
+            DJobOpcode::AlterToolchain { project, toolchain } => {
+                Ty::AlterToolchain(PAlterToolchain {
                     project,
-                    registry,
-                    name,
-                    action: Some(convert!(action as _)),
+                    toolchain: Some(convert!(toolchain as _)),
+                })
+            }
+
+            DJobOpcode::AlterDependency { project, dependency } => {
+                Ty::AlterDependency(PAlterDependency {
+                    project,
+                    dependency: Some(convert!(dependency as _)),
                 })
             }
         };
