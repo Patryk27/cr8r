@@ -24,7 +24,7 @@ impl ExperimentExecutorActor {
                 result => {
                     let result = result
                         .map(|_| ())
-                        .map_err(|err| err.to_string());
+                        .map_err(|err| format!("{:#?}", err)); // @todo this could be nicer
 
                     self.logger.add(DEventType::JobCompleted { id, result });
                 }
