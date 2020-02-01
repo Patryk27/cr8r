@@ -2,7 +2,7 @@ use derivative::Derivative;
 use log::*;
 use tokio::sync::{mpsc, oneshot};
 
-use lib_actor::ActorWorkflow;
+use lib_core_actor::*;
 use lib_interop::domain::DRunner;
 
 use crate::backend::runner::RunnerActor;

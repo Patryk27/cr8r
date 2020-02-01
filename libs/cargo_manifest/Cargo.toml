@@ -1,0 +1,12 @@
+[package]
+name = "lib_cargo_manifest"
+version = "0.1.0"
+authors = ["Patryk Wychowaniec <wychowaniec.patryk@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+thiserror = "1.0"
+toml = { version = "0.5", features = ["preserve_order"] }
+
+[dev-dependencies]
+pretty_assertions = "0.6"

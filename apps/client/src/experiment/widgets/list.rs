@@ -2,8 +2,8 @@ use std::fmt;
 
 use prettytable::{cell, row};
 
+use lib_core_ui::*;
 use lib_interop::domain::DExperiment;
-use lib_ui::*;
 
 use crate::experiment::{ExperimentIdWidget, ExperimentStatusWidget};
 

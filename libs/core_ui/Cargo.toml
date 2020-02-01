@@ -1,5 +1,5 @@
 [package]
-name = "lib_ui"
+name = "lib_core_ui"
 version = "0.1.0"
 authors = ["Patryk Wychowaniec <wychowaniec.patryk@gmail.com>"]
 edition = "2018"

@@ -1,7 +1,11 @@
+use core::result;
+
 use thiserror::*;
 
+pub type Result<T> = result::Result<T, CargoManifestError>;
+
 #[derive(Debug, Error, Eq, PartialEq)]
-pub enum CargoManifestMalformedError {
+pub enum CargoManifestError {
     #[error("Section `{name}` is missing")]
     MissingSection {
         name: String,
@@ -13,14 +17,20 @@ pub enum CargoManifestMalformedError {
         expected_type: String,
     },
 
-    #[error("Manifest could not be serialized")]
-    CannotBeSerialized(
+    #[error("Could not patch dependency `{name}`")]
+    IllegalDependencyPatch {
+        name: String,
+        #[source] source: &'static str,
+    },
+
+    #[error("Could not serialize Cargo manifest")]
+    CouldNotSerialize(
         #[from]
         #[source] toml::ser::Error,
     ),
 
-    #[error("Manifest could not be deserialized")]
-    CannotBeUnserialized(
+    #[error("Could not deserialize Cargo manifest")]
+    CouldNotDeserialize(
         #[from]
         #[source] toml::de::Error,
     ),

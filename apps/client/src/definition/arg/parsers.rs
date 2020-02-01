@@ -1,7 +1,9 @@
 pub use self::{
-    dependency_parser::*,
-    toolchain_parser::*,
+    dependencies::*,
+    dependency::*,
+    toolchain::*,
 };
 
-mod dependency_parser;
-mod toolchain_parser;
+mod dependencies;
+mod dependency;
+mod toolchain;

@@ -20,7 +20,7 @@ mod service;
 pub async fn start(address: String, secret: Option<String>, system: System) -> Result<()> {
     let address = address
         .parse()
-        .context("Could not parse controller's address")?: SocketAddr;
+        .context("Could not understand controller's address")?: SocketAddr;
 
     let service = ControllerServer::with_interceptor(
         ControllerService::new(system),

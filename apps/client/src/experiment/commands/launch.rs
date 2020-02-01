@@ -1,7 +1,7 @@
 use anyhow::*;
 use colored::Colorize;
 
-use lib_ui::*;
+use lib_core_ui::*;
 
 use crate::app::AppContext;
 use crate::definition::DefinitionArg;
@@ -9,7 +9,7 @@ use crate::definition::DefinitionArg;
 pub async fn launch(ctxt: &mut AppContext, watch: bool, definition: DefinitionArg) -> Result<()> {
     let definition = definition
         .parse()
-        .context("Could not parse experiment's definition")?;
+        .context("Could not understand experiment")?;
 
     let id = spinner! {
         ctxt.client()

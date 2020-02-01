@@ -1,6 +1,6 @@
 use log::*;
 
-use lib_actor::ActorWorkflow;
+use lib_core_actor::*;
 
 use super::ExperimentExecutorActor;
 

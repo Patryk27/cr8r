@@ -1,6 +1,6 @@
 use anyhow::*;
 
-use lib_actor::ActorWorkflow;
+use lib_core_actor::*;
 use lib_interop::domain::DJobOpcode;
 
 use super::super::ExperimentExecutorActor;

@@ -1,7 +1,7 @@
 use std::fmt;
 
+use lib_core_ui::*;
 use lib_interop::domain::DRunnerStatus;
-use lib_ui::*;
 
 pub struct RunnerStatusWidget<'a> {
     status: &'a DRunnerStatus,

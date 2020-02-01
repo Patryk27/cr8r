@@ -2,7 +2,7 @@ use anyhow::*;
 use closure::*;
 use log::*;
 
-use lib_actor::ActorWorkflow;
+use lib_core_actor::*;
 use lib_interop::domain::{DEventType, DJob, DJobOpcode};
 use lib_sandbox::SandboxListener;
 

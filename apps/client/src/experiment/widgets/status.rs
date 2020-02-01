@@ -1,7 +1,7 @@
 use std::fmt;
 
+use lib_core_ui::*;
 use lib_interop::domain::DExperimentStatus;
-use lib_ui::*;
 
 pub struct ExperimentStatusWidget<'a> {
     status: &'a DExperimentStatus,

@@ -2,8 +2,8 @@ use std::fmt;
 
 use prettytable::{cell, row};
 
+use lib_core_ui::*;
 use lib_interop::domain::DRunner;
-use lib_ui::*;
 
 use crate::runner::{RunnerNameWidget, RunnerStatusWidget};
 

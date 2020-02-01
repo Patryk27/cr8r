@@ -1,7 +1,7 @@
 use anyhow::*;
 use tonic::Status;
 
-use lib_ui::*;
+use lib_core_ui::*;
 
 pub struct AppErrorWidget;
 
@@ -58,7 +58,7 @@ fn print_connection_failed() {
     eprintln!("{}", MessageWidget::warn(
         "Note:",
         [
-            "This is most likely caused by a misconfiguration in the `client.toml` file.",
+            "This is most likely caused by a misconfiguration in the `client.yaml` file.",
             "",
             "Please ensure that all URLs and credentials are valid, that the controller is",
             "actually running and it's accessible from your network.",

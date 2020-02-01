@@ -3,7 +3,7 @@ use std::collections::VecDeque;
 use chrono::Utc;
 use tokio::sync::mpsc;
 
-use lib_actor::tell;
+use lib_core_actor::*;
 use lib_interop::domain::{DEvent, DEventType, DExperimentId};
 
 use crate::session::Session;

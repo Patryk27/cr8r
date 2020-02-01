@@ -10,18 +10,18 @@ chrono = "0.4"
 closure = "0.2"
 colored = "1.9"
 derivative = "1.0"
-lib_actor = { path = "../../libs/actor" }
+lib_cargo_manifest = { path = "../../libs/cargo_manifest" }
+lib_core_actor = { path = "../../libs/core_actor" }
+lib_core_log = { path = "../../libs/core_log" }
+lib_core_ui = { path = "../../libs/core_ui" }
 lib_interop = { path = "../../libs/interop" }
-lib_log = { path = "../../libs/log" }
 lib_sandbox = { path = "../../libs/sandbox" }
-lib_ui = { path = "../../libs/ui" }
 log = "0.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.8"
 thiserror = "1.0"
 tokio = { version = "0.2", features = ["full"] }
-toml = { version = "0.5", features = ["preserve_order"] }
-tonic = "0.1.1"
+tonic = "0.1"
 
 [dev-dependencies]
 pretty_assertions = "0.6"

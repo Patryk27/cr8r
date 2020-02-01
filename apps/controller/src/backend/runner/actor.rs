@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use log::*;
 use tokio::stream::StreamExt;
 
-use lib_actor::ActorWorkflow;
+use lib_core_actor::*;
 use lib_interop::domain::{DRunnerId, DRunnerName};
 
 use crate::backend::runner::{RunnerRx, RunnerStatus};

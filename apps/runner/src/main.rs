@@ -11,7 +11,6 @@ use log::*;
 use lib_interop::client::ControllerClient;
 use lib_sandbox::SandboxProvider;
 
-mod cargo;
 mod core;
 mod experiment;
 mod session;
@@ -26,7 +25,7 @@ async fn main() {
     };
 
     let result = try {
-        lib_log::init()
+        lib_core_log::init()
             .context("Could not initialize logging facility")?;
 
         let config = Config::load()
@@ -52,7 +51,7 @@ async fn main() {
     }: Result<()>;
 
     if let Err(err) = result {
-        eprintln!("{}", lib_ui::ErrorWidget::new(&err));
+        eprintln!("{}", lib_core_ui::ErrorWidget::new(&err));
 
         exit(1);
     }

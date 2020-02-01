@@ -1,8 +1,8 @@
 use anyhow::*;
 
+use lib_core_ui::*;
 use lib_interop::convert;
 use lib_interop::proto::controller::PFindRunnersRequest;
-use lib_ui::*;
 
 use crate::app::AppContext;
 use crate::runner::RunnerListWidget;

@@ -9,7 +9,7 @@ pub async fn list(conn: &LxdConnector) -> Result<Vec<LxdContainer>> {
     ]).await?;
 
     let containers = serde_json::from_str(&containers)
-        .context("Could not parse response from LXD")?;
+        .context("Could not understand response from LXD")?;
 
     Ok(containers)
 }

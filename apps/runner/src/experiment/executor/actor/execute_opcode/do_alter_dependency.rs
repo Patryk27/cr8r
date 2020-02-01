@@ -1,10 +1,10 @@
 use std::path::PathBuf;
+use std::str::FromStr;
 
 use anyhow::*;
 
+use lib_cargo_manifest::{CargoDependencyPatch, CargoManifest};
 use lib_interop::domain::definition_inner::{DDependencyDef, DDependencyDefSource};
-
-use crate::cargo::CargoManifestEditor;
 
 use super::super::ExperimentExecutorActor;
 
@@ -23,19 +23,36 @@ impl ExperimentExecutorActor {
             .context("Could not read `Cargo.toml`")?;
 
         let manifest = {
-            let mut editor = CargoManifestEditor::new(&manifest)?;
+            let mut manifest = CargoManifest::from_str(&manifest)
+                .context("Could not parse `Cargo.toml`")?;
 
             match dependency.source {
+                DDependencyDefSource::Branch { branch } => {
+                    manifest.apply_dependency_patch(&dependency.name, CargoDependencyPatch::UseBranch {
+                        branch: &branch,
+                    })
+                }
+
+                DDependencyDefSource::Tag { tag } => {
+                    manifest.apply_dependency_patch(&dependency.name, CargoDependencyPatch::UseTag {
+                        tag: &tag,
+                    })
+                }
+
                 DDependencyDefSource::Version { version } => {
-                    editor.patch_dependency(&dependency.name, &version)?;
+                    manifest.apply_dependency_patch(&dependency.name, CargoDependencyPatch::UseVersion {
+                        version: &version,
+                    })
                 }
 
                 _ => {
                     unimplemented!();
                 }
-            };
+            }.context("Could not update `Cargo.toml`")?;
 
-            editor.finish()?
+            manifest
+                .print()
+                .context("Could not print `Cargo.toml`")?
         };
 
         self.sandbox

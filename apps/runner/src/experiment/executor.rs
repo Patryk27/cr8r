@@ -1,6 +1,6 @@
 use tokio::sync::mpsc;
 
-use lib_actor::{ask, tell};
+use lib_core_actor::*;
 use lib_interop::domain::DAssignment;
 use lib_sandbox::Sandbox;
 

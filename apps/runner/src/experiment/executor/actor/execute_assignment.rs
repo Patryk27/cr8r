@@ -1,4 +1,4 @@
-use lib_actor::ActorWorkflow;
+use lib_core_actor::*;
 use lib_interop::domain::{DAssignment, DEventType};
 
 use super::ExperimentExecutorActor;

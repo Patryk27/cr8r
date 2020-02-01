@@ -21,13 +21,13 @@ impl ControllerClient {
         info!("Connecting to controller at: {}", address.green());
 
         let uri = Uri::from_str(&address)
-            .context("Could not parse controller's address")?;
+            .context("Could not understand controller's address")?;
 
         let auth = secret
             .map(|secret| format!("Bearer {}", secret))
             .map(|secret| MetadataValue::from_str(&secret))
             .transpose()
-            .context("Could not parse controller's secret")?;
+            .context("Could not understand controller's secret")?;
 
         let channel = Channel::builder(uri)
             .connect()

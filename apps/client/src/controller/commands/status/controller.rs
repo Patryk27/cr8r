@@ -3,7 +3,7 @@ use std::time::Duration;
 use anyhow::*;
 use colored::Colorize;
 
-use lib_ui::*;
+use lib_core_ui::*;
 
 use crate::app::AppContext;
 
