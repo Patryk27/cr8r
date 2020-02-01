@@ -1,3 +1,5 @@
+use std::iter::FromIterator;
+
 use toml::Value;
 use toml::value::Table;
 
@@ -12,107 +14,173 @@ pub enum CargoDependencyPatch<'a> {
 }
 
 impl CargoManifest {
-    pub fn apply_dependency_patch(&mut self, dep_name: &str, dep_patch: CargoDependencyPatch) -> Result<()> {
-        use CargoDependencyPatch::*;
-
-        let deps = self.inner
-            .get("dependencies")
-            .ok_or_else(|| CargoManifestError::MissingSection {
-                name: "dependencies".to_string(),
-            })?;
-
-        let deps = deps
-            .as_table()
-            .ok_or_else(|| CargoManifestError::InvalidPropertyType {
-                name: "dependencies".to_string(),
-                expected_type: "table".to_string(),
-            })?;
-
-        let dep = if let Some(dep) = deps.get(dep_name) {
+    pub fn patch_dependency(&mut self, dep_name: &str, dep_patch: CargoDependencyPatch) -> Result<()> {
+        let dep = if let Some(dep) = Self::load_dependency(&self.inner, dep_name)? {
             dep.clone()
         } else {
             return Ok(());
         };
 
-        let patch = match dep {
+        let dep_patch = match dep {
             // E.g.: foo = '0.1'
-            Value::String(_) => {
-                unimplemented!()
+            dep @ Value::String(_) => {
+                let dep = Table::from_iter(vec![
+                    ("version".to_string(), dep),
+                ].into_iter());
+
+                Self::build_patch_for_non_git_dependency(dep, dep_name, dep_patch)?
             }
 
-            // E.g.: foo = { version = '0.1', ... }
+            // E.g.: foo = { version = '...', ... }
             Value::Table(dep) if dep.contains_key("version") => {
-                unimplemented!()
+                Self::build_patch_for_non_git_dependency(dep, dep_name, dep_patch)?
             }
 
-            // E.g.: foo = { git = "...", ... }
-            Value::Table(mut dep) if dep.contains_key("git") => {
-                let registry = dep
-                    .get("git")
-                    .unwrap()
-                    .as_str()
-                    .unwrap()
-                    .to_string();
+            // E.g.: foo = { path = '...', ... }
+            Value::Table(dep) if dep.contains_key("path") => {
+                Self::build_patch_for_non_git_dependency(dep, dep_name, dep_patch)?
+            }
 
-                dep.remove("branch");
-                dep.remove("tag");
-
-                match dep_patch {
-                    UseBranch(branch) => {
-                        dep.insert("branch".to_string(), Value::String(branch.to_string()));
-                    }
-
-                    UseTag(tag) => {
-                        dep.insert("tag".to_string(), Value::String(tag.to_string()));
-                    }
-
-                    UseVersion(version) => {
-                        dep.remove("git");
-                        dep.insert("version".to_string(), Value::String(version.to_string()));
-                    }
-
-                    UsePath(path) => {
-                        dep.remove("git");
-                        dep.insert("path".to_string(), Value::String(path.to_string()));
-                    }
-                }
-
-                Patch {
-                    registry,
-                    content: Value::Table(dep),
-                }
+            // E.g.: foo = { git = '...', ... }
+            Value::Table(dep) if dep.contains_key("git") => {
+                Self::build_patch_for_git_dependency(dep, dep_patch)?
             }
 
             _ => {
-                unimplemented!()
+                return Err(CargoManifestError::InvalidPropertyType {
+                    path: format!("dependencies.{}", dep_name),
+                    expected_type: "".to_string(),
+                });
             }
         };
 
-        let all_patches = self.inner
+        Self::add_patch(&mut self.inner, dep_name, dep_patch)?;
+
+        Ok(())
+    }
+
+    fn load_dependency<'a>(manifest: &'a Table, dep_name: &str) -> Result<Option<&'a Value>> {
+        let deps = manifest
+            .get("dependencies")
+            .ok_or_else(|| CargoManifestError::MissingProperty {
+                path: "dependencies".to_string(),
+            })?
+            .as_table()
+            .ok_or_else(|| CargoManifestError::InvalidPropertyType {
+                path: "dependencies".to_string(),
+                expected_type: "table".to_string(),
+            })?;
+
+        Ok(deps.get(dep_name))
+    }
+
+    fn build_patch_for_non_git_dependency(
+        mut dep: Table,
+        dep_name: &str,
+        dep_patch: CargoDependencyPatch,
+    ) -> Result<ProcessedPatch> {
+        let registry = dep
+            .get("registry")
+            .and_then(|reg| reg.as_str())
+            .unwrap_or("crates-io")
+            .to_string();
+
+        dep.remove("path");
+        dep.remove("version");
+
+        match dep_patch {
+            CargoDependencyPatch::UseBranch(_) => {
+                return Err(CargoManifestError::IllegalDependencyPatch {
+                    name: dep_name.to_string(),
+                    reason: "Tried to apply a `branch = ...` patch on a non-Git dependency",
+                });
+            }
+
+            CargoDependencyPatch::UseTag(_) => {
+                return Err(CargoManifestError::IllegalDependencyPatch {
+                    name: dep_name.to_string(),
+                    reason: "Tried to apply a `tag = ...` patch on a non-Git dependency",
+                });
+            }
+
+            CargoDependencyPatch::UseVersion(version) => {
+                dep.insert("version".to_string(), Value::String(version.to_string()));
+            }
+
+            CargoDependencyPatch::UsePath(path) => {
+                dep.insert("path".to_string(), Value::String(path.to_string()));
+            }
+        }
+
+        Ok(ProcessedPatch {
+            registry,
+            content: Value::Table(dep),
+        })
+    }
+
+    fn build_patch_for_git_dependency(mut dep: Table, dep_patch: CargoDependencyPatch) -> Result<ProcessedPatch> {
+        let registry = dep
+            .get("git")
+            .unwrap()
+            .as_str()
+            .unwrap()
+            .to_string();
+
+        dep.remove("branch");
+        dep.remove("tag");
+
+        match dep_patch {
+            CargoDependencyPatch::UseBranch(branch) => {
+                dep.insert("branch".to_string(), Value::String(branch.to_string()));
+            }
+
+            CargoDependencyPatch::UseTag(tag) => {
+                dep.insert("tag".to_string(), Value::String(tag.to_string()));
+            }
+
+            CargoDependencyPatch::UseVersion(version) => {
+                dep.remove("git");
+                dep.insert("version".to_string(), Value::String(version.to_string()));
+            }
+
+            CargoDependencyPatch::UsePath(path) => {
+                dep.remove("git");
+                dep.insert("path".to_string(), Value::String(path.to_string()));
+            }
+        }
+
+        Ok(ProcessedPatch {
+            registry,
+            content: Value::Table(dep),
+        })
+    }
+
+    fn add_patch(manifest: &mut Table, dep_name: &str, dep_patch: ProcessedPatch) -> Result<()> {
+        let all_patches = manifest
             .entry("patch")
             .or_insert_with(|| Value::Table(Table::new()))
             .as_table_mut()
             .ok_or_else(|| CargoManifestError::InvalidPropertyType {
-                name: "patch".to_string(),
+                path: "patch".to_string(),
                 expected_type: "table".to_string(),
             })?;
 
         let registry_patches = all_patches
-            .entry(patch.registry.clone())
+            .entry(dep_patch.registry.clone())
             .or_insert_with(|| Value::Table(Table::new()))
             .as_table_mut()
             .ok_or_else(|| CargoManifestError::InvalidPropertyType {
-                name: format!("patch.{}", patch.registry),
+                path: format!("patch.{}", dep_patch.registry),
                 expected_type: "table".to_string(),
             })?;
 
-        registry_patches.insert(dep_name.to_string(), patch.content);
+        registry_patches.insert(dep_name.to_string(), dep_patch.content);
 
         Ok(())
     }
 }
 
-struct Patch {
+struct ProcessedPatch {
     registry: String,
     content: Value,
 }
@@ -123,134 +191,153 @@ mod tests {
 
     use super::*;
 
-    mod when_applying_patch_from_branch {
-        use super::*;
+    #[test]
+    fn test_applying_patches_that_change_branch() {
+        let expected = manifest("
+            [dependencies]
+            dep_branch  = { git = 'https://git.microsoft.com', branch = 'features/foo', features = ['foo', 'bar'] }
+            dep_tag     = { git = 'https://git.microsoft.com', branch = 'features/foo', features = ['foo', 'bar'] }
+            dep_version = { git = 'https://git.microsoft.com', branch = 'features/foo', features = ['foo', 'bar'] }
 
-        #[test]
-        fn into_branch_then_patch_succeeds() {
-            let patch = CargoDependencyPatch::UseBranch("features/bar");
+            [patch.'https://git.microsoft.com']
+            dep_branch  = { git = 'https://git.microsoft.com', features = ['foo', 'bar'], branch = 'features/bar' }
+            dep_tag     = { git = 'https://git.microsoft.com', features = ['foo', 'bar'], tag = 'v1.2.3.4' }
+            dep_version = { features = ['foo', 'bar'], version = '1.2.3' }
+        ");
 
-            let expected = manifest("
+        let actual = {
+            let mut manifest = manifest("
                 [dependencies]
-                dep = { git = 'https://git.microsoft.com', branch = 'features/foo', features = ['foo', 'bar'] }
-
-                [patch.'https://git.microsoft.com']
-                dep = { git = 'https://git.microsoft.com', features = ['foo', 'bar'], branch = 'features/bar' }
+                dep_branch  = { git = 'https://git.microsoft.com', branch = 'features/foo', features = ['foo', 'bar'] }
+                dep_tag     = { git = 'https://git.microsoft.com', branch = 'features/foo', features = ['foo', 'bar'] }
+                dep_version = { git = 'https://git.microsoft.com', branch = 'features/foo', features = ['foo', 'bar'] }
             ");
 
-            test(patch, expected);
-        }
-
-        #[test]
-        fn into_tag_then_patch_succeeds() {
-            let patch = CargoDependencyPatch::UseTag("v1.2.3.4");
-
-            let expected = manifest("
-                [dependencies]
-                dep = { git = 'https://git.microsoft.com', branch = 'features/foo', features = ['foo', 'bar'] }
-
-                [patch.'https://git.microsoft.com']
-                dep = { git = 'https://git.microsoft.com', features = ['foo', 'bar'], tag = 'v1.2.3.4' }
-            ");
-
-            test(patch, expected);
-        }
-
-        #[test]
-        fn into_version_then_patch_succeeds() {
-            let patch = CargoDependencyPatch::UseVersion("1.2.3.4");
-
-            let expected = manifest("
-                [dependencies]
-                dep = { git = 'https://git.microsoft.com', branch = 'features/foo', features = ['foo', 'bar'] }
-
-                [patch.'https://git.microsoft.com']
-                dep = { features = ['foo', 'bar'], version = '1.2.3.4' }
-            ");
-
-            test(patch, expected);
-        }
-
-        fn test(patch: CargoDependencyPatch<'static>, expected: CargoManifest) {
-            let mut actual = manifest("
-                [dependencies]
-                dep = { git = 'https://git.microsoft.com', branch = 'features/foo', features = ['foo', 'bar'] }
-            ");
-
-            actual
-                .apply_dependency_patch("dep", patch)
+            manifest
+                .patch_dependency("dep_branch", CargoDependencyPatch::UseBranch("features/bar"))
                 .unwrap();
 
-            assert_manifest_eq(&expected, &actual);
-        }
+            manifest
+                .patch_dependency("dep_tag", CargoDependencyPatch::UseTag("v1.2.3.4"))
+                .unwrap();
+
+            manifest
+                .patch_dependency("dep_version", CargoDependencyPatch::UseVersion("1.2.3"))
+                .unwrap();
+
+            manifest
+        };
+
+        assert_manifest_eq(&expected, &actual);
     }
 
-    mod when_applying_patch_from_version {
-        use super::*;
+    #[test]
+    fn test_applying_patches_that_change_tag() {
+        let expected = manifest("
+            [dependencies]
+            dep_branch  = { git = 'https://git.microsoft.com', tag = 'features/foo', features = ['foo', 'bar'] }
+            dep_tag     = { git = 'https://git.microsoft.com', tag = 'features/foo', features = ['foo', 'bar'] }
+            dep_version = { git = 'https://git.microsoft.com', tag = 'features/foo', features = ['foo', 'bar'] }
 
-        #[test]
-        fn into_branch_then_patch_fails() {
-            let mut manifest = manifest();
+            [patch.'https://git.microsoft.com']
+            dep_branch  = { git = 'https://git.microsoft.com', features = ['foo', 'bar'], branch = 'features/bar' }
+            dep_tag     = { git = 'https://git.microsoft.com', features = ['foo', 'bar'], tag = 'v1.2.3.4' }
+            dep_version = { features = ['foo', 'bar'], version = '1.2.3' }
+        ");
 
-            let result = manifest.apply_dependency_patch(
-                "dep_concise",
-                CargoDependencyPatch::UseBranch("foo"),
-            );
-
-            assert_eq!(result, Err(CargoManifestError::IllegalDependencyPatch {
-                name: "dep_concise".to_string(),
-                source: "Cannot apply `branch = ...` patch to a non-Git dependency",
-            }));
-        }
-
-        #[test]
-        fn into_tag_then_patch_fails() {
-            let mut manifest = manifest();
-
-            let result = manifest.apply_dependency_patch(
-                "dep_concise",
-                CargoDependencyPatch::UseTag("foo"),
-            );
-
-            assert_eq!(result, Err(CargoManifestError::IllegalDependencyPatch {
-                name: "dep_concise".to_string(),
-                source: "Cannot apply `tag = ...` patch to a non-Git dependency",
-            }));
-        }
-
-        #[test]
-        fn into_version_then_patch_succeeds() {
-            let mut manifest = manifest();
-
-            manifest
-                .apply_dependency_patch("dep_concise", CargoDependencyPatch::UseVersion("1.0"))
-                .unwrap();
-
-            manifest
-                .apply_dependency_patch("dep_expanded", CargoDependencyPatch::UseVersion("2.0-alpha"))
-                .unwrap();
-
-            let expected = super::manifest("
+        let actual = {
+            let mut manifest = manifest("
                 [dependencies]
-                dep_concise = '0.1'
-                dep_expanded = { version = '0.1', features = ['foo', 'bar'] }
+                dep_branch  = { git = 'https://git.microsoft.com', tag = 'features/foo', features = ['foo', 'bar'] }
+                dep_tag     = { git = 'https://git.microsoft.com', tag = 'features/foo', features = ['foo', 'bar'] }
+                dep_version = { git = 'https://git.microsoft.com', tag = 'features/foo', features = ['foo', 'bar'] }
             ");
 
-            assert_eq!(expected.print(), manifest.print());
-        }
+            manifest
+                .patch_dependency("dep_branch", CargoDependencyPatch::UseBranch("features/bar"))
+                .unwrap();
 
-        #[test]
-        fn into_path_then_patch_succeeds() {
-            // @todo
-        }
+            manifest
+                .patch_dependency("dep_tag", CargoDependencyPatch::UseTag("v1.2.3.4"))
+                .unwrap();
 
-        fn manifest() -> CargoManifest {
-            super::manifest("
+            manifest
+                .patch_dependency("dep_version", CargoDependencyPatch::UseVersion("1.2.3"))
+                .unwrap();
+
+            manifest
+        };
+
+        assert_manifest_eq(&expected, &actual);
+    }
+
+    #[test]
+    fn test_applying_patches_that_change_version() {
+        let expected = manifest("
+            [dependencies]
+            dep_branch  = '0.1'
+            dep_tag     = '0.1'
+            dep_version = '0.1'
+
+            [patch.crates-io]
+            dep_version = { version = '1.2.3-beta' }
+        ");
+
+        let actual = {
+            let mut manifest = manifest("
                 [dependencies]
-                dep_concise = '0.1'
-                dep_expanded = { version = '0.1', features = ['foo', 'bar'] }
-            ")
-        }
+                dep_branch  = '0.1'
+                dep_tag     = '0.1'
+                dep_version = '0.1'
+            ");
+
+            assert_eq!(
+                Err(CargoManifestError::IllegalDependencyPatch {
+                    name: "dep_branch".to_string(),
+                    reason: "Tried to apply a `branch = ...` patch on a non-Git dependency",
+                }),
+                manifest.patch_dependency("dep_branch", CargoDependencyPatch::UseBranch("features/bar"))
+            );
+
+            assert_eq!(
+                Err(CargoManifestError::IllegalDependencyPatch {
+                    name: "dep_tag".to_string(),
+                    reason: "Tried to apply a `tag = ...` patch on a non-Git dependency",
+                }),
+                manifest.patch_dependency("dep_tag", CargoDependencyPatch::UseTag("v1.2.3.4"))
+            );
+
+            manifest
+                .patch_dependency("dep_version", CargoDependencyPatch::UseVersion("1.2.3-beta"))
+                .unwrap();
+
+            manifest
+        };
+
+        assert_manifest_eq(&expected, &actual);
+    }
+
+    #[test]
+    fn patching_non_existing_dependency_does_nothing() {
+        let expected = manifest("
+            [dependencies]
+            foo = '0.1'
+        ");
+
+        let actual = {
+            let mut manifest = manifest("
+                [dependencies]
+                foo = '0.1'
+            ");
+
+            manifest
+                .patch_dependency("bar", CargoDependencyPatch::UseVersion("1.0"))
+                .unwrap();
+
+            manifest
+        };
+
+        assert_manifest_eq(&expected, &actual);
     }
 
     fn manifest(manifest: &str) -> CargoManifest {
@@ -260,6 +347,6 @@ mod tests {
     }
 
     fn assert_manifest_eq(expected: &CargoManifest, actual: &CargoManifest) {
-        assert_eq!(expected.print(), input.print());
+        assert_eq!(expected.print(), actual.print());
     }
 }

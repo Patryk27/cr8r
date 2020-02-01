@@ -6,21 +6,21 @@ pub type Result<T> = result::Result<T, CargoManifestError>;
 
 #[derive(Debug, Error, Eq, PartialEq)]
 pub enum CargoManifestError {
-    #[error("Section `{name}` is missing")]
-    MissingSection {
-        name: String,
+    #[error("Property `{path}` is missing")]
+    MissingProperty {
+        path: String,
     },
 
-    #[error("Property `{name}` was expected to be `{expected_type}`")]
+    #[error("Property `{path}` was expected to be of type `{expected_type}`")]
     InvalidPropertyType {
-        name: String,
+        path: String,
         expected_type: String,
     },
 
-    #[error("Could not patch dependency `{name}`")]
+    #[error("Could not patch dependency `{name}`: {reason}")]
     IllegalDependencyPatch {
         name: String,
-        #[source] source: &'static str,
+        reason: &'static str,
     },
 
     #[error("Could not serialize Cargo manifest")]

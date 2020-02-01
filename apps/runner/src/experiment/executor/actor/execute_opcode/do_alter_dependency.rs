@@ -28,21 +28,24 @@ impl ExperimentExecutorActor {
 
             match dependency.source {
                 DDependencyDefSource::Branch { branch } => {
-                    manifest.apply_dependency_patch(&dependency.name, CargoDependencyPatch::UseBranch {
-                        branch: &branch,
-                    })
+                    manifest.patch_dependency(
+                        &dependency.name,
+                        CargoDependencyPatch::UseBranch(&branch),
+                    )
                 }
 
                 DDependencyDefSource::Tag { tag } => {
-                    manifest.apply_dependency_patch(&dependency.name, CargoDependencyPatch::UseTag {
-                        tag: &tag,
-                    })
+                    manifest.patch_dependency(
+                        &dependency.name,
+                        CargoDependencyPatch::UseTag(&tag),
+                    )
                 }
 
                 DDependencyDefSource::Version { version } => {
-                    manifest.apply_dependency_patch(&dependency.name, CargoDependencyPatch::UseVersion {
-                        version: &version,
-                    })
+                    manifest.patch_dependency(
+                        &dependency.name,
+                        CargoDependencyPatch::UseVersion(&version),
+                    )
                 }
 
                 _ => {
