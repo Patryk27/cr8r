@@ -120,7 +120,7 @@ fn event_as_report(jobs: &[DJob], event: &DEvent) -> Option<DReport> {
             };
 
             if let Some(job) = jobs.get(*id) {
-                DReport::system_msg(event.at, format!("Job `{}` completed; result: {}", job.name, result))
+                DReport::system_msg(event.at, format!("Job `{}` completed with {}", job.name, result))
             } else {
                 warn!("Runner reported that it has finished working on job #{}, which does not exist; this is probably a bug", id);
                 return None;
