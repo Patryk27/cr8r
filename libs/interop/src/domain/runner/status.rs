@@ -35,10 +35,10 @@ impl TryFrom<PRunnerStatus> for DRunnerStatus {
                 }
             }
 
-            Ty::Working(PWorking { since, .. }) => {
+            Ty::Working(PWorking { since, experiment_id }) => {
                 DRunnerStatus::Working {
                     since: convert!(since as DateTime),
-                    experiment_id: convert!(since as _),
+                    experiment_id: convert!(experiment_id as _),
                 }
             }
 

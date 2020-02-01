@@ -1,6 +1,8 @@
 use anyhow::*;
 use structopt::StructOpt;
 
+use lib_interop::proto::core::PExperimentId;
+
 use crate::app::AppContext;
 use crate::definition::DefinitionArg;
 
@@ -13,7 +15,7 @@ mod watch;
 #[derive(Debug, StructOpt)]
 pub enum ExperimentCommand {
     Abort {
-        id: String,
+        id: PExperimentId,
     },
 
     Launch {
@@ -25,7 +27,7 @@ pub enum ExperimentCommand {
     },
 
     Show {
-        id: String,
+        id: PExperimentId,
 
         #[structopt(short = "a", long = "show-all")]
         show_all: bool,
@@ -38,7 +40,7 @@ pub enum ExperimentCommand {
     },
 
     Watch {
-        id: String,
+        id: PExperimentId,
     },
 }
 
@@ -54,7 +56,7 @@ impl ExperimentCommand {
             }
 
             ExperimentCommand::Show { id, show_all, show_jobs, show_reports } => {
-                show::show(ctxt, &id, show_all || show_jobs, show_all || show_reports).await
+                show::show(ctxt, id, show_all || show_jobs, show_all || show_reports).await
             }
 
             ExperimentCommand::Watch { id } => {

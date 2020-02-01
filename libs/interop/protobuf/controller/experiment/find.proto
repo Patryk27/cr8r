@@ -5,7 +5,7 @@ package cr8r.controller;
 import "core/experiment.proto";
 
 message PFindExperimentsRequest {
-    string id = 1;
+    uint32 id = 1;
 }
 
 message PFindExperimentsReply {

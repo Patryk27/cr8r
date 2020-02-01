@@ -5,8 +5,8 @@ package cr8r.controller;
 import "core/event.proto";
 
 message PAddEventRequest {
-    string runner_id = 1;
-    string experiment_id = 2;
+    uint32 runner_id = 1;
+    uint32 experiment_id = 2;
     core.PEvent event = 3;
 }
 

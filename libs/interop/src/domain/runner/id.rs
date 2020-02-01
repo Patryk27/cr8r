@@ -1,3 +1,3 @@
 crate::newtype! {
-    DRunnerId: Uuid
+    DRunnerId as number
 }

@@ -22,7 +22,7 @@ pub async fn launch(ctxt: &mut AppContext, watch: bool, definition: DefinitionAr
     println!("{}", MessageWidget::success(
         "Success:",
         [
-            format!("Experiment `{}` has been created.", id.blue()),
+            format!("Experiment `{}` has been created.", id.to_string().blue()),
             "It's now waiting for a runner to pick it up.".to_string(),
         ].join("\n"),
     ));

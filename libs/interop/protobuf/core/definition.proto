@@ -22,7 +22,7 @@ message PDefinition {
             }
 
             message PPatch {
-                string attachment_id = 1;
+                uint32 attachment_id = 1;
             }
 
             oneof ty {

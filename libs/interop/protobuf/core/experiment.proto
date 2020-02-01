@@ -3,7 +3,7 @@ syntax = "proto3";
 package cr8r.core;
 
 message PExperiment {
-    string id = 1;
+    uint32 id = 1;
     string created_at = 2;
     PExperimentStatus status = 3;
 }

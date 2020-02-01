@@ -1,3 +1,3 @@
 crate::newtype! {
-    DExperimentId: Uuid
+    DExperimentId as number
 }

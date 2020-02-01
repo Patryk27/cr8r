@@ -5,7 +5,7 @@ package cr8r.controller;
 import "core/report.proto";
 
 message PFindReportsRequest {
-    string experiment_id = 1;
+    uint32 experiment_id = 1;
 }
 
 message PFindReportsReply {

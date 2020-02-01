@@ -1,3 +1,3 @@
 crate::newtype! {
-    DAttachmentId: Uuid
+    DAttachmentId as number
 }

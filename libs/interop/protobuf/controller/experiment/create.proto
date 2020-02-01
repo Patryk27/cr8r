@@ -9,5 +9,5 @@ message PCreateExperimentRequest {
 }
 
 message PCreateExperimentReply {
-    string id = 1;
+    uint32 id = 1;
 }

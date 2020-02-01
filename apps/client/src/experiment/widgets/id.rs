@@ -1,5 +1,7 @@
 use std::fmt;
 
+use colored::Colorize;
+
 use lib_interop::domain::DExperimentId;
 
 pub struct ExperimentIdWidget<'a> {
@@ -14,8 +16,6 @@ impl<'a> ExperimentIdWidget<'a> {
 
 impl fmt::Display for ExperimentIdWidget<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use colored::Colorize;
-
-        write!(f, "{}", self.id.as_str().bright_cyan())
+        write!(f, "{}", self.id.as_num().to_string().bright_cyan())
     }
 }

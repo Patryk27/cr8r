@@ -13,21 +13,18 @@ pub async fn find_experiments(system: &System, request: PFindExperimentsRequest)
             .get_model()
             .await;
 
-        let mut matches = true;
-
-        if !request.id.is_empty() {
-            matches = experiment.id.as_str() == request.id;
+        if request.id > 0 && experiment.id.as_num() != request.id {
+            continue;
         }
 
-        if matches {
-            experiments.push(experiment);
-        }
+        experiments.push(experiment);
     }
 
     experiments.sort_unstable_by(|a, b| {
-        a.created_at
-            .cmp(&b.created_at)
-            .reverse()
+        let a = a.id.as_num();
+        let b = b.id.as_num();
+
+        a.cmp(&b).reverse()
     });
 
     let experiments = experiments

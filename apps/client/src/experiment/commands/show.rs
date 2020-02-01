@@ -4,6 +4,7 @@ use lib_core_ui::*;
 use lib_interop::convert;
 use lib_interop::domain::DExperiment;
 use lib_interop::proto::controller::{PFindExperimentsRequest, PFindReportsRequest};
+use lib_interop::proto::core::PExperimentId;
 
 use crate::app::AppContext;
 use crate::experiment::ExperimentDetailsWidget;
@@ -11,7 +12,7 @@ use crate::report::ReportListWidget;
 
 pub async fn show(
     ctxt: &mut AppContext,
-    id: &str,
+    id: PExperimentId,
     show_jobs: bool,
     show_reports: bool,
 ) -> Result<()> {
@@ -37,7 +38,7 @@ pub async fn show(
         }
 
         if show_reports {
-            if let Err(err) = print_reports(ctxt, &id).await {
+            if let Err(err) = print_reports(ctxt, id).await {
                 // @todo this should be a proper error message
                 println!("Couldn't print reports: {}", err);
             }
@@ -53,13 +54,13 @@ fn print_experiment(experiment: &DExperiment) {
     println!("{}", ExperimentDetailsWidget::new(experiment));
 }
 
-async fn print_reports(ctxt: &mut AppContext, id: &str) -> Result<()> {
+async fn print_reports(ctxt: &mut AppContext, id: PExperimentId) -> Result<()> {
     println!("{}", HeaderWidget::new("Reports"));
 
     let reports = spinner! {
         ctxt.client()
             .await?
-            .find_reports(PFindReportsRequest { experiment_id: id.into() })
+            .find_reports(PFindReportsRequest { experiment_id: id })
             .await?
             .reports
     };

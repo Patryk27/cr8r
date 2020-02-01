@@ -3,7 +3,7 @@ syntax = "proto3";
 package cr8r.core;
 
 message PRunner {
-    string id = 1;
+    uint32 id = 1;
     string name = 2;
     string joined_at = 3;
     string last_heartbeat_at = 4;
@@ -17,7 +17,7 @@ message PRunnerStatus {
 
     message PWorking {
         string since = 1;
-        string experiment_id = 2;
+        uint32 experiment_id = 2;
     }
 
     message PZombie {

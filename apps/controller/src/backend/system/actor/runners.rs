@@ -11,6 +11,7 @@ pub struct Runners {
     system: System,
     index: BiMap<DRunnerId, DRunnerName>,
     runners: HashMap<DRunnerId, Runner>,
+    next_id: DRunnerId,
 }
 
 impl Runners {
@@ -19,6 +20,7 @@ impl Runners {
             system,
             index: BiMap::new(),
             runners: HashMap::new(),
+            next_id: DRunnerId::default(),
         }
     }
 
@@ -27,7 +29,7 @@ impl Runners {
             return Err(anyhow!("Runner with this name already exists"));
         }
 
-        let id = DRunnerId::default();
+        let id = self.next_id.inc();
 
         let runner = Runner::new(
             self.system.clone(),

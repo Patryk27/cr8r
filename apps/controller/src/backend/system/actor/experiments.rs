@@ -9,6 +9,7 @@ use crate::backend::Experiment;
 pub struct Experiments {
     experiments: HashMap<DExperimentId, Experiment>,
     pending: VecDeque<DExperimentId>,
+    next_id: DExperimentId,
 }
 
 impl Experiments {
@@ -16,11 +17,12 @@ impl Experiments {
         Self {
             experiments: HashMap::new(),
             pending: VecDeque::new(),
+            next_id: DExperimentId::default(),
         }
     }
 
     pub fn create(&mut self, jobs: Vec<DJob>) -> DExperimentId {
-        let id = DExperimentId::default();
+        let id = self.next_id.inc();
 
         let experiment = Experiment::new(
             id.clone(),

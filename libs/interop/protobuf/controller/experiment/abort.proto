@@ -3,7 +3,7 @@ syntax = "proto3";
 package cr8r.controller;
 
 message PAbortExperimentRequest {
-    string id = 1;
+    uint32 id = 1;
 }
 
 message PAbortExperimentReply {

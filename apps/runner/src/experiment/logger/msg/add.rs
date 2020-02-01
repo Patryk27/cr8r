@@ -12,7 +12,7 @@ pub async fn add(
         let result = session.invoke(|client, runner_id| {
             client.add_event(
                 runner_id,
-                experiment_id.to_string(),
+                experiment_id.as_num(),
                 event.clone().into(),
             )
         }).await;

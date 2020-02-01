@@ -1,27 +1,50 @@
 #[macro_export]
 macro_rules! newtype {
-    ($name:ident: Uuid) => {
-        $crate::newtype! {
-            @gen $name
-        }
+    ($name:ident as number) => {
+        use std::fmt;
+
+        #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+        pub struct $name(u32);
 
         impl $name {
-            pub fn default() -> Self {
-                uuid::Uuid::new_v4()
-                    .to_hyphenated()
-                    .to_string()
-                    .into()
+            pub fn as_num(&self) -> u32 {
+                self.0
+            }
+
+            pub fn inc(&mut self) -> Self {
+                let this = *self;
+                self.0 += 1;
+                this
+            }
+        }
+
+        impl Default for $name {
+            fn default() -> Self {
+                Self(1)
+            }
+        }
+
+        // @todo this should probably be `TryFrom<u32>` for the `num == 0` case
+        impl From<u32> for $name {
+            fn from(num: u32) -> Self {
+                Self(num)
+            }
+        }
+
+        impl Into<u32> for $name {
+            fn into(self) -> u32 {
+                self.0
+            }
+        }
+
+        impl fmt::Display for $name {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                write!(f, "{}", self.0)
             }
         }
     };
 
-    ($name:ident: String) => {
-        $crate::newtype! {
-            @gen $name
-        }
-    };
-
-    (@gen $name:ident) => {
+    ($name:ident as string) => {
         use std::fmt;
 
         #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -33,7 +56,7 @@ macro_rules! newtype {
             }
         }
 
-        // @todo this should probably be `TryFrom<String>` for cases like `str.is_empty()`
+        // @todo this should probably be `TryFrom<String>` for the `str.is_empty()` case
         impl From<String> for $name {
             fn from(str: String) -> Self {
                 Self(str)

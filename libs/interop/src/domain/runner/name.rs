@@ -1,3 +1,3 @@
 crate::newtype! {
-    DRunnerName: String
+    DRunnerName as string
 }
