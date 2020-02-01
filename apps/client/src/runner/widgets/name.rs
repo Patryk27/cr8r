@@ -1,5 +1,7 @@
 use std::fmt;
 
+use colored::Colorize;
+
 use lib_interop::domain::DRunnerName;
 
 pub struct RunnerNameWidget<'a> {
@@ -14,8 +16,6 @@ impl<'a> RunnerNameWidget<'a> {
 
 impl fmt::Display for RunnerNameWidget<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use colored::Colorize;
-
         write!(f, "{}", self.name.as_str().bright_cyan())
     }
 }

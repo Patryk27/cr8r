@@ -1,5 +1,7 @@
 use std::fmt;
 
+use colored::Colorize;
+
 use lib_core_ui::*;
 use lib_interop::domain::DExperimentStatus;
 
@@ -15,8 +17,6 @@ impl<'a> ExperimentStatusWidget<'a> {
 
 impl fmt::Display for ExperimentStatusWidget<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use colored::Colorize;
-
         write!(f, "{}", match self.status {
             DExperimentStatus::Idle { since } => {
                 let state = "idle / awaiting runner".yellow();

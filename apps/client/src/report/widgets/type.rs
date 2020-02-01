@@ -1,5 +1,7 @@
 use std::fmt;
 
+use colored::Colorize;
+
 use lib_interop::domain::DReportType;
 
 pub struct ReportTypeWidget<'a> {
@@ -14,8 +16,6 @@ impl<'a> ReportTypeWidget<'a> {
 
 impl fmt::Display for ReportTypeWidget<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use colored::Colorize;
-
         //@formatter:off
         let ty = match self.ty {
             DReportType::SystemMsg  => "sys ",
