@@ -126,6 +126,11 @@ impl CargoManifest {
             .unwrap()
             .to_string();
 
+        // A dirty-hack to avoid https://github.com/rust-lang/cargo/issues/5478 that should work in most cases
+        if let Some(Value::String(git)) = dep.get_mut("git") {
+            git.push('#');
+        }
+
         dep.remove("branch");
         dep.remove("tag");
 
@@ -200,8 +205,8 @@ mod tests {
             dep_version = { git = 'https://git.microsoft.com', branch = 'features/foo', features = ['foo', 'bar'] }
 
             [patch.'https://git.microsoft.com']
-            dep_branch  = { git = 'https://git.microsoft.com', features = ['foo', 'bar'], branch = 'features/bar' }
-            dep_tag     = { git = 'https://git.microsoft.com', features = ['foo', 'bar'], tag = 'v1.2.3.4' }
+            dep_branch  = { git = 'https://git.microsoft.com#', features = ['foo', 'bar'], branch = 'features/bar' }
+            dep_tag     = { git = 'https://git.microsoft.com#', features = ['foo', 'bar'], tag = 'v1.2.3.4' }
             dep_version = { features = ['foo', 'bar'], version = '1.2.3' }
         ");
 
@@ -240,8 +245,8 @@ mod tests {
             dep_version = { git = 'https://git.microsoft.com', tag = 'features/foo', features = ['foo', 'bar'] }
 
             [patch.'https://git.microsoft.com']
-            dep_branch  = { git = 'https://git.microsoft.com', features = ['foo', 'bar'], branch = 'features/bar' }
-            dep_tag     = { git = 'https://git.microsoft.com', features = ['foo', 'bar'], tag = 'v1.2.3.4' }
+            dep_branch  = { git = 'https://git.microsoft.com#', features = ['foo', 'bar'], branch = 'features/bar' }
+            dep_tag     = { git = 'https://git.microsoft.com#', features = ['foo', 'bar'], tag = 'v1.2.3.4' }
             dep_version = { features = ['foo', 'bar'], version = '1.2.3' }
         ");
 
