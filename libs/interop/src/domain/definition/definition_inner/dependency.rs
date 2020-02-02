@@ -25,7 +25,7 @@ pub enum DDependencyDefSource {
         version: String,
     },
 
-    Patch {
+    Path {
         attachment_id: DAttachmentId,
     },
 }
@@ -51,8 +51,8 @@ impl TryFrom<PDependencyDef> for DDependencyDef {
                 DDependencyDefSource::Version { version }
             }
 
-            Ty::Patch(PPatch { attachment_id }) => {
-                DDependencyDefSource::Patch {
+            Ty::Path(PPathSource { attachment_id }) => {
+                DDependencyDefSource::Path {
                     attachment_id: convert!(attachment_id as _),
                 }
             }
@@ -77,14 +77,14 @@ impl Into<PDependencyDef> for DDependencyDef {
                 Ty::Tag(PTagSource { tag })
             }
 
-            DDependencyDefSource::Patch { attachment_id } => {
-                Ty::Patch(PPatch {
-                    attachment_id: convert!(attachment_id as _),
-                })
-            }
-
             DDependencyDefSource::Version { version } => {
                 Ty::Version(PVersionSource { version })
+            }
+
+            DDependencyDefSource::Path { attachment_id } => {
+                Ty::Path(PPathSource {
+                    attachment_id: convert!(attachment_id as _),
+                })
             }
         });
 

@@ -21,7 +21,7 @@ message PDefinition {
                 string version = 1;
             }
 
-            message PPatch {
+            message PPathSource {
                 uint32 attachment_id = 1;
             }
 
@@ -29,7 +29,7 @@ message PDefinition {
                 PBranchSource branch = 1;
                 PTagSource tag = 2;
                 PVersionSource version = 3;
-                PPatch patch = 4;
+                PPathSource path = 4;
             }
         }
 
