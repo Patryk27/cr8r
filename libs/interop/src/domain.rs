@@ -1,13 +1,13 @@
 pub use self::{
-    assignment::*,
-    attachment::*,
-    definition::*,
+    assignment::DAssignment,
+    attachment::DAttachmentId,
+    definition::DDefinition,
     error::*,
-    event::*,
-    experiment::*,
-    job::*,
-    report::*,
-    runner::*,
+    event::{DEvent, DEventType},
+    experiment::{DExperiment, DExperimentId, DExperimentStatus},
+    job::{DJob, DJobOpcode},
+    report::{DReport, DReportType},
+    runner::{DRunner, DRunnerId, DRunnerName, DRunnerStatus},
 };
 
 mod macros;

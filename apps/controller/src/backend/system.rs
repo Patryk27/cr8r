@@ -6,7 +6,7 @@ use lib_interop::domain::{DAssignment, DDefinition, DExperimentId, DRunnerId, DR
 
 use crate::backend::{Compiler, Experiment, Runner};
 
-pub(self) use self::{
+use self::{
     actor::*,
     msg::*,
 };
@@ -24,11 +24,11 @@ impl System {
         let (tx, rx) = mpsc::unbounded_channel();
         let system = Self { tx };
 
-        tokio::spawn(SystemActor::new(
-            rx,
-            system.clone(),
+        tokio::spawn(SystemActor {
             compiler,
-        ).start());
+            runners: Runners::new(system.clone()),
+            experiments: Experiments::new(),
+        }.start(rx));
 
         system
     }

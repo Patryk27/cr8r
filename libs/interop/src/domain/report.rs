@@ -6,18 +6,18 @@ use crate::convert;
 use crate::domain::{DomainError, DomainResult};
 use crate::proto::core::{PReport, PReportType};
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
-pub enum DReportType {
-    SystemMsg,
-    CustomMsg,
-    ProcessMsg,
-}
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DReport {
     pub at: DateTime<Utc>,
     pub ty: DReportType,
     pub msg: String,
+}
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum DReportType {
+    SystemMsg,
+    CustomMsg,
+    ProcessMsg,
 }
 
 impl DReport {

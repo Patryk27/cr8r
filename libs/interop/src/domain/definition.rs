@@ -4,12 +4,18 @@ use crate::convert;
 use crate::domain::{DomainError, DomainResult};
 use crate::proto::core::PDefinition;
 
-pub mod definition_inner;
+pub use self::{
+    dependency::*,
+    toolchain::*,
+};
+
+mod dependency;
+mod toolchain;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DDefinition {
-    pub toolchain: Option<definition_inner::DToolchainDef>,
-    pub dependencies: Vec<definition_inner::DDependencyDef>,
+    pub toolchain: Option<DToolchainDef>,
+    pub dependencies: Vec<DDependencyDef>,
 }
 
 impl TryFrom<PDefinition> for DDefinition {

@@ -1,10 +1,10 @@
 use log::*;
 use tokio::stream::StreamExt;
 
-use crate::backend::{Compiler, System};
+use crate::backend::Compiler;
 use crate::backend::system::SystemRx;
 
-use self::{
+pub use self::{
     experiments::*,
     runners::*,
 };
@@ -13,24 +13,16 @@ mod experiments;
 mod runners;
 
 pub struct SystemActor {
-    rx: SystemRx,
-    pub(super) compiler: Compiler,
-    pub(super) runners: Runners,
-    pub(super) experiments: Experiments,
+    pub compiler: Compiler,
+    pub runners: Runners,
+    pub experiments: Experiments,
 }
 
 impl SystemActor {
-    pub fn new(rx: SystemRx, system: System, compiler: Compiler) -> Self {
-        let runners = Runners::new(system);
-        let experiments = Experiments::new();
-
-        Self { rx, compiler, runners, experiments }
-    }
-
-    pub async fn start(mut self) {
+    pub async fn start(mut self, mut rx: SystemRx) {
         debug!("Actor started");
 
-        while let Some(msg) = self.rx.next().await {
+        while let Some(msg) = rx.next().await {
             msg.handle(&mut self)
                 .await;
         }

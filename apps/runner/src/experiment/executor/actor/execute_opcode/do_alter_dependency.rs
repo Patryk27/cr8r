@@ -4,7 +4,7 @@ use std::str::FromStr;
 use anyhow::*;
 
 use lib_cargo_manifest::{CargoDependencyPatch, CargoManifest};
-use lib_interop::domain::definition_inner::{DDependencyDef, DDependencyDefSource};
+use lib_interop::domain::definition::{DDependencyDef, DDependencyDefSource};
 
 use super::super::ExperimentExecutorActor;
 

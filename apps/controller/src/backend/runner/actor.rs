@@ -9,34 +9,21 @@ use crate::backend::runner::{RunnerRx, RunnerStatus};
 use crate::backend::System;
 
 pub struct RunnerActor {
-    rx: RunnerRx,
-    pub(super) system: System,
-    pub(super) id: DRunnerId,
-    pub(super) name: DRunnerName,
-    pub(super) joined_at: DateTime<Utc>,
-    pub(super) last_heartbeat_at: DateTime<Utc>,
-    pub(super) status: RunnerStatus,
+    pub system: System,
+    pub id: DRunnerId,
+    pub name: DRunnerName,
+    pub joined_at: DateTime<Utc>,
+    pub last_heartbeat_at: DateTime<Utc>,
+    pub status: RunnerStatus,
 }
 
 impl RunnerActor {
-    pub fn new(rx: RunnerRx, system: System, id: DRunnerId, name: DRunnerName) -> Self {
-        Self {
-            rx,
-            system,
-            id,
-            name,
-            joined_at: Utc::now(),
-            last_heartbeat_at: Utc::now(),
-            status: RunnerStatus::default(),
-        }
-    }
-
-    pub async fn start(mut self) {
+    pub async fn start(mut self, mut rx: RunnerRx) {
         debug!("Actor started");
         debug!("-> id: {}", self.id);
         debug!("-> name: {}", self.name);
 
-        while let Some(msg) = self.rx.next().await {
+        while let Some(msg) = rx.next().await {
             match msg.handle(&mut self) {
                 ActorWorkflow::Continue => {
                     //

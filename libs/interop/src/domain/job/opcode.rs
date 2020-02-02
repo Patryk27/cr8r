@@ -2,7 +2,7 @@ use std::convert::TryFrom;
 
 use crate::convert;
 use crate::domain::{DomainError, DomainResult};
-use crate::domain::definition::definition_inner::{DDependencyDef, DToolchainDef};
+use crate::domain::definition::{DDependencyDef, DToolchainDef};
 use crate::proto::core::PJobOpcode;
 
 #[derive(Clone, Debug)]

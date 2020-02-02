@@ -1,12 +1,13 @@
 use std::sync::Arc;
 
 use anyhow::*;
+use chrono::Utc;
 use tokio::sync::mpsc;
 
 use lib_core_actor::*;
 use lib_interop::domain::{DAssignment, DEvent, DExperiment, DExperimentId, DJob, DReport, DRunnerId};
 
-pub(self) use self::{
+use self::{
     actor::*,
     msg::*,
     status::*,
@@ -25,11 +26,13 @@ impl Experiment {
     pub fn new(id: DExperimentId, jobs: Vec<DJob>) -> Self {
         let (tx, rx) = mpsc::unbounded_channel();
 
-        tokio::spawn(ExperimentActor::new(
-            rx,
+        tokio::spawn(ExperimentActor {
             id,
             jobs,
-        ).start());
+            created_at: Utc::now(),
+            watchers: Vec::new(),
+            status: ExperimentStatus::default(),
+        }.start(rx));
 
         Self { tx }
     }

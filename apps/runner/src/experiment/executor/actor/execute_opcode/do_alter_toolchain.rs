@@ -1,6 +1,6 @@
 use anyhow::*;
 
-use lib_interop::domain::definition::definition_inner::DToolchainDef;
+use lib_interop::domain::definition::DToolchainDef;
 
 use super::super::ExperimentExecutorActor;
 

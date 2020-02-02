@@ -26,11 +26,10 @@ impl ExperimentLogger {
         let (tx, rx) = mpsc::unbounded_channel();
 
         tokio::spawn(ExperimentLoggerActor {
-            rx,
             session,
             experiment_id,
             pending_events: VecDeque::new(),
-        }.start());
+        }.start(rx));
 
         Self { tx }
     }

@@ -1,3 +1,4 @@
+use chrono::Utc;
 use tokio::sync::mpsc;
 
 use lib_core_actor::*;
@@ -5,7 +6,7 @@ use lib_interop::domain::{DRunner, DRunnerId, DRunnerName};
 
 use crate::backend::System;
 
-pub(self) use self::{
+use self::{
     actor::*,
     msg::*,
     status::*,
@@ -24,12 +25,14 @@ impl Runner {
     pub fn new(system: System, id: DRunnerId, name: DRunnerName) -> Self {
         let (tx, rx) = mpsc::unbounded_channel();
 
-        tokio::spawn(RunnerActor::new(
-            rx,
+        tokio::spawn(RunnerActor {
             system,
             id,
             name,
-        ).start());
+            joined_at: Utc::now(),
+            last_heartbeat_at: Utc::now(),
+            status: RunnerStatus::default(),
+        }.start(rx));
 
         Self { tx }
     }
