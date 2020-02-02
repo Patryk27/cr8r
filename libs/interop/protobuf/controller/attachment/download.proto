@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package cr8r.controller;
+
+message PDownloadAttachmentRequest {
+    uint32 id = 1;
+}
+
+message PDownloadAttachmentReply {
+    message PMetadata {
+        string name = 1;
+        uint64 size = 2;
+    }
+
+    message PContent {
+        bytes content = 1;
+    }
+
+    oneof chunk {
+        PMetadata metadata = 1;
+        PContent content = 2;
+    }
+}

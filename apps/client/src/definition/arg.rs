@@ -3,24 +3,27 @@ use structopt::StructOpt;
 
 use lib_interop::domain::DDefinition;
 
-use self::parsers::*;
+use crate::app::AppContext;
 
-mod parsers;
+pub use self::{
+    dependency::*,
+    toolchain::*,
+};
+
+mod dependency;
+mod toolchain;
 
 #[derive(Debug, StructOpt)]
 pub struct DefinitionArg {
     #[structopt(long = "toolchain", short = "t")]
-    toolchain: Option<String>,
+    pub toolchain: Option<ToolchainArg>,
 
     #[structopt(long = "dependency", short = "d")]
-    dependencies: Vec<String>,
+    pub dependencies: Vec<DependencyArg>,
 }
 
 impl DefinitionArg {
-    pub fn parse(self) -> Result<DDefinition> {
-        Ok(DDefinition {
-            toolchain: parse_toolchain(self.toolchain),
-            dependencies: parse_dependencies(self.dependencies)?,
-        })
+    pub async fn build(self, ctxt: &mut AppContext) -> Result<DDefinition> {
+        unimplemented!()
     }
 }

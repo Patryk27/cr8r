@@ -2,18 +2,19 @@ syntax = "proto3";
 
 package cr8r.controller;
 
-import "core/report.proto";
-import "controller/howdy.proto";
 import "controller/assignment/get.proto";
-import "controller/attachment/create.proto";
+import "controller/attachment/download.proto";
+import "controller/attachment/upload.proto";
 import "controller/event/add.proto";
 import "controller/experiment/abort.proto";
 import "controller/experiment/create.proto";
 import "controller/experiment/find.proto";
 import "controller/experiment/watch.proto";
+import "controller/howdy.proto";
 import "controller/report/find.proto";
 import "controller/runner/find.proto";
 import "controller/runner/register.proto";
+import "core/report.proto";
 
 service Controller {
     rpc Howdy (PHowdyRequest) returns (PHowdyReply);
@@ -22,7 +23,8 @@ service Controller {
     rpc GetAssignment (PGetAssignmentRequest) returns (PGetAssignmentReply);
 
     // Attachment-oriented methods
-    rpc CreateAttachment (stream PCreateAttachmentRequest) returns (PCreateAttachmentReply);
+    rpc DownloadAttachment (PDownloadAttachmentRequest) returns (stream PDownloadAttachmentReply);
+    rpc UploadAttachment (stream PUploadAttachmentRequest) returns (PUploadAttachmentReply);
 
     // Experiment-oriented methods
     rpc AbortExperiment (PAbortExperimentRequest) returns (PAbortExperimentReply);

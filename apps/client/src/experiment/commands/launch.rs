@@ -8,7 +8,8 @@ use crate::definition::DefinitionArg;
 
 pub async fn launch(ctxt: &mut AppContext, watch: bool, definition: DefinitionArg) -> Result<()> {
     let definition = definition
-        .parse()
+        .build(ctxt)
+        .await
         .context("Could not understand experiment")?;
 
     let id = spinner! {

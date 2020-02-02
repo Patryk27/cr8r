@@ -55,10 +55,19 @@ impl Controller for ControllerService {
             .map_err(transform_error)
     }
 
-    async fn create_attachment(
+    type DownloadAttachmentStream = tokio::sync::mpsc::UnboundedReceiver<Result<PDownloadAttachmentReply, Status>>;
+
+    async fn download_attachment(
         &self,
-        request: Request<Streaming<PCreateAttachmentRequest>>,
-    ) -> Result<Response<PCreateAttachmentReply>, Status> {
+        request: Request<PDownloadAttachmentRequest>,
+    ) -> Result<Response<Self::DownloadAttachmentStream>, Status> {
+        unimplemented!()
+    }
+
+    async fn upload_attachment(
+        &self,
+        request: Request<Streaming<PUploadAttachmentRequest>>,
+    ) -> Result<Response<PUploadAttachmentReply>, Status> {
         unimplemented!()
     }
 
