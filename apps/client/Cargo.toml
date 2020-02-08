@@ -8,7 +8,10 @@ edition = "2018"
 anyhow = "1.0"
 chrono = "0.4"
 colored = "1.9"
+futures = "0.3"
 indicatif = "0.13"
+lib_core_channel = { path = "../../libs/core_channel" }
+lib_core_tempfile = { path = "../../libs/core_tempfile" }
 lib_core_ui = { path = "../../libs/core_ui" }
 lib_interop = { path = "../../libs/interop" }
 nom = "5.1"
@@ -16,6 +19,7 @@ prettytable-rs = "0.8"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.8"
 structopt = "0.3"
+tar = "0.4"
 tokio = { version = "0.2", features = ["full"] }
 tonic = "0.1"
 

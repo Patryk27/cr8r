@@ -10,6 +10,7 @@ use crate::backend::System;
 
 use self::{
     assignment::*,
+    attachment::*,
     event::*,
     experiment::*,
     howdy::*,
@@ -18,6 +19,7 @@ use self::{
 };
 
 mod assignment;
+mod attachment;
 mod event;
 mod experiment;
 mod howdy;
@@ -68,12 +70,15 @@ impl Controller for ControllerService {
         &self,
         request: Request<Streaming<PUploadAttachmentRequest>>,
     ) -> Result<Response<PUploadAttachmentReply>, Status> {
-        unimplemented!()
+        upload_attachment(request.into_inner())
+            .await
+            .map(Response::new)
+            .map_err(transform_error)
     }
 
     async fn abort_experiment(
         &self,
-        request: Request<PAbortExperimentRequest>,
+        _request: Request<PAbortExperimentRequest>,
     ) -> Result<Response<PAbortExperimentReply>, Status> {
         unimplemented!()
     }

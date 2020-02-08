@@ -62,10 +62,10 @@ impl Runners {
         self.index.get_by_right(name)
     }
 
-    pub fn validate(&self, id: &DRunnerId) -> Result<()> {
+    /* pub fn validate(&self, id: &DRunnerId) -> Result<()> {
         self.index
             .get_by_left(id)
             .map(|_| ())
             .ok_or_else(|| anyhow!("No such runner exists"))
-    }
+    } @todo */
 }

@@ -1,22 +1,22 @@
 // @todo ensure controller's protocol version matches ours
 
+#![feature(async_closure)]
 #![feature(box_syntax)]
 #![feature(try_blocks)]
 #![feature(type_ascription)]
 
-mod app;
-mod controller;
-mod definition;
-mod experiment;
-mod report;
-mod runner;
+mod commands;
+mod modules;
+mod widgets;
 
 #[tokio::main]
 async fn main() {
     use anyhow::*;
-    use app::*;
-    use structopt::StructOpt;
+    use commands::AppCommand;
+    use modules::app::{AppConfig, AppContext};
+    use widgets::AppErrorWidget;
     use std::process::exit;
+    use structopt::StructOpt;
 
     let result = try {
         let cmd = AppCommand::from_args();

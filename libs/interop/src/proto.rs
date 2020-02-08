@@ -1,6 +1,9 @@
 pub mod core {
     include!("../protobuf/.artifacts/cr8r.core.rs");
 
+    // Attachment-oriented types
+    pub type PAttachmentId = u32;
+
     // Experiment-oriented types
     pub type PExperimentId = u32;
 
