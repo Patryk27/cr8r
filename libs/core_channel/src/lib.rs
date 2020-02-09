@@ -1,14 +1,23 @@
-use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
+use tokio::sync::{mpsc, oneshot};
 
-pub type UTx<T> = UnboundedSender<T>;
-pub type URx<T> = UnboundedReceiver<T>;
+pub type UTx<T> = mpsc::UnboundedSender<T>;
+pub type URx<T> = mpsc::UnboundedReceiver<T>;
 
-pub trait Notify {
-    fn notify(self, tx: &UTx<Self>) where Self: Sized;
+pub type OTx<T> = oneshot::Sender<T>;
+pub type ORx<T> = oneshot::Receiver<T>;
+
+pub trait SendTo<Tx> {
+    fn send_to(self, tx: Tx);
 }
 
-impl<T> Notify for T {
-    fn notify(self, tx: &UTx<Self>) {
+impl<T> SendTo<&UTx<T>> for T {
+    fn send_to(self, tx: &UTx<T>) {
+        let _ = tx.send(self);
+    }
+}
+
+impl<T> SendTo<OTx<T>> for T {
+    fn send_to(self, tx: OTx<T>) {
         let _ = tx.send(self);
     }
 }
