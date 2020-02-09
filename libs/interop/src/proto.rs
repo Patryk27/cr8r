@@ -3,6 +3,8 @@ pub mod core {
 
     // Attachment-oriented types
     pub type PAttachmentId = u32;
+    pub type PAttachmentName = String;
+    pub type PAttachmentSize = u64;
 
     // Experiment-oriented types
     pub type PExperimentId = u32;
