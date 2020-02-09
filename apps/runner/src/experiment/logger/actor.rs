@@ -3,11 +3,12 @@ use std::collections::VecDeque;
 use log::*;
 use tokio::stream::StreamExt;
 
+use lib_core_channel::URx;
 use lib_interop::domain::{DEvent, DExperimentId};
 
 use crate::session::Session;
 
-use super::ExperimentLoggerRx;
+use super::ExperimentLoggerMsg;
 
 pub struct ExperimentLoggerActor {
     pub session: Session,
@@ -16,10 +17,10 @@ pub struct ExperimentLoggerActor {
 }
 
 impl ExperimentLoggerActor {
-    pub async fn start(mut self, mut rx: ExperimentLoggerRx) {
-        debug!("Actor started");
+    pub async fn start(mut self, mut mailbox: URx<ExperimentLoggerMsg>) {
+        debug!("Actor has started");
 
-        while let Some(msg) = rx.next().await {
+        while let Some(msg) = mailbox.next().await {
             // @todo we should wake once in a while to process events from the `pending_events` queue
 
             msg.handle(&mut self)
@@ -28,6 +29,6 @@ impl ExperimentLoggerActor {
 
         // @todo even if we're orphaned, we should process events from the `pending_events` queue, not just drop them
 
-        debug!("Actor orphaned, halting");
+        debug!("Actor has halted");
     }
 }

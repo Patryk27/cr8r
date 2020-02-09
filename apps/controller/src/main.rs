@@ -4,18 +4,16 @@
 #![feature(type_alias_impl_trait)]
 #![feature(type_ascription)]
 
-use std::process::exit;
-
-use anyhow::*;
-
-use self::config::*;
-
-mod backend;
+mod system;
 mod config;
-mod frontend;
+mod rpc;
 
 #[tokio::main]
 async fn main() {
+    use anyhow::*;
+    use std::process::exit;
+    use self::config::*;
+
     let result = try {
         lib_core_log::init()
             .context("Could not initialize logging facility")?;
@@ -23,12 +21,12 @@ async fn main() {
         let config = Config::load()
             .context("Could not load configuration from `controller.yaml`")?;
 
-        let system = backend::start(config.ecosystem)
-            .context("Could not start controller's backend")?;
+        let system = system::start(config.ecosystem)
+            .context("Could not start controller (sys module failed)")?;
 
-        frontend::start(config.controller.address, config.controller.secret, system)
+        rpc::start(config.controller.address, config.controller.secret, system)
             .await
-            .context("Could not start controller's frontend")?
+            .context("Could not start controller (rpc module failed)")?
     }: Result<()>;
 
     if let Err(err) = result {

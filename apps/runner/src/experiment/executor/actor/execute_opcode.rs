@@ -13,7 +13,7 @@ mod do_alter_toolchain;
 
 impl ExperimentExecutorActor {
     pub(super) async fn execute_opcode(&mut self, opcode: DJobOpcode) -> Result<ActorWorkflow> {
-        if self.handle_messages().should_stop() {
+        if self.handle_messages().actor_should_stop() {
             return Ok(ActorWorkflow::Stop);
         }
 

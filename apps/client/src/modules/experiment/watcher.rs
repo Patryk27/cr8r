@@ -1,8 +1,10 @@
+use std::convert::TryInto;
+
 use anyhow::*;
 use tokio::sync::mpsc;
 use tokio::task;
 
-use lib_core_channel::URx;
+use lib_core_channel::{SendTo, URx};
 use lib_interop::domain::{DExperimentId, DReport};
 
 use crate::modules::app::AppContext;
@@ -31,7 +33,16 @@ impl<'c> ExperimentWatcher<'c> {
                     .message()
                     .await;
 
-                unimplemented!()
+                let report = report
+                    .transpose()
+                    .map(|report| match report {
+                        Ok(report) => Ok(report.try_into()?),
+                        Err(err) => Err(err.into()),
+                    });
+
+                if let Some(report) = report {
+                    report.send_to(&tx);
+                }
             }
         });
 

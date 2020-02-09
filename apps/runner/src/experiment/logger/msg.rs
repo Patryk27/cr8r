@@ -1,12 +1,8 @@
 use log::*;
-use tokio::sync::mpsc;
 
 use lib_interop::domain::DEvent;
 
 use super::ExperimentLoggerActor;
-
-pub type ExperimentLoggerTx = mpsc::UnboundedSender<ExperimentLoggerMsg>;
-pub type ExperimentLoggerRx = mpsc::UnboundedReceiver<ExperimentLoggerMsg>;
 
 #[derive(Debug)]
 pub enum ExperimentLoggerMsg {

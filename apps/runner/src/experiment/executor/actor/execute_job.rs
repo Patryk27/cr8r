@@ -10,7 +10,7 @@ use super::ExperimentExecutorActor;
 
 impl ExperimentExecutorActor {
     pub(super) async fn execute_job(&mut self, job: DJob) -> Result<ActorWorkflow> {
-        if self.handle_messages().should_stop() {
+        if self.handle_messages().actor_should_stop() {
             return Ok(ActorWorkflow::Stop);
         }
 
@@ -66,7 +66,7 @@ impl ExperimentExecutorActor {
 
     async fn execute_opcodes(&mut self, opcodes: Vec<DJobOpcode>) -> Result<ActorWorkflow> {
         for opcode in opcodes {
-            if self.execute_opcode(opcode).await?.should_stop() {
+            if self.execute_opcode(opcode).await?.actor_should_stop() {
                 return Ok(ActorWorkflow::Stop);
             }
         }

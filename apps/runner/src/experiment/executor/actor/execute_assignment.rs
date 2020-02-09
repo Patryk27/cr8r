@@ -5,7 +5,7 @@ use super::ExperimentExecutorActor;
 
 impl ExperimentExecutorActor {
     pub(super) async fn execute_assignment(&mut self, assignment: DAssignment) -> ActorWorkflow {
-        if self.handle_messages().should_stop() {
+        if self.handle_messages().actor_should_stop() {
             return ActorWorkflow::Stop;
         }
 
@@ -17,7 +17,7 @@ impl ExperimentExecutorActor {
                 .await;
 
             match result {
-                Ok(workflow) if workflow.should_stop() => {
+                Ok(workflow) if workflow.actor_should_stop() => {
                     return ActorWorkflow::Stop;
                 }
 

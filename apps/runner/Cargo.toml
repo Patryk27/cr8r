@@ -12,6 +12,7 @@ colored = "1.9"
 derivative = "1.0"
 lib_cargo_manifest = { path = "../../libs/cargo_manifest" }
 lib_core_actor = { path = "../../libs/core_actor" }
+lib_core_channel = { path = "../../libs/core_channel" }
 lib_core_log = { path = "../../libs/core_log" }
 lib_core_ui = { path = "../../libs/core_ui" }
 lib_interop = { path = "../../libs/interop" }

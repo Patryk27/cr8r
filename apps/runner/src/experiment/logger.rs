@@ -1,9 +1,10 @@
 use std::collections::VecDeque;
 
 use chrono::Utc;
-use tokio::sync::mpsc;
+use tokio::{sync::mpsc, task};
 
 use lib_core_actor::*;
+use lib_core_channel::UTx;
 use lib_interop::domain::{DEvent, DEventType, DExperimentId};
 
 use crate::session::Session;
@@ -18,14 +19,14 @@ mod msg;
 
 #[derive(Clone)]
 pub struct ExperimentLogger {
-    tx: ExperimentLoggerTx,
+    tx: UTx<ExperimentLoggerMsg>,
 }
 
 impl ExperimentLogger {
     pub fn new(session: Session, experiment_id: DExperimentId) -> Self {
         let (tx, rx) = mpsc::unbounded_channel();
 
-        tokio::spawn(ExperimentLoggerActor {
+        task::spawn(ExperimentLoggerActor {
             session,
             experiment_id,
             pending_events: VecDeque::new(),

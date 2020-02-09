@@ -1,6 +1,7 @@
-use tokio::sync::mpsc;
+use tokio::{sync::mpsc, task};
 
 use lib_core_actor::*;
+use lib_core_channel::UTx;
 use lib_interop::domain::DAssignment;
 use lib_sandbox::Sandbox;
 
@@ -18,7 +19,7 @@ mod msg;
 mod status;
 
 pub struct ExperimentExecutor {
-    tx: ExperimentExecutorTx,
+    tx: UTx<ExperimentExecutorMsg>,
 }
 
 impl ExperimentExecutor {
@@ -28,10 +29,10 @@ impl ExperimentExecutor {
         sandbox: Sandbox,
         logger: ExperimentLogger,
     ) -> Self {
-        let (tx, rx) = mpsc::unbounded_channel();
+        let (tx, mailbox) = mpsc::unbounded_channel();
 
-        tokio::spawn(ExperimentExecutorActor {
-            rx,
+        task::spawn(ExperimentExecutorActor {
+            mailbox,
             sandbox,
             logger,
             status: ExperimentExecutorStatus::Running,

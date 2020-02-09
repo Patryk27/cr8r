@@ -8,7 +8,7 @@ use tokio::io::AsyncReadExt;
 use tokio::sync::mpsc;
 use tokio::task;
 
-use lib_core_channel::{Notify, URx, UTx};
+use lib_core_channel::{SendTo, URx, UTx};
 use lib_core_tempfile::TempFile;
 use lib_interop::proto::controller::p_upload_attachment_request::{Chunk, PContent, PMetadata};
 use lib_interop::proto::controller::PUploadAttachmentRequest;
@@ -57,7 +57,7 @@ impl<'c> AttachmentUploader<'c> {
 
     async fn compress(&mut self, dir: PathBuf) -> Result<TempFile> {
         AttachmentUploaderProgress::CompressingAttachment
-            .notify(&self.tx);
+            .send_to(&self.tx);
 
         let archive = TempFile::new()
             .await?;
@@ -103,7 +103,7 @@ impl<'c> AttachmentUploader<'c> {
 
             AttachmentUploaderProgress::AttachmentCompressed {
                 total_bytes: archive_size,
-            }.notify(&tx);
+            }.send_to(&tx);
 
             let mut archive = tokio_io::BufReader::new(archive);
             let mut chunk = [0u8; CHUNK_SIZE as usize];
@@ -127,7 +127,7 @@ impl<'c> AttachmentUploader<'c> {
                 }).await.unwrap();
 
                 AttachmentUploaderProgress::UploadingAttachment { sent_bytes }
-                    .notify(&tx);
+                    .send_to(&tx);
 
                 sent_bytes += chunk_size as u64;
             }
@@ -140,7 +140,7 @@ impl<'c> AttachmentUploader<'c> {
             .await?;
 
         AttachmentUploaderProgress::AttachmentUploaded
-            .notify(&self.tx);
+            .send_to(&self.tx);
 
         Ok(reply.id)
     }

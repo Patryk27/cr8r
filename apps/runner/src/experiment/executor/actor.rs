@@ -1,11 +1,12 @@
 use log::*;
 
+use lib_core_channel::URx;
 use lib_interop::domain::{DAssignment, DEventType};
 use lib_sandbox::Sandbox;
 
 use crate::experiment::{ExperimentExecutorStatus, ExperimentLogger};
 
-use super::ExperimentExecutorRx;
+use super::ExperimentExecutorMsg;
 
 mod execute_assignment;
 mod execute_job;
@@ -13,7 +14,7 @@ mod execute_opcode;
 mod handle_messages;
 
 pub struct ExperimentExecutorActor {
-    pub rx: ExperimentExecutorRx,
+    pub mailbox: URx<ExperimentExecutorMsg>,
     pub sandbox: Sandbox,
     pub logger: ExperimentLogger,
     pub status: ExperimentExecutorStatus,
@@ -21,7 +22,7 @@ pub struct ExperimentExecutorActor {
 
 impl ExperimentExecutorActor {
     pub async fn start(mut self, assignment: DAssignment) {
-        debug!("Actor started");
+        debug!("Actor has started");
 
         self.logger.add(DEventType::ExperimentStarted);
 
@@ -29,7 +30,7 @@ impl ExperimentExecutorActor {
             .execute_assignment(assignment)
             .await;
 
-        if workflow.should_continue() {
+        if workflow.actor_should_continue() {
             self.logger.add(DEventType::ExperimentCompleted);
             self.status = ExperimentExecutorStatus::Completed;
         } else {

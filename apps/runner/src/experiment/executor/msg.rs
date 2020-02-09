@@ -1,15 +1,13 @@
 use derivative::Derivative;
 use log::*;
-use tokio::sync::{mpsc, oneshot};
+use tokio::sync::oneshot;
 
 use lib_core_actor::*;
+use lib_core_channel::SendTo;
 
 use crate::experiment::ExperimentExecutorStatus;
 
 use super::ExperimentExecutorActor;
-
-pub type ExperimentExecutorTx = mpsc::UnboundedSender<ExperimentExecutorMsg>;
-pub type ExperimentExecutorRx = mpsc::UnboundedReceiver<ExperimentExecutorMsg>;
 
 #[derive(Derivative)]
 #[derivative(Debug)]
@@ -34,7 +32,7 @@ impl ExperimentExecutorMsg {
             }
 
             GetStatus { tx } => {
-                let _ = tx.send(actor.status);
+                actor.status.send_to(tx);
                 ActorWorkflow::Continue
             }
         }

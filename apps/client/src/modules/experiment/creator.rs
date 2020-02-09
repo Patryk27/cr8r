@@ -2,7 +2,7 @@ use anyhow::*;
 use tokio::fs;
 use tokio::sync::mpsc::unbounded_channel;
 
-use lib_core_channel::{Notify, URx, UTx};
+use lib_core_channel::{SendTo, URx, UTx};
 use lib_interop::proto::core::PExperimentId;
 
 use crate::modules::app::AppContext;
@@ -53,12 +53,12 @@ impl<'c> ExperimentCreator<'c> {
 
     async fn validate_dependencies(&mut self, def: &DefinitionArg) -> Result<()> {
         ExperimentCreatorProgress::ValidatingDependencies
-            .notify(&self.tx);
+            .send_to(&self.tx);
 
         for dep in &def.dependencies {
             ExperimentCreatorProgress::ValidatingDependency {
                 name: dep.name.to_string(),
-            }.notify(&self.tx);
+            }.send_to(&self.tx);
 
             if let DependencySourceArg::Path(path) = &dep.source {
                 if fs::metadata(path).await.is_err() {
@@ -79,7 +79,7 @@ impl<'c> ExperimentCreator<'c> {
         }
 
         ExperimentCreatorProgress::UploadingDependencies
-            .notify(&self.tx);
+            .send_to(&self.tx);
 
         for dep in &def.dependencies {
             if let DependencySourceArg::Path(path) = &dep.source {
@@ -88,7 +88,7 @@ impl<'c> ExperimentCreator<'c> {
                 ExperimentCreatorProgress::UploadingDependency {
                     name: dep.name.to_string(),
                     progress,
-                }.notify(&self.tx);
+                }.send_to(&self.tx);
 
                 uploader
                     .upload_dir(path)
@@ -102,7 +102,7 @@ impl<'c> ExperimentCreator<'c> {
 
     async fn create_experiment(&mut self, def: DefinitionArg) -> Result<PExperimentId> {
         ExperimentCreatorProgress::CreatingExperiment
-            .notify(&self.tx);
+            .send_to(&self.tx);
 
         unimplemented!()
     }
