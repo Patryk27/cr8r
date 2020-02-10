@@ -70,7 +70,7 @@ impl Controller for ControllerService {
         &self,
         request: Request<Streaming<PUploadAttachmentRequest>>,
     ) -> Result<Response<PUploadAttachmentReply>, Status> {
-        upload_attachment(request.into_inner())
+        upload_attachment(&self.system, request.into_inner())
             .await
             .map(Response::new)
             .map_err(transform_error)

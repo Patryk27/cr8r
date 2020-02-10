@@ -56,6 +56,12 @@ macro_rules! newtype {
             }
         }
 
+        impl From<&str> for $name {
+            fn from(str: &str) -> Self {
+                str.to_string().into()
+            }
+        }
+
         // @todo this should probably be `TryFrom<String>` for the `str.is_empty()` case
         impl From<String> for $name {
             fn from(str: String) -> Self {

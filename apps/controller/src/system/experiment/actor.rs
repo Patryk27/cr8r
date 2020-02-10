@@ -19,8 +19,8 @@ pub struct ExperimentActor {
 
 impl ExperimentActor {
     pub async fn start(mut self, mut mailbox: URx<ExperimentMsg>) {
-        debug!("Actor has started");
-        debug!("-> id: {}", self.id);
+        trace!("Actor started");
+        trace!("-> id = {}", self.id);
 
         while let Some(msg) = mailbox.next().await {
             self.perform_self_check();
@@ -28,7 +28,7 @@ impl ExperimentActor {
             msg.handle(&mut self);
         }
 
-        debug!("Actor has halted");
+        trace!("Actor halted");
     }
 
     fn perform_self_check(&mut self) {

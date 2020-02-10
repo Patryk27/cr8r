@@ -19,12 +19,12 @@ pub struct ExperimentsActor {
 
 impl ExperimentsActor {
     pub async fn start(mut self, mut mailbox: URx<ExperimentsMsg>) {
-        debug!("Actor has started");
+        trace!("Actor started");
 
         while let Some(msg) = mailbox.next().await {
             msg.handle(&mut self);
         }
 
-        debug!("Actor has halted");
+        trace!("Actor halted");
     }
 }

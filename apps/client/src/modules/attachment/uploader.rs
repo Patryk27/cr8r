@@ -83,15 +83,6 @@ impl<'c> AttachmentUploader<'c> {
         let (mut rpc_tx, rpc_rx) = mpsc::channel(1);
 
         task::spawn(async move {
-            rpc_tx
-                .send(PUploadAttachmentRequest {
-                    chunk: Some(Chunk::Metadata(PMetadata {
-                        name: "foo".to_string(),
-                    })),
-                })
-                .await
-                .unwrap();
-
             let archive = tokio_fs::File::open(archive)
                 .await
                 .unwrap();
@@ -100,6 +91,16 @@ impl<'c> AttachmentUploader<'c> {
                 .await
                 .unwrap()
                 .len();
+
+            rpc_tx
+                .send(PUploadAttachmentRequest {
+                    chunk: Some(Chunk::Metadata(PMetadata {
+                        name: "foo".to_string(),
+                        size: archive_size,
+                    })),
+                })
+                .await
+                .unwrap();
 
             AttachmentUploaderProgress::AttachmentCompressed {
                 total_bytes: archive_size,
@@ -122,7 +123,7 @@ impl<'c> AttachmentUploader<'c> {
                 rpc_tx.send(PUploadAttachmentRequest {
                     chunk: Some(Chunk::Content(PContent {
                         content: chunk.to_vec(),
-                        size: chunk_size as u32,
+                        size: chunk_size as u64,
                     }))
                 }).await.unwrap();
 

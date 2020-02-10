@@ -16,7 +16,7 @@ pub struct System {
 
 impl System {
     pub async fn start(mut self) -> Result<()> {
-        debug!("Actor has started");
+        trace!("Actor started");
 
         loop {
             let assignment = self

@@ -2,6 +2,9 @@ controller:
   address: '127.0.0.1:1234'
   secret: 'top-secret'
 
+attachments:
+  store-size: 4096
+
 ecosystem:
   projects:
     cr8r-test:

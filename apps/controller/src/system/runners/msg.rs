@@ -30,7 +30,7 @@ mod register;
 
 impl RunnersMsg {
     pub fn handle(self, actor: &mut RunnersActor) {
-        debug!("Handling message: {:?}", self);
+        trace!("Handling message: {:?}", self);
 
         match self {
             RunnersMsg::FindAll { tx } => {

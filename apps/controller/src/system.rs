@@ -1,22 +1,24 @@
 use anyhow::*;
 
-use crate::config::Ecosystem;
-
 pub use self::{
-    assignments::Assignments,
-    attachment::Attachment,
-    attachments::Attachments,
-    compiler::Compiler,
-    experiment::Experiment,
-    experiments::Experiments,
-    runner::Runner,
-    runners::Runners,
+    assignments::*,
+    attachment::*,
+    attachments::*,
+    compiler::*,
+    config::*,
+    ecosystem::*,
+    experiment::*,
+    experiments::*,
+    runner::*,
+    runners::*,
 };
 
 mod assignments;
 mod attachment;
 mod attachments;
 mod compiler;
+mod config;
+mod ecosystem;
 mod experiment;
 mod experiments;
 mod runner;
@@ -29,12 +31,12 @@ pub struct System {
     pub runners: Runners,
 }
 
-pub fn start(ecosystem: Ecosystem) -> Result<System> {
-    let compiler = Compiler::new(ecosystem)
+pub fn start(config: SystemConfig) -> Result<System> {
+    let compiler = Compiler::new(config.ecosystem)
         .context("Could not initialize experiment compiler")?;
 
     let assignments = Assignments::new();
-    let attachments = Attachments::new();
+    let attachments = Attachments::new(config.attachments);
     let experiments = Experiments::new(compiler);
     let runners = Runners::new();
 

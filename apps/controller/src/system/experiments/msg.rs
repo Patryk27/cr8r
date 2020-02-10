@@ -38,7 +38,7 @@ mod launch;
 
 impl ExperimentsMsg {
     pub fn handle(self, actor: &mut ExperimentsActor) {
-        debug!("Handling message: {:?}", self);
+        trace!("Handling message: {:?}", self);
 
         match self {
             ExperimentsMsg::FindAll { tx } => {

@@ -21,12 +21,12 @@ async fn main() {
         let config = Config::load()
             .context("Could not load configuration from `controller.yaml`")?;
 
-        let system = system::start(config.ecosystem)
-            .context("Could not start controller (sys module failed)")?;
+        let system = system::start(config.system)
+            .context("Could not start controller (failed to start the system module)")?;
 
-        rpc::start(config.controller.address, config.controller.secret, system)
+        rpc::start(config.rpc, system)
             .await
-            .context("Could not start controller (rpc module failed)")?
+            .context("Could not start controller (failed to start the rpc module)")?
     }: Result<()>;
 
     if let Err(err) = result {

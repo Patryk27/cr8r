@@ -54,7 +54,7 @@ mod watch;
 
 impl ExperimentMsg {
     pub fn handle(self, actor: &mut ExperimentActor) {
-        debug!("Handling message: {:?}", self);
+        trace!("Handling message: {:?}", self);
 
         match self {
             ExperimentMsg::Abort => {

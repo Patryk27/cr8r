@@ -18,7 +18,7 @@ mod actor;
 mod msg;
 mod status;
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct Experiment {
     tx: UTx<ExperimentMsg>,
 }

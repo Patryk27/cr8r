@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct Controller {
+pub struct RpcConfig {
     pub address: String,
 
     #[serde(default)]

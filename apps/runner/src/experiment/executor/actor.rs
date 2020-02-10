@@ -22,7 +22,7 @@ pub struct ExperimentExecutorActor {
 
 impl ExperimentExecutorActor {
     pub async fn start(mut self, assignment: DAssignment) {
-        debug!("Actor has started");
+        trace!("Actor started");
 
         self.logger.add(DEventType::ExperimentStarted);
 

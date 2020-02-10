@@ -5,11 +5,12 @@ package cr8r.controller;
 message PUploadAttachmentRequest {
     message PMetadata {
         string name = 1;
+        uint64 size = 2;
     }
 
     message PContent {
         bytes content = 1;
-        uint32 size = 2;
+        uint64 size = 2;
     }
 
     oneof chunk {

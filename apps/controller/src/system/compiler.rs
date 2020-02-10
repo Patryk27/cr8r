@@ -3,14 +3,14 @@ use anyhow::*;
 use lib_compiler::CompilerBuilder;
 use lib_interop::domain::{DDefinition, DJob};
 
-use crate::config::{Ecosystem, Environment, Projects, Providers};
+use crate::system::{EcosystemConfig, EcosystemEnvironmentConfig, EcosystemProjectsConfig, EcosystemProvidersConfig};
 
 pub struct Compiler {
     compiler: lib_compiler::Compiler,
 }
 
 impl Compiler {
-    pub fn new(ecosystem: Ecosystem) -> Result<Self> {
+    pub fn new(ecosystem: EcosystemConfig) -> Result<Self> {
         let mut compiler = lib_compiler::Compiler::builder();
 
         setup_environment(&mut compiler, ecosystem.environment);
@@ -27,13 +27,13 @@ impl Compiler {
     }
 }
 
-fn setup_environment(compiler: &mut CompilerBuilder, environment: Environment) {
+fn setup_environment(compiler: &mut CompilerBuilder, environment: EcosystemEnvironmentConfig) {
     let environment = lib_compiler::Environment::new(environment.default_toolchain);
 
     compiler.set_environment(environment);
 }
 
-fn setup_providers(compiler: &mut CompilerBuilder, providers: Providers) -> Result<()> {
+fn setup_providers(compiler: &mut CompilerBuilder, providers: EcosystemProvidersConfig) -> Result<()> {
     for (provider_name, provider) in providers {
         let setup = provider.setup
             .into_iter()
@@ -48,7 +48,7 @@ fn setup_providers(compiler: &mut CompilerBuilder, providers: Providers) -> Resu
     Ok(())
 }
 
-fn setup_projects(compiler: &mut CompilerBuilder, projects: Projects) -> Result<()> {
+fn setup_projects(compiler: &mut CompilerBuilder, projects: EcosystemProjectsConfig) -> Result<()> {
     for (project_name, project) in projects {
         let project = lib_compiler::ProjectDef::new(
             project.repository,

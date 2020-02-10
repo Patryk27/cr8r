@@ -18,7 +18,7 @@ pub struct ExperimentLoggerActor {
 
 impl ExperimentLoggerActor {
     pub async fn start(mut self, mut mailbox: URx<ExperimentLoggerMsg>) {
-        debug!("Actor has started");
+        trace!("Actor started");
 
         while let Some(msg) = mailbox.next().await {
             // @todo we should wake once in a while to process events from the `pending_events` queue
@@ -29,6 +29,6 @@ impl ExperimentLoggerActor {
 
         // @todo even if we're orphaned, we should process events from the `pending_events` queue, not just drop them
 
-        debug!("Actor has halted");
+        trace!("Actor halted");
     }
 }

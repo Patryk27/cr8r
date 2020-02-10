@@ -24,7 +24,7 @@ impl ExperimentExecutorMsg {
     pub fn handle(self, actor: &mut ExperimentExecutorActor) -> ActorWorkflow {
         use ExperimentExecutorMsg::*;
 
-        debug!("Handling message: {:?}", self);
+        trace!("Handling message: {:?}", self);
 
         match self {
             Abort => {

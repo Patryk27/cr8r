@@ -1,6 +1,6 @@
 pub use self::{
     assignment::DAssignment,
-    attachment::DAttachmentId,
+    attachment::{DAttachmentId, DAttachmentName},
     definition::DDefinition,
     error::*,
     event::{DEvent, DEventType},

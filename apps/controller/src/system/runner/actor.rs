@@ -17,9 +17,9 @@ pub struct RunnerActor {
 
 impl RunnerActor {
     pub async fn start(mut self, mut mailbox: URx<RunnerMsg>) {
-        debug!("Actor has started");
-        debug!("-> id: {}", self.id);
-        debug!("-> name: {}", self.name);
+        trace!("Actor started");
+        trace!("-> id = {}", self.id);
+        trace!("-> name = {}", self.name);
 
         while let Some(msg) = mailbox.next().await {
             if msg.handle(&mut self).actor_should_stop() {
@@ -27,12 +27,12 @@ impl RunnerActor {
             }
         }
 
-        debug!("Actor is halting");
+        trace!("Actor is halting");
 
         if let RunnerStatus::Working { experiment, .. } = &self.status {
             experiment.abort();
         }
 
-        debug!("Actor has halted");
+        trace!("Actor halted");
     }
 }

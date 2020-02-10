@@ -13,18 +13,21 @@ use self::{
     authorizer::*,
     service::*,
 };
+pub use self::config::*;
 
 mod authorizer;
+mod config;
 mod service;
 
-pub async fn start(address: String, secret: Option<String>, system: System) -> Result<()> {
-    let address = address
+pub async fn start(config: RpcConfig, system: System) -> Result<()> {
+    let address = config
+        .address
         .parse()
         .context("Could not understand controller's address")?: SocketAddr;
 
     let service = ControllerServer::with_interceptor(
         ControllerService::new(system),
-        Authorizer::new(secret),
+        Authorizer::new(config.secret),
     );
 
     info!("🚀 Listening on: {}", address.to_string().green());

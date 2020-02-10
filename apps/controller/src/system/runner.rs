@@ -15,7 +15,7 @@ mod actor;
 mod msg;
 mod status;
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct Runner {
     tx: UTx<RunnerMsg>,
 }

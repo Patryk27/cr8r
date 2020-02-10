@@ -3,19 +3,17 @@ use std::fs;
 use anyhow::*;
 use serde::Deserialize;
 
-pub use self::{
-    controller::*,
-    ecosystem::*,
-};
-
-mod controller;
-mod ecosystem;
+use crate::rpc::RpcConfig;
+use crate::system::SystemConfig;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
-    pub controller: Controller,
-    pub ecosystem: Ecosystem,
+    #[serde(rename = "controller")]
+    pub rpc: RpcConfig,
+
+    #[serde(flatten)]
+    pub system: SystemConfig,
 }
 
 impl Config {

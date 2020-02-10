@@ -17,7 +17,7 @@ impl ExperimentLoggerMsg {
     pub async fn handle(self, actor: &mut ExperimentLoggerActor) {
         use ExperimentLoggerMsg::*;
 
-        debug!("Handling message: {:?}", self);
+        trace!("Handling message: {:?}", self);
 
         match self {
             Add { event } => {

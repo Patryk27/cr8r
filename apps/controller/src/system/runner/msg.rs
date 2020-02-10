@@ -22,7 +22,7 @@ mod get_model;
 
 impl RunnerMsg {
     pub fn handle(self, actor: &mut RunnerActor) -> ActorWorkflow {
-        debug!("Handling message: {:?}", self);
+        trace!("Handling message: {:?}", self);
 
         match self {
             RunnerMsg::GetModel { tx } => {
