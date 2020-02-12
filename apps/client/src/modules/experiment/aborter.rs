@@ -13,7 +13,7 @@ impl<'c> ExperimentAborter<'c> {
         Self { ctxt }
     }
 
-    pub fn abort(&mut self, id: DExperimentId) -> Result<()> {
+    pub async fn abort(&mut self, id: DExperimentId) -> Result<()> {
         unimplemented!()
     }
 }

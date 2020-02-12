@@ -36,7 +36,7 @@ pub fn start(config: SystemConfig) -> Result<System> {
         .context("Could not initialize experiment compiler")?;
 
     let assignments = Assignments::new();
-    let attachments = Attachments::new(config.attachments);
+    let attachments = Attachments::new(config.attachments)?;
     let experiments = Experiments::new(compiler);
     let runners = Runners::new();
 

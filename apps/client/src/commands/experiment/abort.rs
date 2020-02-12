@@ -12,9 +12,10 @@ pub async fn abort(ctxt: &mut AppContext, id: PExperimentId) -> Result<()> {
     let id = id.try_into().unwrap();
 
     // @todo
-    let x: _ = spinner! {
+    let _ = spinner! {
         ExperimentAborter::new(ctxt)
             .abort(id)
+            .await?
     };
 
     Ok(())

@@ -1,4 +1,8 @@
+use std::path::PathBuf;
+
+use anyhow::*;
 use tokio::{sync::mpsc, task};
+use tokio::fs::File;
 
 use lib_core_actor::*;
 use lib_core_channel::UTx;
@@ -8,10 +12,12 @@ use lib_interop::proto::core::PAttachmentSize;
 use self::{
     actor::*,
     msg::*,
+    state::*,
 };
 
 mod actor;
 mod msg;
+mod state;
 
 #[derive(Clone)]
 pub struct Attachment {
@@ -19,25 +25,44 @@ pub struct Attachment {
 }
 
 impl Attachment {
-    pub fn new(id: DAttachmentId, name: DAttachmentName, size: PAttachmentSize) -> Self {
+    pub fn new(id: DAttachmentId, name: DAttachmentName, size: PAttachmentSize, path: PathBuf, file: File) -> Self {
         let (tx, rx) = mpsc::unbounded_channel();
 
         task::spawn(AttachmentActor {
             id,
             name,
             size,
-        }.start(rx));
+            state: Default::default(),
+        }.start(path, file, rx));
 
         Self { tx }
+    }
+
+    pub async fn add_chunk(&self, chunk: Vec<u8>) -> Result<()> {
+        ask!(self.tx, AttachmentMsg::AddChunk { chunk })
+    }
+
+    pub async fn commit(&self) -> Result<()> {
+        ask!(self.tx, AttachmentMsg::Commit)
     }
 
     pub async fn get_name(&self) -> DAttachmentName {
         ask!(self.tx, AttachmentMsg::GetName)
     }
+
+    pub async fn get_size(&self) -> PAttachmentSize {
+        ask!(self.tx, AttachmentMsg::GetSize)
+    }
+
+    pub fn kill(&self) {
+        tell!(self.tx, AttachmentMsg::Kill)
+    }
 }
 
 #[cfg(test)]
 mod tests {
+    use lib_core_tempfile::TempFile;
+
     use super::*;
 
     mod get_name {
@@ -45,18 +70,42 @@ mod tests {
 
         #[tokio::test]
         async fn returns_attachment_name() {
-            let name = DAttachmentName::from("winrar.rar");
-
-            let attachment = Attachment::new(
-                123.into(),
-                name.clone(),
-                4096,
-            );
+            let (attachment, file) = attachment().await;
 
             assert_eq!(
-                name,
+                DAttachmentName::from("winrar.rar"),
                 attachment.get_name().await,
             );
         }
+    }
+
+    mod get_size {
+        use super::*;
+
+        #[tokio::test]
+        async fn returns_attachment_size() {
+            let (attachment, file) = attachment().await;
+
+            assert_eq!(
+                4096,
+                attachment.get_size().await,
+            );
+        }
+    }
+
+    async fn attachment() -> (Attachment, TempFile) {
+        let file = TempFile::new()
+            .await
+            .unwrap();
+
+        let attachment = Attachment::new(
+            100.into(),
+            "winrar.rar".into(),
+            4096,
+            file.path_buf(),
+            file.tokio_file().await.unwrap(),
+        );
+
+        (attachment, file)
     }
 }

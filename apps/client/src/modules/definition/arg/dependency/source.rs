@@ -43,10 +43,35 @@ impl DependencySourceArg {
         );
 
         alt((
-            map(branch_src, |branch: &str| DependencySourceArg::Branch(branch.to_string())),
-            map(tag_src, |tag: &str| DependencySourceArg::Tag(tag.to_string())),
-            map(version_src, |version: &str| DependencySourceArg::Version(version.to_string())),
-            map(path_src, |path: &str| DependencySourceArg::Path(path.to_string())),
+            map(branch_src, |branch: &str| {
+                DependencySourceArg::Branch(
+                    branch.to_string(),
+                )
+            }),
+
+            // -- //
+
+            map(tag_src, |tag: &str| {
+                DependencySourceArg::Tag(
+                    tag.to_string(),
+                )
+            }),
+
+            // -- //
+
+            map(version_src, |version: &str| {
+                DependencySourceArg::Version(
+                    version.to_string(),
+                )
+            }),
+
+            // -- //
+
+            map(path_src, |path: &str| {
+                DependencySourceArg::Path(
+                    path.to_string(),
+                )
+            }),
         ))(s)
     }
 }

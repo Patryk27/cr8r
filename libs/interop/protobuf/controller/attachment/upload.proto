@@ -10,7 +10,6 @@ message PUploadAttachmentRequest {
 
     message PContent {
         bytes content = 1;
-        uint64 size = 2;
     }
 
     oneof chunk {

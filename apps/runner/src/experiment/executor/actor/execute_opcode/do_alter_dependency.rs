@@ -4,7 +4,7 @@ use std::str::FromStr;
 use anyhow::*;
 
 use lib_cargo_manifest::{CargoDependencyPatch, CargoManifest};
-use lib_interop::domain::definition::{DDependencyDef, DDependencyDefSource};
+use lib_interop::domain::definition::{DDependencyDef, DDependencySourceDef};
 
 use super::super::ExperimentExecutorActor;
 
@@ -27,21 +27,21 @@ impl ExperimentExecutorActor {
                 .context("Could not parse `Cargo.toml`")?;
 
             match dependency.source {
-                DDependencyDefSource::Branch { branch } => {
+                DDependencySourceDef::Branch { branch } => {
                     manifest.patch_dependency(
                         &dependency.name,
                         CargoDependencyPatch::UseBranch(&branch),
                     )
                 }
 
-                DDependencyDefSource::Tag { tag } => {
+                DDependencySourceDef::Tag { tag } => {
                     manifest.patch_dependency(
                         &dependency.name,
                         CargoDependencyPatch::UseTag(&tag),
                     )
                 }
 
-                DDependencyDefSource::Version { version } => {
+                DDependencySourceDef::Version { version } => {
                     manifest.patch_dependency(
                         &dependency.name,
                         CargoDependencyPatch::UseVersion(&version),

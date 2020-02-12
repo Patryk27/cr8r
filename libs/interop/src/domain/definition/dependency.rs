@@ -8,11 +8,11 @@ use crate::proto::core::p_definition::p_dependency_def::PDependencyDefSource;
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DDependencyDef {
     pub name: String,
-    pub source: DDependencyDefSource,
+    pub source: DDependencySourceDef,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum DDependencyDefSource {
+pub enum DDependencySourceDef {
     Branch {
         branch: String,
     },
@@ -40,19 +40,19 @@ impl TryFrom<PDependencyDef> for DDependencyDef {
 
         let source = match convert!(source_ty?) {
             Ty::Branch(PBranchSource { branch }) => {
-                DDependencyDefSource::Branch { branch }
+                DDependencySourceDef::Branch { branch }
             }
 
             Ty::Tag(PTagSource { tag }) => {
-                DDependencyDefSource::Tag { tag }
+                DDependencySourceDef::Tag { tag }
             }
 
             Ty::Version(PVersionSource { version }) => {
-                DDependencyDefSource::Version { version }
+                DDependencySourceDef::Version { version }
             }
 
             Ty::Path(PPathSource { attachment_id }) => {
-                DDependencyDefSource::Path {
+                DDependencySourceDef::Path {
                     attachment_id: convert!(attachment_id as _),
                 }
             }
@@ -69,19 +69,19 @@ impl Into<PDependencyDef> for DDependencyDef {
         let Self { name, source } = self;
 
         let source_ty = Some(match source {
-            DDependencyDefSource::Branch { branch } => {
+            DDependencySourceDef::Branch { branch } => {
                 Ty::Branch(PBranchSource { branch })
             }
 
-            DDependencyDefSource::Tag { tag } => {
+            DDependencySourceDef::Tag { tag } => {
                 Ty::Tag(PTagSource { tag })
             }
 
-            DDependencyDefSource::Version { version } => {
+            DDependencySourceDef::Version { version } => {
                 Ty::Version(PVersionSource { version })
             }
 
-            DDependencyDefSource::Path { attachment_id } => {
+            DDependencySourceDef::Path { attachment_id } => {
                 Ty::Path(PPathSource {
                     attachment_id: convert!(attachment_id as _),
                 })

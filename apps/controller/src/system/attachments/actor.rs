@@ -13,7 +13,7 @@ use super::{AttachmentsConfig, AttachmentsMsg};
 
 pub struct AttachmentsActor {
     pub config: AttachmentsConfig,
-    pub remaining_store_size: PAttachmentSize,
+    pub remaining_size: PAttachmentSize,
     pub attachments: HashMap<DAttachmentId, Attachment>,
     pub next_id: DAttachmentId,
 }
@@ -23,7 +23,8 @@ impl AttachmentsActor {
         trace!("Actor started");
 
         while let Some(msg) = mailbox.next().await {
-            msg.handle(&mut self);
+            msg.handle(&mut self)
+                .await;
         }
 
         trace!("Actor halted");

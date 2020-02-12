@@ -28,17 +28,21 @@ pub struct Attachments {
 }
 
 impl Attachments {
-    pub fn new(config: AttachmentsConfig) -> Self {
+    pub fn new(config: AttachmentsConfig) -> Result<Self> {
         let (tx, rx) = mpsc::unbounded_channel();
 
+        ensure!(config.store_path.exists(), AttachmentsError::StoreNotExists {
+            path: config.store_path,
+        });
+
         task::spawn(AttachmentsActor {
-            remaining_store_size: config.store_size,
+            remaining_size: config.store_size,
             attachments: Default::default(),
             next_id: Default::default(),
             config,
         }.start(rx));
 
-        Self { tx }
+        Ok(Self { tx })
     }
 
     pub async fn create(&self, name: DAttachmentName, size: PAttachmentSize) -> Result<DAttachmentId> {
@@ -48,10 +52,16 @@ impl Attachments {
     pub async fn get(&self, id: DAttachmentId) -> Result<Attachment> {
         ask!(self.tx, AttachmentsMsg::Get { id })
     }
+
+    pub async fn remove(&self, id: DAttachmentId) -> Result<()> {
+        ask!(self.tx, AttachmentsMsg::Remove { id })
+    }
 }
 
 #[cfg(test)]
 mod tests {
+    use std::env::temp_dir;
+
     use super::*;
 
     mod create {
@@ -82,7 +92,7 @@ mod tests {
                     .err()
                     .unwrap();
 
-                assert_eq!(AttachmentsError::NotEnoughSpaceInStore {
+                assert_eq!(AttachmentsError::AttachmentTooLarge {
                     attachment_size: 1024 * 1024,
                     remaining_store_size: 4096,
                 }.to_string(), err.to_string());
@@ -139,7 +149,8 @@ mod tests {
 
     fn attachments() -> Attachments {
         Attachments::new(AttachmentsConfig {
+            store_path: temp_dir(),
             store_size: 4096,
-        })
+        }).unwrap()
     }
 }

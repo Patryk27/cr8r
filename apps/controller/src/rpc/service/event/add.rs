@@ -22,7 +22,7 @@ pub async fn add_event(
         .find_one(experiment_id)
         .await?;
 
-    let events = experiment
+    experiment
         .add_event(runner_id, event)
         .await?;
 

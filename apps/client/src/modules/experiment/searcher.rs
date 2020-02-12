@@ -24,12 +24,12 @@ impl<'c> ExperimentSearcher<'c> {
             .await?
             .experiments;
 
-        let experiment = experiments
+        let experiments = experiments
             .drain(..)
             .next()
             .map(|experiment| -> Result<DExperiment> { Ok(experiment.try_into()?) })
             .transpose();
 
-        experiment
+        experiments
     }
 }

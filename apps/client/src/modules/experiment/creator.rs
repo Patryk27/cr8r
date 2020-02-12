@@ -1,17 +1,24 @@
+use std::collections::HashMap;
+
 use anyhow::*;
-use tokio::fs;
 use tokio::sync::mpsc::unbounded_channel;
 
-use lib_core_channel::{SendTo, URx, UTx};
-use lib_interop::proto::core::PExperimentId;
+use lib_core_channel::{URx, UTx};
+use lib_interop::domain::DExperimentId;
+use lib_interop::proto::core::PAttachmentId;
 
 use crate::modules::app::AppContext;
-use crate::modules::attachment::{AttachmentUploader, AttachmentUploaderProgress};
-use crate::modules::definition::{DefinitionArg, DependencySourceArg};
+use crate::modules::attachment::AttachmentUploaderProgress;
+use crate::modules::definition::DefinitionArg;
+
+mod create_experiment;
+mod upload_dependencies;
+mod validate_dependencies;
 
 pub struct ExperimentCreator<'c> {
     ctxt: &'c mut AppContext,
-    tx: UTx<ExperimentCreatorProgress>,
+    progress: UTx<ExperimentCreatorProgress>,
+    attachments: HashMap<String, PAttachmentId>,
 }
 
 pub enum ExperimentCreatorProgress {
@@ -21,6 +28,8 @@ pub enum ExperimentCreatorProgress {
         name: String,
     },
 
+    DependenciesValidated,
+
     UploadingDependencies,
 
     UploadingDependency {
@@ -28,19 +37,27 @@ pub enum ExperimentCreatorProgress {
         progress: URx<AttachmentUploaderProgress>,
     },
 
+    DependenciesUploaded,
+
     CreatingExperiment,
 
-    ExperimentCreated,
+    ExperimentCreated {
+        id: DExperimentId,
+    },
 }
 
 impl<'c> ExperimentCreator<'c> {
     pub fn new(ctxt: &'c mut AppContext) -> (Self, URx<ExperimentCreatorProgress>) {
-        let (tx, rx) = unbounded_channel();
+        let (progress, progress_rx) = unbounded_channel();
 
-        (Self { ctxt, tx }, rx)
+        (Self {
+            ctxt,
+            progress,
+            attachments: Default::default(),
+        }, progress_rx)
     }
 
-    pub async fn create(mut self, def: DefinitionArg) -> Result<PExperimentId> {
+    pub async fn create(mut self, def: DefinitionArg) -> Result<DExperimentId> {
         self.validate_dependencies(&def)
             .await?;
 
@@ -49,61 +66,5 @@ impl<'c> ExperimentCreator<'c> {
 
         self.create_experiment(def)
             .await
-    }
-
-    async fn validate_dependencies(&mut self, def: &DefinitionArg) -> Result<()> {
-        ExperimentCreatorProgress::ValidatingDependencies
-            .send_to(&self.tx);
-
-        for dep in &def.dependencies {
-            ExperimentCreatorProgress::ValidatingDependency {
-                name: dep.name.to_string(),
-            }.send_to(&self.tx);
-
-            if let DependencySourceArg::Path(path) = &dep.source {
-                if fs::metadata(path).await.is_err() {
-                    return Err(anyhow!(
-                        "Dependency `{}` refers to a non-existing path `{}`",
-                        dep.name, path,
-                    ));
-                }
-            }
-        }
-
-        Ok(())
-    }
-
-    async fn upload_dependencies(&mut self, def: &DefinitionArg) -> Result<()> {
-        if !def.contains_path_deps() {
-            return Ok(());
-        }
-
-        ExperimentCreatorProgress::UploadingDependencies
-            .send_to(&self.tx);
-
-        for dep in &def.dependencies {
-            if let DependencySourceArg::Path(path) = &dep.source {
-                let (mut uploader, progress) = AttachmentUploader::new(self.ctxt);
-
-                ExperimentCreatorProgress::UploadingDependency {
-                    name: dep.name.to_string(),
-                    progress,
-                }.send_to(&self.tx);
-
-                uploader
-                    .upload_dir(path)
-                    .await
-                    .with_context(|| format!("Could not upload `{}`", dep.name))?;
-            }
-        }
-
-        Ok(())
-    }
-
-    async fn create_experiment(&mut self, def: DefinitionArg) -> Result<PExperimentId> {
-        ExperimentCreatorProgress::CreatingExperiment
-            .send_to(&self.tx);
-
-        unimplemented!()
     }
 }

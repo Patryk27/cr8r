@@ -3,7 +3,8 @@ controller:
   secret: 'top-secret'
 
 attachments:
-  store-size: 4096
+  store-path: /tmp/attachments
+  store-size: 134217728
 
 ecosystem:
   projects:

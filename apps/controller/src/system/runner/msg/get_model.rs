@@ -25,7 +25,7 @@ pub fn get_model(actor: &RunnerActor) -> DRunner {
     };
 
     DRunner {
-        id: actor.id.clone(),
+        id: actor.id,
         name: actor.name.clone(),
         joined_at: actor.joined_at,
         last_heartbeat_at: actor.last_heartbeat_at,

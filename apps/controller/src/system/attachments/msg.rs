@@ -12,6 +12,7 @@ use super::AttachmentsActor;
 
 mod create;
 mod get;
+mod remove;
 
 #[derive(Derivative)]
 #[derivative(Debug)]
@@ -30,20 +31,36 @@ pub enum AttachmentsMsg {
         #[derivative(Debug = "ignore")]
         tx: OTx<Result<Attachment>>,
     },
+
+    Remove {
+        id: DAttachmentId,
+
+        #[derivative(Debug = "ignore")]
+        tx: OTx<Result<()>>,
+    },
 }
 
 impl AttachmentsMsg {
-    pub fn handle(self, actor: &mut AttachmentsActor) {
+    pub async fn handle(self, actor: &mut AttachmentsActor) {
+        use AttachmentsMsg::*;
+
         trace!("Handling message: {:?}", self);
 
         match self {
-            AttachmentsMsg::Create { name, size, tx } => {
+            Create { name, size, tx } => {
                 create::create(actor, name, size)
+                    .await
                     .send_to(tx);
             }
 
-            AttachmentsMsg::Get { id, tx } => {
+            Get { id, tx } => {
                 get::get(actor, id)
+                    .send_to(tx);
+            }
+
+            Remove { id, tx } => {
+                remove::remove(actor, id)
+                    .await
                     .send_to(tx);
             }
         }

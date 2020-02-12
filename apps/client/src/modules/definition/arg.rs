@@ -18,7 +18,7 @@ pub struct DefinitionArg {
 }
 
 impl DefinitionArg {
-    pub fn contains_path_deps(&self) -> bool {
+    pub fn contains_path_dependencies(&self) -> bool {
         self.dependencies
             .iter()
             .any(|dep| dep.source.is_path())

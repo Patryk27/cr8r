@@ -22,7 +22,7 @@ impl System {
 
             ExperimentLogger::new(
                 self.session.clone(),
-                assignment.experiment.id.clone(),
+                assignment.experiment.id,
             )
         };
 

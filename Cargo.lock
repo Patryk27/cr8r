@@ -279,6 +279,7 @@ dependencies = [
  "lib_core_actor 0.1.0",
  "lib_core_channel 0.1.0",
  "lib_core_log 0.1.0",
+ "lib_core_tempfile 0.1.0",
  "lib_core_ui 0.1.0",
  "lib_interop 0.1.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -727,6 +728,7 @@ dependencies = [
  "anyhow 1.0.26 (registry+https://github.com/rust-lang/crates.io-index)",
  "chrono 0.4.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "colored 1.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "itertools 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

@@ -1,4 +1,5 @@
 use anyhow::*;
+use tokio::task;
 use tonic::Streaming;
 
 use lib_interop::proto::controller::*;
@@ -29,33 +30,57 @@ pub async fn upload_attachment(
 
     let id = system
         .attachments
-        .create(metadata.name.into(), metadata.size.into())
+        .create(metadata.name.into(), metadata.size)
         .await?;
 
-    let attachment = system
-        .attachments
-        .get(id)
-        .await?;
+    let uploading_result = try {
+        let attachment = system
+            .attachments
+            .get(id)
+            .await?;
 
-    while let Some(request) = request.message().await? {
-        let content = request
-            .chunk
-            .map(|chunk| {
-                match chunk {
-                    Chunk::Content(content) => Some(content),
-                    _ => None,
-                }
+        while let Some(request) = request.message().await? {
+            let content = request
+                .chunk
+                .map(|chunk| {
+                    match chunk {
+                        Chunk::Content(content) => Some(content),
+                        _ => None,
+                    }
+                })
+                .flatten();
+
+            let content = content.ok_or_else(|| {
+                anyhow!("Protocol error: Next chunk was expected to carry attachment's contents")
+            })?;
+
+            attachment
+                .add_chunk(content.content)
+                .await?;
+        }
+
+        attachment
+            .commit()
+            .await?;
+    };
+
+    match uploading_result {
+        Ok(()) => {
+            Ok(PUploadAttachmentReply {
+                id: id.into(),
             })
-            .flatten();
+        }
 
-        let content = content.ok_or_else(|| {
-            anyhow!("Protocol error: Next chunk was expected to carry attachment's contents")
-        })?;
+        Err(err) => {
+            let attachments = system.attachments.clone();
 
-        // attachment.upload_chunk() @todo
+            task::spawn(async move {
+                let _ = attachments
+                    .remove(id)
+                    .await;
+            });
+
+            Err(err)
+        }
     }
-
-    Ok(PUploadAttachmentReply {
-        id: id.into(),
-    })
 }

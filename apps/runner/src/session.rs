@@ -42,6 +42,6 @@ impl Session {
         &'a mut self,
         f: impl FnOnce(&'a mut ControllerClient, PRunnerId) -> F,
     ) -> F {
-        f(&mut self.client, self.runner_id.clone())
+        f(&mut self.client, self.runner_id)
     }
 }

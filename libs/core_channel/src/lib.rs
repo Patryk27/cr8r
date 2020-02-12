@@ -1,5 +1,8 @@
 use tokio::sync::{mpsc, oneshot};
 
+pub type BTx<T> = mpsc::Sender<T>;
+pub type BRx<T> = mpsc::Receiver<T>;
+
 pub type UTx<T> = mpsc::UnboundedSender<T>;
 pub type URx<T> = mpsc::UnboundedReceiver<T>;
 
