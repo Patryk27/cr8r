@@ -1,4 +1,5 @@
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[must_use]
 pub enum ActorWorkflow {
     Continue,
     Stop,
