@@ -29,10 +29,12 @@ pub async fn show(
     };
 
     if show_jobs || show_reports {
-        println!("{}", HeaderWidget::new("Experiment"));
+        HeaderWidget::new("Experiment")
+            .println();
     }
 
-    println!("{}", ExperimentDetailsWidget::new(&experiment));
+    ExperimentDetailsWidget::new(&experiment)
+        .println();
 
     if show_jobs {
         do_show_jobs(ctxt, id)
@@ -48,7 +50,8 @@ pub async fn show(
 }
 
 async fn do_show_jobs(ctxt: &mut AppContext, id: DExperimentId) -> Result<()> {
-    println!("{}", HeaderWidget::new("Jobs"));
+    HeaderWidget::new("Jobs")
+        .println();
 
     // @todo
 
@@ -56,7 +59,8 @@ async fn do_show_jobs(ctxt: &mut AppContext, id: DExperimentId) -> Result<()> {
 }
 
 async fn do_show_reports(ctxt: &mut AppContext, id: DExperimentId) -> Result<()> {
-    println!("{}", HeaderWidget::new("Reports"));
+    HeaderWidget::new("Reports")
+        .println();
 
     let reports = spinner! {
         ReportSearcher::new(ctxt)
@@ -64,7 +68,8 @@ async fn do_show_reports(ctxt: &mut AppContext, id: DExperimentId) -> Result<()>
             .await?
     };
 
-    println!("{}", ReportListWidget::new(&reports));
+    ReportListWidget::new(&reports)
+        .println();
 
     Ok(())
 }

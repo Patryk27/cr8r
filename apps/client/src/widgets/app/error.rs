@@ -6,87 +6,74 @@ pub struct AppErrorWidget;
 
 impl AppErrorWidget {
     pub fn print(error: anyhow::Error) {
-        let err_string = error.to_string();
+        let error_msg = error.to_string();
 
         // There exist a few errors that are more likely to occur in reality than the other ones (e.g. `Connection
         // refused`) - for such errors we have prepared custom `print_*` functions that provide more context than the
         // generic error message
-        let mut err_overwritten = false;
+        let mut error_handled = false;
 
-        if err_string.contains("Connection refused") {
+        if error_msg.contains("Connection refused") {
             print_connection_failed();
-            err_overwritten = true;
+            error_handled = true;
         }
 
-        if err_string.contains("broken pipe") {
+        if error_msg.contains("broken pipe") {
             print_connection_lost();
-            err_overwritten = true;
+            error_handled = true;
         }
 
-        if err_string.contains("stream no longer needed") {
+        if error_msg.contains("stream no longer needed") {
             print_connection_dropped();
-            err_overwritten = true;
+            error_handled = true;
         }
 
-        if err_overwritten {
-            eprint!("{}", MessageWidget::info(
+        if error_handled {
+            MessageWidget::info(
                 "For reference, the underlying error was:",
                 format!("{:?}", error),
-            ));
-
-            return;
+            ).eprint();
+        } else {
+            ErrorWidget::new(&error)
+                .eprint();
         }
-
-        eprint!("{}", ErrorWidget::new(&error));
     }
 }
 
 fn print_connection_failed() {
-    eprintln!("{}", ErrorWidget::new(&anyhow!(
-        "Could not connect to the controller"
-    )));
+    ErrorWidget::new(&anyhow!("Could not connect to the controller"))
+        .eprintln();
 
-    eprintln!("{}", MessageWidget::warn(
-        "Note:",
-        [
-            "This is most likely caused by a misconfiguration in the `client.yaml` file.",
-            "",
-            "Please ensure that all URLs and credentials are valid, that the controller is",
-            "actually running and it's accessible from your network.",
-        ].join("\n"),
-    ));
+    MessageWidget::warn_inv("Note:", [
+        "This is most likely caused by a misconfiguration in the `client.yaml` file.",
+        "",
+        "Please ensure that all URLs and credentials are valid, that the controller is",
+        "actually running and it's accessible from your network.",
+    ]).eprintln();
 }
 
 fn print_connection_lost() {
-    eprintln!("{}", ErrorWidget::new(&anyhow!(
-        "Lost connection to the controller"
-    )));
+    ErrorWidget::new(&anyhow!("Lost connection to the controller"))
+        .eprintln();
 
-    eprintln!("{}", MessageWidget::warn(
-        "Note:",
-        [
-            "This might happen because of a network partitioning (e.g. you or the controller",
-            "lost access to the network) or because the controller has been manually shut",
-            "down.",
-            "",
-            "Please try repeating the latest action and, if the problem persists, you should",
-            "find some useful information in the controller's log."
-        ].join("\n"),
-    ));
+    MessageWidget::warn_inv("Note:", [
+        "This might happen because of a network partitioning (e.g. you or the controller",
+        "lost access to the network) or because the controller has been manually shut",
+        "down.",
+        "",
+        "Please try repeating the latest action and, if the problem persists, you should",
+        "find some useful information in the controller's log."
+    ]);
 }
 
 fn print_connection_dropped() {
-    eprintln!("{}", ErrorWidget::new(&anyhow!(
-        "Could not read controller's response"
-    )));
+    ErrorWidget::new(&anyhow!("Could not read controller's response"))
+        .eprintln();
 
-    eprintln!("{}", MessageWidget::warn(
-        "Note:",
-        [
-            "This is most likely caused by a bug in the controller.",
-            "",
-            "Please try repeating the latest action and, if the problem persists, you should",
-            "find some useful information in the controller's log."
-        ].join("\n"),
-    ));
+    MessageWidget::warn_inv("Note:", [
+        "This is most likely caused by a bug in the controller.",
+        "",
+        "Please try repeating the latest action and, if the problem persists, you should",
+        "find some useful information in the controller's log."
+    ]);
 }

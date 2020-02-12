@@ -25,7 +25,8 @@ pub async fn watch(ctxt: &mut AppContext, id: PExperimentId) -> Result<()> {
     println!();
 
     while let Some(report) = spinner! { reports.next().await } {
-        println!("{}", InlineReportWidget::new(&report?));
+        InlineReportWidget::new(&report?)
+            .println();
     }
 
     println!();

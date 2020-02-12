@@ -1,54 +1,88 @@
 use std::fmt;
 
-#[derive(Clone, Copy, Eq, PartialEq)]
-pub enum MessageType {
-    Info,
-    Warn,
-    Error,
-    Success,
-}
+use colored::Colorize;
+
+pub use self::{
+    body::*,
+    r#type::*,
+};
+
+mod body;
+mod r#type;
 
 pub struct MessageWidget {
     ty: MessageType,
     header: String,
-    content: String,
+    body: String,
+    invert_colors: bool,
 }
 
 impl MessageWidget {
-    pub fn new(ty: MessageType, header: String, content: String) -> Self {
-        Self { ty, header, content }
+    pub fn new(ty: MessageType, header: String, body: impl MessageBody, invert_colors: bool) -> Self {
+        Self {
+            ty,
+            header,
+            body: body.body(),
+            invert_colors,
+        }
     }
 
-    pub fn info(header: impl Into<String>, content: impl Into<String>) -> Self {
-        Self::new(MessageType::Info, header.into(), content.into())
-    }
+    fn colored(&self, text: &str, use_color: bool) -> String {
+        use MessageType::*;
 
-    pub fn warn(header: impl Into<String>, content: impl Into<String>) -> Self {
-        Self::new(MessageType::Warn, header.into(), content.into())
-    }
+        if !use_color {
+            return text.to_string();
+        }
 
-    pub fn error(header: impl Into<String>, content: impl Into<String>) -> Self {
-        Self::new(MessageType::Error, header.into(), content.into())
+        match self.ty {
+            Info => text.blue(),
+            Warn => text.yellow(),
+            Error => text.red(),
+            Success => text.green(),
+        }.to_string()
     }
+}
 
-    pub fn success(header: impl Into<String>, content: impl Into<String>) -> Self {
-        Self::new(MessageType::Success, header.into(), content.into())
+macro_rules! constructors {
+    ( $($ty:path => $fn:ident $fn_inv:ident,)* ) => {
+        impl MessageWidget {
+        $(
+            pub fn $fn(header: impl Into<String>, body: impl MessageBody) -> Self {
+                Self::new($ty, header.into(), body, false)
+            }
+
+            pub fn $fn_inv(header: impl Into<String>, body: impl MessageBody) -> Self {
+                Self::new($ty, header.into(), body, true)
+            }
+        )*
+        }
     }
+}
+
+constructors! {
+    MessageType::Info => info info_inv,
+    MessageType::Warn => warn warn_inv,
+    MessageType::Error => error error_inv,
+    MessageType::Success => success success_inv,
 }
 
 impl fmt::Display for MessageWidget {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use colored::Colorize;
+        let color_header = !self.invert_colors;
+        let color_body = self.invert_colors;
 
-        writeln!(f, "{}", self.header)?;
+        writeln!(
+            f,
+            "{}",
+            self.colored(&self.header, color_header),
+        )?;
 
-        for line in self.content.lines() {
-            writeln!(f, "  {}", match self.ty {
-                MessageType::Info => line.blue(),
-                MessageType::Warn => line.yellow(),
-                MessageType::Error => line.red(),
-                MessageType::Success => line.green(),
-            })?;
+        for line in self.body.lines() {
+            writeln!(
+                f,
+                "  {}",
+                self.colored(line, color_body)
+            )?;
         }
 
         Ok(())

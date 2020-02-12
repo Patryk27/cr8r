@@ -8,7 +8,8 @@ use lib_core_ui::*;
 use crate::modules::app::AppContext;
 
 pub async fn print(ctxt: &mut AppContext) -> Result<()> {
-    println!("{}", HeaderWidget::new("Controller"));
+    HeaderWidget::new("Controller")
+        .println();
 
     println!(
         "Address: {}",

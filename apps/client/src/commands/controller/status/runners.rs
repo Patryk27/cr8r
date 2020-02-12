@@ -8,11 +8,11 @@ use crate::modules::app::AppContext;
 use crate::widgets::RunnerListWidget;
 
 pub async fn print(ctxt: &mut AppContext) -> Result<()> {
-    println!("{}", HeaderWidget::new("Runners"));
+    HeaderWidget::new("Runners")
+        .println();
 
     let runners = spinner! {
-        ctxt
-            .client()
+        ctxt.client()
             .await?
             .find_runners(PFindRunnersRequest::default())
             .await?
@@ -21,7 +21,8 @@ pub async fn print(ctxt: &mut AppContext) -> Result<()> {
 
     let runners = convert!(runners as [_?]);
 
-    print!("{}", RunnerListWidget::new(&runners));
+    RunnerListWidget::new(&runners)
+        .print();
 
     Ok(())
 }

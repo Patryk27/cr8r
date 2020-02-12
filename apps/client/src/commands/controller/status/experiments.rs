@@ -8,7 +8,8 @@ use crate::modules::app::AppContext;
 use crate::widgets::ExperimentListWidget;
 
 pub async fn print(ctxt: &mut AppContext) -> Result<()> {
-    println!("{}", HeaderWidget::new("Experiments"));
+    HeaderWidget::new("Experiments")
+        .println();
 
     let experiments = spinner! {
         ctxt.client()
@@ -20,7 +21,8 @@ pub async fn print(ctxt: &mut AppContext) -> Result<()> {
 
     let experiments = convert!(experiments as [_?]);
 
-    print!("{}", ExperimentListWidget::new(&experiments));
+    ExperimentListWidget::new(&experiments)
+        .print();
 
     Ok(())
 }
