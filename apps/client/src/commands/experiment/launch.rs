@@ -169,7 +169,7 @@ async fn print_creating_experiment(watch: bool, rx: &mut URx<ExperimentCreatorPr
 
                 if !watch {
                     println!("You can see status of your experiment using:");
-                    println!("$ {}", format!("cr8r experiment status {}", id).blue());
+                    println!("$ {}", format!("cr8r experiment show {}", id).blue());
                     println!();
                     println!("Or, if you prefer a real-time view:");
                     println!("$ {}", format!("cr8r experiment watch {}", id).blue());
