@@ -2,9 +2,9 @@ use anyhow::*;
 
 use lib_interop::domain::definition::DToolchainDef;
 
-use super::super::ExperimentExecutorActor;
+use super::super::ExecutorActor;
 
-impl ExperimentExecutorActor {
+impl ExecutorActor {
     pub(super) async fn do_alter_toolchain(
         &mut self,
         project: String,

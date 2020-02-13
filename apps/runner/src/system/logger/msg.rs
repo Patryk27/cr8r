@@ -2,10 +2,10 @@ use log::*;
 
 use lib_interop::domain::DEvent;
 
-use super::ExperimentLoggerActor;
+use super::LoggerActor;
 
 #[derive(Debug)]
-pub enum ExperimentLoggerMsg {
+pub enum LoggerMsg {
     Add {
         event: DEvent,
     },
@@ -13,9 +13,9 @@ pub enum ExperimentLoggerMsg {
 
 mod add;
 
-impl ExperimentLoggerMsg {
-    pub async fn handle(self, actor: &mut ExperimentLoggerActor) {
-        use ExperimentLoggerMsg::*;
+impl LoggerMsg {
+    pub async fn handle(self, actor: &mut LoggerActor) {
+        use LoggerMsg::*;
 
         trace!("Handling message: {:?}", self);
 

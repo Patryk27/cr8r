@@ -5,8 +5,8 @@ use lib_core_channel::UTx;
 use lib_interop::domain::DAssignment;
 use lib_sandbox::Sandbox;
 
-use crate::experiment::ExperimentLogger;
-use crate::session::Session;
+use crate::rpc::ControllerSession;
+use crate::system::Logger;
 
 use self::{
     actor::*,
@@ -18,34 +18,34 @@ mod actor;
 mod msg;
 mod status;
 
-pub struct ExperimentExecutor {
-    tx: UTx<ExperimentExecutorMsg>,
+pub struct Executor {
+    tx: UTx<ExecutorMsg>,
 }
 
-impl ExperimentExecutor {
+impl Executor {
     pub fn new(
-        session: Session,
+        session: ControllerSession,
         assignment: DAssignment,
         sandbox: Sandbox,
-        logger: ExperimentLogger,
+        logger: Logger,
     ) -> Self {
         let (tx, mailbox) = mpsc::unbounded_channel();
 
-        task::spawn(ExperimentExecutorActor {
+        task::spawn(ExecutorActor {
             mailbox,
             sandbox,
             logger,
-            status: ExperimentExecutorStatus::Running,
+            status: ExecutorStatus::Running,
         }.start(assignment));
 
         Self { tx }
     }
 
     pub async fn abort(&self) {
-        tell!(self.tx, ExperimentExecutorMsg::Abort);
+        tell!(self.tx, ExecutorMsg::Abort);
     }
 
-    pub async fn get_status(&self) -> ExperimentExecutorStatus {
-        ask!(self.tx, ExperimentExecutorMsg::GetStatus)
+    pub async fn get_status(&self) -> ExecutorStatus {
+        ask!(self.tx, ExecutorMsg::GetStatus)
     }
 }

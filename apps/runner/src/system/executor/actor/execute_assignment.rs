@@ -1,9 +1,9 @@
 use lib_core_actor::*;
 use lib_interop::domain::{DAssignment, DEventType};
 
-use super::ExperimentExecutorActor;
+use super::ExecutorActor;
 
-impl ExperimentExecutorActor {
+impl ExecutorActor {
     pub(super) async fn execute_assignment(&mut self, assignment: DAssignment) -> ActorWorkflow {
         if self.handle_messages().actor_should_stop() {
             return ActorWorkflow::Stop;

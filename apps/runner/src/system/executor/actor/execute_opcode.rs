@@ -3,7 +3,7 @@ use anyhow::*;
 use lib_core_actor::*;
 use lib_interop::domain::DJobOpcode;
 
-use super::super::ExperimentExecutorActor;
+use super::super::ExecutorActor;
 
 mod do_alter_dependency;
 mod do_execute;
@@ -11,7 +11,7 @@ mod do_log_custom_msg;
 mod do_log_system_msg;
 mod do_alter_toolchain;
 
-impl ExperimentExecutorActor {
+impl ExecutorActor {
     pub(super) async fn execute_opcode(&mut self, opcode: DJobOpcode) -> Result<ActorWorkflow> {
         if self.handle_messages().actor_should_stop() {
             return Ok(ActorWorkflow::Stop);

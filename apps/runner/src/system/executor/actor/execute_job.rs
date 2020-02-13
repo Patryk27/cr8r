@@ -6,9 +6,9 @@ use lib_core_actor::*;
 use lib_interop::domain::{DEventType, DJob, DJobOpcode};
 use lib_sandbox::SandboxListener;
 
-use super::ExperimentExecutorActor;
+use super::ExecutorActor;
 
-impl ExperimentExecutorActor {
+impl ExecutorActor {
     pub(super) async fn execute_job(&mut self, job: DJob) -> Result<ActorWorkflow> {
         if self.handle_messages().actor_should_stop() {
             return Ok(ActorWorkflow::Stop);
@@ -16,18 +16,18 @@ impl ExperimentExecutorActor {
 
         self.init_sandbox()
             .await
-            .context("Could not initialize the sandbox")?;
+            .context("Could not initialize sandbox")?;
 
         let result = self
             .execute_opcodes(job.opcodes)
             .await;
 
         if let Err(err) = self.destroy_sandbox().await {
-            warn!("Could not destroy the sandbox: {}", err);
+            warn!("Could not destroy sandbox: {:?}", err);
             warn!("This may affect the next job");
 
             self.logger.add(DEventType::SystemMsg {
-                msg: format!("Could not destroy sandbox: {}", err),
+                msg: format!("Could not destroy sandbox: {:?}", err),
             });
 
             self.logger.add(DEventType::SystemMsg {

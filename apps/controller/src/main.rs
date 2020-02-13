@@ -12,21 +12,22 @@ mod rpc;
 async fn main() {
     use anyhow::*;
     use std::process::exit;
+
     use self::config::*;
 
     let result = try {
         lib_core_log::init()
-            .context("Could not initialize logging facility")?;
+            .context("Could not initialize logger")?;
 
         let config = Config::load()
-            .context("Could not load configuration from `controller.yaml`")?;
+            .context("Could not load configuration(from `controller.yaml`)")?;
 
         let system = system::start(config.system)
-            .context("Could not start controller (failed to start the system module)")?;
+            .context("Could not start system")?;
 
         rpc::start(config.rpc, system)
             .await
-            .context("Could not start controller (failed to start the rpc module)")?
+            .context("Could not start RPC server")?
     }: Result<()>;
 
     if let Err(err) = result {

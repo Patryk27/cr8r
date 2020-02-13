@@ -1,38 +1,41 @@
 use anyhow::*;
+use colored::Colorize;
 use log::*;
 
-use lib_sandbox::{SandboxConfig, SandboxProvider};
+use lib_interop::client::ControllerClient;
+use lib_sandbox::SandboxProvider;
 
-use crate::session::Session;
+use crate::config::Config;
+use crate::rpc::ControllerSession;
 
-mod conduct_assignment;
-mod get_assignment;
+pub use self::{
+    dispatcher::*,
+    executor::*,
+    logger::*,
+};
 
-pub struct System {
-    pub sandbox_config: SandboxConfig,
-    pub sandbox_provider: SandboxProvider,
-    pub session: Session,
-}
+mod dispatcher;
+mod executor;
+mod logger;
 
-impl System {
-    pub async fn start(mut self) -> Result<()> {
-        trace!("Actor started");
+pub async fn start(config: Config) -> Result<()> {
+    let sandbox_provider = SandboxProvider::new();
 
-        loop {
-            let assignment = self
-                .get_assignment()
-                .await;
+    let client = ControllerClient::connect(config.controller.address, config.controller.secret)
+        .await
+        .context("Could not connect to the controller")?;
 
-            match self.conduct_assignment(assignment).await {
-                Ok(_) => {
-                    info!("Experiment conducted successfully");
-                }
+    let session = ControllerSession::open(client, config.runner.name)
+        .await
+        .context("Could not open session")?;
 
-                Err(err) => {
-                    // @todo we should notify controller about this incident
-                    error!("Couldn't conduct experiment: {:?}", err);
-                }
-            }
-        }
-    }
+    let dispatcher = Dispatcher {
+        sandbox_config: config.sandbox,
+        sandbox_provider,
+        session,
+    }.start();
+
+    info!("{}", "🚀 We are ready to accept commands".green());
+
+    dispatcher.await
 }

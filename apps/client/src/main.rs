@@ -12,17 +12,17 @@ mod widgets;
 #[tokio::main]
 async fn main() {
     use anyhow::*;
-    use commands::AppCommand;
-    use modules::app::{AppConfig, AppContext};
-    use widgets::AppErrorWidget;
     use std::process::exit;
     use structopt::StructOpt;
+    use self::commands::AppCommand;
+    use self::modules::app::{AppConfig, AppContext};
+    use self::widgets::AppErrorWidget;
 
     let result = try {
         let cmd = AppCommand::from_args();
 
         let config = AppConfig::load()
-            .context("Could not load configuration from `client.yaml`")?;
+            .context("Could not load configuration (from `client.yaml`)")?;
 
         let mut ctxt = AppContext::new(config);
 

@@ -2,9 +2,9 @@ use log::*;
 
 use lib_core_actor::*;
 
-use super::ExperimentExecutorActor;
+use super::ExecutorActor;
 
-impl ExperimentExecutorActor {
+impl ExecutorActor {
     pub(super) fn handle_messages(&mut self) -> ActorWorkflow {
         while let Ok(msg) = self.mailbox.try_recv() {
             if msg.handle(self).actor_should_stop() {

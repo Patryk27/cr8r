@@ -1,9 +1,9 @@
 use lib_interop::domain::DEvent;
 
-use super::super::ExperimentLoggerActor;
+use super::super::LoggerActor;
 
 pub async fn add(
-    ExperimentLoggerActor { session, experiment_id, pending_events, .. }: &mut ExperimentLoggerActor,
+    LoggerActor { session, experiment_id, pending_events, .. }: &mut LoggerActor,
     event: DEvent,
 ) {
     pending_events.push_back(event);

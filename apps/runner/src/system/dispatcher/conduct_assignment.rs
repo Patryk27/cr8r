@@ -4,10 +4,9 @@ use tokio::time;
 
 use lib_interop::domain::DAssignment;
 
-use crate::experiment::{ExperimentExecutor, ExperimentExecutorStatus, ExperimentLogger};
-use crate::system::System;
+use crate::system::{Dispatcher, Executor, ExecutorStatus, Logger};
 
-impl System {
+impl Dispatcher {
     pub(super) async fn conduct_assignment(&mut self, assignment: DAssignment) -> Result<()> {
         let sandbox = {
             debug!("Preparing sandbox");
@@ -18,18 +17,18 @@ impl System {
         };
 
         let logger = {
-            debug!("Preparing experiment logger");
+            debug!("Preparing logger");
 
-            ExperimentLogger::new(
+            Logger::new(
                 self.session.clone(),
                 assignment.experiment.id,
             )
         };
 
         let executor = {
-            debug!("Preparing experiment executor");
+            debug!("Preparing executor");
 
-            ExperimentExecutor::new(
+            Executor::new(
                 self.session.clone(),
                 assignment,
                 sandbox,
@@ -40,14 +39,18 @@ impl System {
         debug!("Waiting for experiment to finish");
 
         loop {
-            // @todo self.process_messages();
-
             match executor.get_status().await {
-                ExperimentExecutorStatus::Aborted | ExperimentExecutorStatus::Completed => {
+                ExecutorStatus::Aborted => {
+                    debug!("Experiment result: aborted");
                     break;
                 }
 
-                ExperimentExecutorStatus::Running => {
+                ExecutorStatus::Completed => {
+                    debug!("Experiment result: completed");
+                    break;
+                }
+
+                ExecutorStatus::Running => {
                     time::delay_for(time::Duration::from_secs(1))
                         .await;
                 }

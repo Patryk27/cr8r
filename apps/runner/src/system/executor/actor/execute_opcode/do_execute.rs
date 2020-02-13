@@ -1,8 +1,8 @@
 use anyhow::*;
 
-use super::super::ExperimentExecutorActor;
+use super::super::ExecutorActor;
 
-impl ExperimentExecutorActor {
+impl ExecutorActor {
     pub(super) async fn do_execute(&mut self, cmd: String) -> Result<()> {
         self.sandbox
             .exec(&cmd)

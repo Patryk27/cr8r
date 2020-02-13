@@ -7,7 +7,7 @@ use lib_core_actor::*;
 use lib_core_channel::UTx;
 use lib_interop::domain::{DEvent, DEventType, DExperimentId};
 
-use crate::session::Session;
+use crate::rpc::ControllerSession;
 
 use self::{
     actor::*,
@@ -18,15 +18,15 @@ mod actor;
 mod msg;
 
 #[derive(Clone)]
-pub struct ExperimentLogger {
-    tx: UTx<ExperimentLoggerMsg>,
+pub struct Logger {
+    tx: UTx<LoggerMsg>,
 }
 
-impl ExperimentLogger {
-    pub fn new(session: Session, experiment_id: DExperimentId) -> Self {
+impl Logger {
+    pub fn new(session: ControllerSession, experiment_id: DExperimentId) -> Self {
         let (tx, rx) = mpsc::unbounded_channel();
 
-        task::spawn(ExperimentLoggerActor {
+        task::spawn(LoggerActor {
             session,
             experiment_id,
             pending_events: VecDeque::new(),
@@ -41,6 +41,6 @@ impl ExperimentLogger {
             ty,
         };
 
-        tell!(self.tx, ExperimentLoggerMsg::Add { event });
+        tell!(self.tx, LoggerMsg::Add { event });
     }
 }

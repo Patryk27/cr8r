@@ -4,23 +4,23 @@ use lib_core_channel::URx;
 use lib_interop::domain::{DAssignment, DEventType};
 use lib_sandbox::Sandbox;
 
-use crate::experiment::{ExperimentExecutorStatus, ExperimentLogger};
+use crate::system::{ExecutorStatus, Logger};
 
-use super::ExperimentExecutorMsg;
+use super::ExecutorMsg;
 
 mod execute_assignment;
 mod execute_job;
 mod execute_opcode;
 mod handle_messages;
 
-pub struct ExperimentExecutorActor {
-    pub mailbox: URx<ExperimentExecutorMsg>,
+pub struct ExecutorActor {
+    pub mailbox: URx<ExecutorMsg>,
     pub sandbox: Sandbox,
-    pub logger: ExperimentLogger,
-    pub status: ExperimentExecutorStatus,
+    pub logger: Logger,
+    pub status: ExecutorStatus,
 }
 
-impl ExperimentExecutorActor {
+impl ExecutorActor {
     pub async fn start(mut self, assignment: DAssignment) {
         trace!("Actor started");
 
@@ -32,10 +32,10 @@ impl ExperimentExecutorActor {
 
         if workflow.actor_should_continue() {
             self.logger.add(DEventType::ExperimentCompleted);
-            self.status = ExperimentExecutorStatus::Completed;
+            self.status = ExecutorStatus::Completed;
         } else {
             // @todo notify logger?
-            self.status = ExperimentExecutorStatus::Aborted;
+            self.status = ExecutorStatus::Aborted;
         }
 
         self.handle_messages_until_orphaning()

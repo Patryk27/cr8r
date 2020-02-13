@@ -6,10 +6,10 @@ use tokio::time;
 use lib_interop::domain::DAssignment;
 use lib_interop::proto::controller::PGetAssignmentReply;
 
-use crate::system::System;
+use crate::system::Dispatcher;
 
-impl System {
-    pub(super) async fn get_assignment(&mut self) -> DAssignment {
+impl Dispatcher {
+    pub(super) async fn await_assignment(&mut self) -> DAssignment {
         loop {
             debug!("Polling controller for a new assignment");
 
@@ -23,7 +23,7 @@ impl System {
                         .try_into()
                         .unwrap(): DAssignment; // @todo
 
-                    info!("We've been assigned experiment `{}`", assignment.experiment.id);
+                    info!("We've been assigned experiment [id={}]", assignment.experiment.id);
 
                     return assignment;
                 }

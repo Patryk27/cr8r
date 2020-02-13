@@ -2,56 +2,31 @@
 #![feature(try_blocks)]
 #![feature(type_ascription)]
 
-use std::process::exit;
-
-use anyhow::*;
-use colored::Colorize;
-use log::*;
-
-use lib_interop::client::ControllerClient;
-use lib_sandbox::SandboxProvider;
-
-mod core;
-mod experiment;
-mod session;
+mod config;
+mod rpc;
 mod system;
 
 #[tokio::main]
 async fn main() {
-    use self::{
-        core::*,
-        session::*,
-        system::*,
-    };
+    use anyhow::*;
+    use lib_core_ui::*;
+    use std::process::exit;
+    use self::config::*;
 
     let result = try {
         lib_core_log::init()
-            .context("Could not initialize logging facility")?;
+            .context("Could not initialize logger")?;
 
         let config = Config::load()
-            .context("Could not load configuration from `runner.yaml``")?;
+            .context("Could not load configuration (from `runner.yaml`)")?;
 
-        let sandbox_provider = SandboxProvider::new();
-
-        let client = ControllerClient::connect(config.controller.address, config.controller.secret)
-            .await
-            .context("Could not connect to controller")?;
-
-        let client = Session::open(client, config.runner.name)
-            .await
-            .context("Could not connect to controller")?;
-
-        info!("{}", "🚀 We are ready to accept commands".green());
-
-        System {
-            sandbox_config: config.sandbox,
-            sandbox_provider,
-            session: client,
-        }.start().await?
+        system::start(config)
+            .await?
     }: Result<()>;
 
     if let Err(err) = result {
-        eprintln!("{}", lib_core_ui::ErrorWidget::new(&err));
+        ErrorWidget::new(&err)
+            .eprintln();
 
         exit(1);
     }

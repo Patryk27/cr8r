@@ -6,9 +6,9 @@ use anyhow::*;
 use lib_cargo_manifest::{CargoDependencyPatch, CargoManifest};
 use lib_interop::domain::definition::{DDependencyDef, DDependencySourceDef};
 
-use super::super::ExperimentExecutorActor;
+use super::super::ExecutorActor;
 
-impl ExperimentExecutorActor {
+impl ExecutorActor {
     pub(super) async fn do_alter_dependency(
         &mut self,
         project: String,

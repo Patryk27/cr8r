@@ -7,19 +7,20 @@ use lib_interop::client::ControllerClient;
 use lib_interop::proto::core::{PRunnerId, PRunnerName};
 
 #[derive(Clone)]
-pub struct Session {
+pub struct ControllerSession {
     pub client: ControllerClient,
     pub runner_id: PRunnerId,
 }
 
-impl Session {
+impl ControllerSession {
     pub async fn open(mut client: ControllerClient, name: PRunnerName) -> Result<Self> {
         info!("Opening session");
 
         // Ensure we're compatible with the controller
         debug!("Confirming protocol's compatibility");
 
-        let version = client.howdy()
+        let version = client
+            .howdy()
             .await?
             .version;
 
@@ -29,7 +30,8 @@ impl Session {
         // Register us
         debug!("Registering");
 
-        let runner_id = client.register_runner(name)
+        let runner_id = client
+            .register_runner(name)
             .await?
             .id;
 

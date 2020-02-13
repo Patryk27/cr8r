@@ -1,28 +1,27 @@
 use derivative::Derivative;
 use log::*;
-use tokio::sync::oneshot;
 
 use lib_core_actor::*;
-use lib_core_channel::SendTo;
+use lib_core_channel::{OTx, SendTo};
 
-use crate::experiment::ExperimentExecutorStatus;
+use crate::system::ExecutorStatus;
 
-use super::ExperimentExecutorActor;
+use super::ExecutorActor;
 
 #[derive(Derivative)]
 #[derivative(Debug)]
-pub enum ExperimentExecutorMsg {
+pub enum ExecutorMsg {
     Abort,
 
     GetStatus {
         #[derivative(Debug = "ignore")]
-        tx: oneshot::Sender<ExperimentExecutorStatus>,
+        tx: OTx<ExecutorStatus>,
     },
 }
 
-impl ExperimentExecutorMsg {
-    pub fn handle(self, actor: &mut ExperimentExecutorActor) -> ActorWorkflow {
-        use ExperimentExecutorMsg::*;
+impl ExecutorMsg {
+    pub fn handle(self, actor: &mut ExecutorActor) -> ActorWorkflow {
+        use ExecutorMsg::*;
 
         trace!("Handling message: {:?}", self);
 
