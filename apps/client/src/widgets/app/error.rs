@@ -29,7 +29,7 @@ impl AppErrorWidget {
         }
 
         if error_handled {
-            MessageWidget::info(
+            MessageWidget::info_inv(
                 "For reference, the underlying error was:",
                 format!("{:?}", error),
             ).eprint();
@@ -63,7 +63,7 @@ fn print_connection_lost() {
         "",
         "Please try repeating the latest action and, if the problem persists, you should",
         "find some useful information in the controller's log."
-    ]);
+    ]).eprintln();
 }
 
 fn print_connection_dropped() {
@@ -75,5 +75,5 @@ fn print_connection_dropped() {
         "",
         "Please try repeating the latest action and, if the problem persists, you should",
         "find some useful information in the controller's log."
-    ]);
+    ]).eprintln();
 }
