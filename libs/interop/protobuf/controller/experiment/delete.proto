@@ -2,10 +2,10 @@ syntax = "proto3";
 
 package cr8r.controller;
 
-message PAbortExperimentRequest {
+message PDeleteExperimentRequest {
     uint32 id = 1;
 }
 
-message PAbortExperimentReply {
+message PDeleteExperimentReply {
     //
 }

@@ -9,6 +9,10 @@ use super::{ExperimentCreator, ExperimentCreatorProgress::*};
 
 impl<'c> ExperimentCreator<'c> {
     pub(super) async fn validate_dependencies(&mut self, definition: &DefinitionArg) -> Result<()> {
+        if definition.dependencies.is_empty() {
+            return Ok(());
+        }
+
         ValidatingDependencies.send_to(&self.progress);
 
         for dependency in &definition.dependencies {

@@ -12,6 +12,13 @@ use super::ExperimentsActor;
 #[derive(Derivative)]
 #[derivative(Debug)]
 pub enum ExperimentsMsg {
+    Delete {
+        id: DExperimentId,
+
+        #[derivative(Debug = "ignore")]
+        tx: OTx<Result<()>>,
+    },
+
     FindAll {
         #[derivative(Debug = "ignore")]
         tx: OTx<Vec<Experiment>>,
@@ -32,26 +39,34 @@ pub enum ExperimentsMsg {
     },
 }
 
+mod delete;
 mod find_all;
 mod find_one;
 mod launch;
 
 impl ExperimentsMsg {
     pub fn handle(self, actor: &mut ExperimentsActor) {
+        use ExperimentsMsg::*;
+
         trace!("Handling message: {:?}", self);
 
         match self {
-            ExperimentsMsg::FindAll { tx } => {
+            Delete { id, tx } => {
+                delete::delete(actor, id)
+                    .send_to(tx);
+            }
+
+            FindAll { tx } => {
                 find_all::find_all(actor)
                     .send_to(tx);
             }
 
-            ExperimentsMsg::FindOne { id, tx } => {
+            FindOne { id, tx } => {
                 find_one::find_one(actor, id)
                     .send_to(tx);
             }
 
-            ExperimentsMsg::Launch { definition, tx } => {
+            Launch { definition, tx } => {
                 launch::launch(actor, definition)
                     .send_to(tx);
             }

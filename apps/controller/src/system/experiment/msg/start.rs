@@ -33,12 +33,12 @@ pub fn start(actor: &mut ExperimentActor, runner: DRunnerId) -> Result<DAssignme
 
         ExperimentStatus::Completed { .. } => {
             Err(anyhow!(
-                "This experiment has been already completed - if you want to re-start it, please create a new one",
+                "This experiment has been already completed - if you want to restart it, please create a new one",
             ))
         }
 
-        ExperimentStatus::Zombie { .. } => {
-            unimplemented!()
+        ExperimentStatus::Stopped { .. } => {
+            Err(anyhow!("This experiment has been already stopped"))
         }
     }
 }

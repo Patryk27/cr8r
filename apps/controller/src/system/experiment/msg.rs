@@ -12,8 +12,6 @@ use super::ExperimentActor;
 #[derive(Derivative)]
 #[derivative(Debug)]
 pub enum ExperimentMsg {
-    Abort,
-
     AddEvent {
         runner_id: DRunnerId,
         event: DEvent,
@@ -39,49 +37,53 @@ pub enum ExperimentMsg {
         tx: OTx<Result<DAssignment>>,
     },
 
+    Stop,
+
     Watch {
         #[derivative(Debug = "ignore")]
         tx: OTx<Result<URx<Arc<DReport>>>>,
     },
 }
 
-mod abort;
 mod add_event;
 mod get_model;
 mod get_reports;
 mod start;
+mod stop;
 mod watch;
 
 impl ExperimentMsg {
     pub fn handle(self, actor: &mut ExperimentActor) {
+        use ExperimentMsg::*;
+
         trace!("Handling message: {:?}", self);
 
         match self {
-            ExperimentMsg::Abort => {
-                abort::abort(actor)
-            }
-
-            ExperimentMsg::AddEvent { runner_id, event, tx } => {
+            AddEvent { runner_id, event, tx } => {
                 add_event::add_event(actor, runner_id, event)
                     .send_to(tx)
             }
 
-            ExperimentMsg::GetModel { tx } => {
+            GetModel { tx } => {
                 get_model::get_model(actor)
                     .send_to(tx)
             }
 
-            ExperimentMsg::GetReports { tx } => {
+            GetReports { tx } => {
                 get_reports::get_reports(actor)
                     .send_to(tx)
             }
 
-            ExperimentMsg::Start { runner_id, tx } => {
+            Start { runner_id, tx } => {
                 start::start(actor, runner_id)
                     .send_to(tx)
             }
 
-            ExperimentMsg::Watch { tx } => {
+            Stop => {
+                stop::stop(actor)
+            }
+
+            Watch { tx } => {
                 watch::watch(actor)
                     .send_to(tx)
             }

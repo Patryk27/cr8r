@@ -2,7 +2,7 @@ use tokio::fs::File;
 
 use lib_interop::proto::core::PAttachmentSize;
 
-pub enum AttachmentState {
+pub enum AttachmentStatus {
     Uninitialized,
 
     Pending {
@@ -13,8 +13,8 @@ pub enum AttachmentState {
     Ready,
 }
 
-impl Default for AttachmentState {
+impl Default for AttachmentStatus {
     fn default() -> Self {
-        AttachmentState::Uninitialized
+        AttachmentStatus::Uninitialized
     }
 }

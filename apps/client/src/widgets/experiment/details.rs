@@ -22,15 +22,18 @@ impl fmt::Display for ExperimentDetailsWidget<'_> {
         let mut table = Table::new();
 
         table.add_row(row![
-            "Id", ExperimentIdWidget::new(&self.experiment.id),
+            "Id",
+            ExperimentIdWidget::new(&self.experiment.id),
         ]);
 
         table.add_row(row![
-            "Created at", DateTimeWidget::new(self.experiment.created_at),
+            "Created at",
+            DateTimeWidget::new(self.experiment.created_at),
         ]);
 
         table.add_row(row![
-            "Status", ExperimentStatusWidget::new(&self.experiment.status),
+            "Status",
+            ExperimentStatusWidget::new(&self.experiment.status),
         ]);
 
         write!(f, "{}", table)

@@ -41,11 +41,11 @@ impl Executor {
         Self { tx }
     }
 
-    pub async fn abort(&self) {
-        tell!(self.tx, ExecutorMsg::Abort);
-    }
-
     pub async fn get_status(&self) -> ExecutorStatus {
         ask!(self.tx, ExecutorMsg::GetStatus)
+    }
+
+    pub async fn stop(&self) {
+        tell!(self.tx, ExecutorMsg::Stop);
     }
 }

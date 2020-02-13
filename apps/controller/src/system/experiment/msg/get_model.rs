@@ -26,8 +26,8 @@ pub fn get_model(actor: &mut ExperimentActor) -> DExperiment {
             }
         }
 
-        ExperimentStatus::Zombie { since, .. } => {
-            DExperimentStatus::Zombie {
+        ExperimentStatus::Stopped { since } => {
+            DExperimentStatus::Stopped {
                 since: since.to_owned(),
             }
         }

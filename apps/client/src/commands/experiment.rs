@@ -6,15 +6,16 @@ use lib_interop::proto::core::PExperimentId;
 use crate::modules::app::AppContext;
 use crate::modules::definition::DefinitionArg;
 
-mod abort;
+mod delete;
 mod launch;
 mod list;
 mod show;
+mod stop;
 mod watch;
 
 #[derive(Debug, StructOpt)]
 pub enum ExperimentCommand {
-    Abort {
+    Delete {
         id: PExperimentId,
     },
 
@@ -39,6 +40,10 @@ pub enum ExperimentCommand {
         show_reports: bool,
     },
 
+    Stop {
+        id: PExperimentId,
+    },
+
     Watch {
         id: PExperimentId,
     },
@@ -47,8 +52,8 @@ pub enum ExperimentCommand {
 impl ExperimentCommand {
     pub async fn run(self, ctxt: &mut AppContext) -> Result<()> {
         match self {
-            ExperimentCommand::Abort { id } => {
-                abort::abort(ctxt, id).await
+            ExperimentCommand::Delete { id } => {
+                delete::delete(ctxt, id).await
             }
 
             ExperimentCommand::Launch { watch, definition } => {
@@ -57,6 +62,10 @@ impl ExperimentCommand {
 
             ExperimentCommand::Show { id, show_all, show_jobs, show_reports } => {
                 show::show(ctxt, id, show_all || show_jobs, show_all || show_reports).await
+            }
+
+            ExperimentCommand::Stop { id } => {
+                stop::stop(ctxt, id).await
             }
 
             ExperimentCommand::Watch { id } => {

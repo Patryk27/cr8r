@@ -1,7 +1,7 @@
 use std::convert::TryInto;
 
 use log::*;
-use tokio::time;
+use tokio::time::{delay_for, Duration};
 
 use lib_interop::domain::DAssignment;
 use lib_interop::proto::controller::PGetAssignmentReply;
@@ -32,7 +32,7 @@ impl Dispatcher {
                     debug!("Got nothing");
                     debug!("We'll try again in a few seconds");
 
-                    time::delay_for(time::Duration::from_secs(2))
+                    delay_for(Duration::from_secs(2))
                         .await;
                 }
 
@@ -40,7 +40,7 @@ impl Dispatcher {
                     error!("Couldn't poll controller for an assignment: {:?}", err);
                     error!("We'll try again in a minute");
 
-                    time::delay_for(time::Duration::from_secs(60))
+                    delay_for(Duration::from_secs(60))
                         .await;
                 }
             }

@@ -8,13 +8,13 @@ use lib_core_channel::URx;
 use lib_interop::domain::{DAttachmentId, DAttachmentName};
 use lib_interop::proto::core::PAttachmentSize;
 
-use super::{AttachmentMsg, AttachmentState};
+use super::{AttachmentMsg, AttachmentStatus};
 
 pub struct AttachmentActor {
     pub id: DAttachmentId,
     pub name: DAttachmentName,
     pub size: PAttachmentSize,
-    pub state: AttachmentState,
+    pub status: AttachmentStatus,
 }
 
 impl AttachmentActor {
@@ -25,7 +25,7 @@ impl AttachmentActor {
         trace!("-> size = {}", self.size);
         trace!("-> path = {}", path.display());
 
-        self.state = AttachmentState::Pending {
+        self.status = AttachmentStatus::Pending {
             file,
             uploaded_bytes: 0,
         };

@@ -1,11 +1,13 @@
 pub use self::{
-    aborter::*,
     creator::*,
+    deleter::*,
     searcher::*,
+    stopper::*,
     watcher::*,
 };
 
-mod aborter;
 mod creator;
+mod deleter;
 mod searcher;
+mod stopper;
 mod watcher;

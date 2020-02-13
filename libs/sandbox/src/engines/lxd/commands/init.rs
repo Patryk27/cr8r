@@ -1,6 +1,6 @@
 use anyhow::*;
 use log::*;
-use tokio::time;
+use tokio::time::{delay_for, Duration};
 
 use lib_lxd::{LxdDeviceDef, LxdListener};
 
@@ -101,7 +101,7 @@ async fn wait_for_network(engine: &mut LxdSandboxEngine) -> Result<()> {
     trace!(".. waiting for network");
 
     // Wait a bit before systemd gets initialized; otherwise we won't be able to invoke `systemctl`
-    time::delay_for(time::Duration::from_millis(1000))
+    delay_for(Duration::from_millis(1000))
         .await;
 
     super::exec(engine, "systemctl start network-online.target")

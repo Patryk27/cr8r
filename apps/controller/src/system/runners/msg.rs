@@ -30,15 +30,17 @@ mod register;
 
 impl RunnersMsg {
     pub fn handle(self, actor: &mut RunnersActor) {
+        use RunnersMsg::*;
+
         trace!("Handling message: {:?}", self);
 
         match self {
-            RunnersMsg::FindAll { tx } => {
+            FindAll { tx } => {
                 find_all::find_all(actor)
                     .send_to(tx);
             }
 
-            RunnersMsg::Register { name, tx } => {
+            Register { name, tx } => {
                 register::register(actor, name)
                     .send_to(tx);
             }

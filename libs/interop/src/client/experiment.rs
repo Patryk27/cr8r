@@ -14,8 +14,25 @@ impl ControllerClient {
         Ok(response.into_inner())
     }
 
+    pub async fn delete_experiment(&mut self, id: PExperimentId) -> Result<PDeleteExperimentReply> {
+        let response = self.client
+            .delete_experiment(PDeleteExperimentRequest { id })
+            .await?;
+
+        Ok(response.into_inner())
+    }
+
     pub async fn find_experiments(&mut self, request: PFindExperimentsRequest) -> Result<PFindExperimentsReply> {
-        let response = self.client.find_experiments(request)
+        let response = self.client
+            .find_experiments(request)
+            .await?;
+
+        Ok(response.into_inner())
+    }
+
+    pub async fn stop_experiment(&mut self, id: PExperimentId) -> Result<PStopExperimentReply> {
+        let response = self.client
+            .stop_experiment(PStopExperimentRequest { id })
             .await?;
 
         Ok(response.into_inner())

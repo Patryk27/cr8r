@@ -35,7 +35,7 @@ impl ExecutorActor {
             self.status = ExecutorStatus::Completed;
         } else {
             // @todo notify logger?
-            self.status = ExecutorStatus::Aborted;
+            self.status = ExecutorStatus::Stopped;
         }
 
         self.handle_messages_until_orphaning()

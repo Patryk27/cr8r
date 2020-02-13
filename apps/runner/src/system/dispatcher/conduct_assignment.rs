@@ -1,6 +1,6 @@
 use anyhow::*;
 use log::*;
-use tokio::time;
+use tokio::time::{delay_for, Duration};
 
 use lib_interop::domain::DAssignment;
 
@@ -40,9 +40,9 @@ impl Dispatcher {
 
         loop {
             match executor.get_status().await {
-                ExecutorStatus::Aborted => {
-                    debug!("Experiment result: aborted");
-                    break;
+                ExecutorStatus::Running => {
+                    delay_for(Duration::from_secs(1))
+                        .await;
                 }
 
                 ExecutorStatus::Completed => {
@@ -50,9 +50,9 @@ impl Dispatcher {
                     break;
                 }
 
-                ExecutorStatus::Running => {
-                    time::delay_for(time::Duration::from_secs(1))
-                        .await;
+                ExecutorStatus::Stopped => {
+                    debug!("Experiment result: stopped");
+                    break;
                 }
             }
         }

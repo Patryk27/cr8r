@@ -38,11 +38,6 @@ impl Experiment {
         Self { tx }
     }
 
-    // @todo there should be something like `DExperimentAbortReason`
-    pub fn abort(&self) {
-        tell!(self.tx, ExperimentMsg::Abort);
-    }
-
     pub async fn add_event(&self, runner_id: DRunnerId, event: DEvent) -> Result<()> {
         ask!(self.tx, ExperimentMsg::AddEvent { runner_id, event })
     }
@@ -57,6 +52,10 @@ impl Experiment {
 
     pub async fn start(&self, runner_id: DRunnerId) -> Result<DAssignment> {
         ask!(self.tx, ExperimentMsg::Start { runner_id })
+    }
+
+    pub fn stop(&self) {
+        tell!(self.tx, ExperimentMsg::Stop);
     }
 
     pub async fn watch(&self) -> Result<URx<Arc<DReport>>> {

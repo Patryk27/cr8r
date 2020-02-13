@@ -34,6 +34,10 @@ impl Experiments {
         Self { tx }
     }
 
+    pub async fn delete(&self, id: DExperimentId) -> Result<()> {
+        ask!(self.tx, ExperimentsMsg::Delete { id })
+    }
+
     pub async fn find_all(&self) -> Vec<Experiment> {
         ask!(self.tx, ExperimentsMsg::FindAll)
     }

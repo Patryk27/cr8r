@@ -25,7 +25,7 @@ pub enum ExperimentStatus {
         result: Result<(), String>,
     },
 
-    Zombie {
+    Stopped {
         since: DateTime<Utc>,
     },
 }

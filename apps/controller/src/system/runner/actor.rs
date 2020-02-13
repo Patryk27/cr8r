@@ -30,7 +30,7 @@ impl RunnerActor {
         trace!("Actor is halting");
 
         if let RunnerStatus::Working { experiment, .. } = &self.status {
-            experiment.abort();
+            experiment.stop();
         }
 
         trace!("Actor halted");

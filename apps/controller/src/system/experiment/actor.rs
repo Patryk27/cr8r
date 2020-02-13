@@ -33,10 +33,11 @@ impl ExperimentActor {
 
     fn perform_self_check(&mut self) {
         if let ExperimentStatus::Running { last_heartbeat_at, .. } = self.status {
-            if (Utc::now() - last_heartbeat_at).num_minutes() >= 5 {
-                self.status = ExperimentStatus::Zombie {
-                    since: Utc::now(),
-                };
+            if (Utc::now() - last_heartbeat_at).num_minutes() >= 10 {
+                warn!("Experiment [id={}] has been running for over 10 minutes without any information from the runner - stopping it", self.id);
+
+                ExperimentMsg::Stop
+                    .handle(self);
             }
         }
     }

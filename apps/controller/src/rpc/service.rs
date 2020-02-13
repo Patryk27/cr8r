@@ -76,13 +76,6 @@ impl Controller for ControllerService {
             .map_err(transform_error)
     }
 
-    async fn abort_experiment(
-        &self,
-        _request: Request<PAbortExperimentRequest>,
-    ) -> Result<Response<PAbortExperimentReply>, Status> {
-        unimplemented!()
-    }
-
     async fn create_experiment(
         &self,
         request: Request<PCreateExperimentRequest>,
@@ -93,11 +86,31 @@ impl Controller for ControllerService {
             .map_err(transform_error)
     }
 
+    async fn delete_experiment(
+        &self,
+        request: Request<PDeleteExperimentRequest>,
+    ) -> Result<Response<PDeleteExperimentReply>, Status> {
+        delete_experiment(&self.system, request.into_inner())
+            .await
+            .map(Response::new)
+            .map_err(transform_error)
+    }
+
     async fn find_experiments(
         &self,
         request: Request<PFindExperimentsRequest>,
     ) -> Result<Response<PFindExperimentsReply>, Status> {
         find_experiments(&self.system, request.into_inner())
+            .await
+            .map(Response::new)
+            .map_err(transform_error)
+    }
+
+    async fn stop_experiment(
+        &self,
+        request: Request<PStopExperimentRequest>,
+    ) -> Result<Response<PStopExperimentReply>, Status> {
+        stop_experiment(&self.system, request.into_inner())
             .await
             .map(Response::new)
             .map_err(transform_error)

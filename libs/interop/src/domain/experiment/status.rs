@@ -25,7 +25,7 @@ pub enum DExperimentStatus {
         result: result::Result<(), String>,
     },
 
-    Zombie {
+    Stopped {
         since: DateTime<Utc>,
     },
 }
@@ -65,8 +65,8 @@ impl TryFrom<PExperimentStatus> for DExperimentStatus {
                 }
             }
 
-            Ty::Zombie(PZombie { since }) => {
-                DExperimentStatus::Zombie {
+            Ty::Stopped(PStopped { since }) => {
+                DExperimentStatus::Stopped {
                     since: convert!(since as DateTime),
                 }
             }
@@ -102,8 +102,8 @@ impl Into<PExperimentStatus> for DExperimentStatus {
                 })
             }
 
-            DExperimentStatus::Zombie { since } => {
-                Ty::Zombie(PZombie {
+            DExperimentStatus::Stopped { since } => {
+                Ty::Stopped(PStopped {
                     since: since.to_rfc3339(),
                 })
             }

@@ -10,7 +10,7 @@ use super::super::{ExperimentActor, ExperimentStatus};
 
 pub fn watch(actor: &mut ExperimentActor) -> Result<URx<Arc<DReport>>> {
     match actor.status {
-        ExperimentStatus::Idle { .. } | ExperimentStatus::Running { .. } | ExperimentStatus::Zombie { .. } => {
+        ExperimentStatus::Idle { .. } | ExperimentStatus::Running { .. } => {
             let (tx, rx) = mpsc::unbounded_channel();
 
             actor.watchers.push(tx);
@@ -20,6 +20,10 @@ pub fn watch(actor: &mut ExperimentActor) -> Result<URx<Arc<DReport>>> {
 
         ExperimentStatus::Completed { .. } => {
             Err(anyhow!("This experiment has been already completed"))
+        }
+
+        ExperimentStatus::Stopped { .. } => {
+            Err(anyhow!("This experiment has been already stopped"))
         }
     }
 }

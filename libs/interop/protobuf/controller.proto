@@ -2,20 +2,22 @@ syntax = "proto3";
 
 package cr8r.controller;
 
+import "controller/howdy.proto";
 import "controller/assignment/get.proto";
 import "controller/attachment/download.proto";
 import "controller/attachment/upload.proto";
 import "controller/event/add.proto";
-import "controller/experiment/abort.proto";
 import "controller/experiment/create.proto";
+import "controller/experiment/delete.proto";
 import "controller/experiment/find.proto";
+import "controller/experiment/stop.proto";
 import "controller/experiment/watch.proto";
-import "controller/howdy.proto";
 import "controller/report/find.proto";
 import "controller/runner/find.proto";
 import "controller/runner/register.proto";
 import "core/report.proto";
 
+// @todo it could (and probably should) be separated into distinct services
 service Controller {
     rpc Howdy (PHowdyRequest) returns (PHowdyReply);
 
@@ -27,9 +29,10 @@ service Controller {
     rpc UploadAttachment (stream PUploadAttachmentRequest) returns (PUploadAttachmentReply);
 
     // Experiment-oriented methods
-    rpc AbortExperiment (PAbortExperimentRequest) returns (PAbortExperimentReply);
     rpc CreateExperiment (PCreateExperimentRequest) returns (PCreateExperimentReply);
+    rpc DeleteExperiment (PDeleteExperimentRequest) returns (PDeleteExperimentReply);
     rpc FindExperiments (PFindExperimentsRequest) returns (PFindExperimentsReply);
+    rpc StopExperiment (PStopExperimentRequest) returns (PStopExperimentReply);
     rpc WatchExperiment (PWatchExperimentRequest) returns (stream core.PReport);
 
     // Event-oriented methods

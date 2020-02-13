@@ -4,15 +4,15 @@ use tokio::io::AsyncWriteExt;
 
 use lib_interop::proto::core::PAttachmentSize;
 
-use super::super::{AttachmentActor, AttachmentState};
+use super::super::{AttachmentActor, AttachmentStatus};
 
 pub async fn add_chunk(actor: &mut AttachmentActor, chunk: Vec<u8>) -> Result<()> {
-    match &mut actor.state {
-        AttachmentState::Uninitialized => {
+    match &mut actor.status {
+        AttachmentStatus::Uninitialized => {
             unreachable!()
         }
 
-        AttachmentState::Pending { file, uploaded_bytes } => {
+        AttachmentStatus::Pending { file, uploaded_bytes } => {
             let chunk_len = chunk.len() as PAttachmentSize;
 
             if *uploaded_bytes + chunk_len > actor.size {
@@ -35,7 +35,7 @@ pub async fn add_chunk(actor: &mut AttachmentActor, chunk: Vec<u8>) -> Result<()
             }
         }
 
-        AttachmentState::Ready => {
+        AttachmentStatus::Ready => {
             Err(anyhow!("This attachment has been already committed"))
         }
     }

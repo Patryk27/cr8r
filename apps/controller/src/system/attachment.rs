@@ -12,12 +12,12 @@ use lib_interop::proto::core::PAttachmentSize;
 use self::{
     actor::*,
     msg::*,
-    state::*,
+    status::*,
 };
 
 mod actor;
 mod msg;
-mod state;
+mod status;
 
 #[derive(Clone)]
 pub struct Attachment {
@@ -32,7 +32,7 @@ impl Attachment {
             id,
             name,
             size,
-            state: Default::default(),
+            status: Default::default(),
         }.start(path, file, rx));
 
         Self { tx }

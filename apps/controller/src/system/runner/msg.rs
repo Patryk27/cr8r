@@ -22,17 +22,19 @@ mod get_model;
 
 impl RunnerMsg {
     pub fn handle(self, actor: &mut RunnerActor) -> ActorWorkflow {
+        use RunnerMsg::*;
+
         trace!("Handling message: {:?}", self);
 
         match self {
-            RunnerMsg::GetModel { tx } => {
+            GetModel { tx } => {
                 get_model::get_model(actor)
                     .send_to(tx);
 
                 ActorWorkflow::Continue
             }
 
-            RunnerMsg::Kill => {
+            Kill => {
                 ActorWorkflow::Stop
             }
         }

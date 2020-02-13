@@ -1,14 +1,14 @@
 use anyhow::*;
 
-use super::super::{AttachmentActor, AttachmentState};
+use super::super::{AttachmentActor, AttachmentStatus};
 
 pub async fn commit(actor: &mut AttachmentActor) -> Result<()> {
-    match &mut actor.state {
-        AttachmentState::Uninitialized => {
+    match &mut actor.status {
+        AttachmentStatus::Uninitialized => {
             unreachable!()
         }
 
-        AttachmentState::Pending { file, uploaded_bytes } => {
+        AttachmentStatus::Pending { file, uploaded_bytes } => {
             if *uploaded_bytes != actor.size {
                 return Err(anyhow!("Tried to commit partially uploaded attachment"));
             }
@@ -17,12 +17,12 @@ pub async fn commit(actor: &mut AttachmentActor) -> Result<()> {
                 .await
                 .unwrap();
 
-            actor.state = AttachmentState::Ready;
+            actor.status = AttachmentStatus::Ready;
 
             Ok(())
         }
 
-        AttachmentState::Ready => {
+        AttachmentStatus::Ready => {
             Err(anyhow!("This attachment has been already committed"))
         }
     }

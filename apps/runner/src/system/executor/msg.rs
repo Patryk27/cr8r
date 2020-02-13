@@ -11,12 +11,12 @@ use super::ExecutorActor;
 #[derive(Derivative)]
 #[derivative(Debug)]
 pub enum ExecutorMsg {
-    Abort,
-
     GetStatus {
         #[derivative(Debug = "ignore")]
         tx: OTx<ExecutorStatus>,
     },
+
+    Stop,
 }
 
 impl ExecutorMsg {
@@ -26,13 +26,13 @@ impl ExecutorMsg {
         trace!("Handling message: {:?}", self);
 
         match self {
-            Abort => {
-                ActorWorkflow::Stop
-            }
-
             GetStatus { tx } => {
                 actor.status.send_to(tx);
                 ActorWorkflow::Continue
+            }
+
+            Stop => {
+                ActorWorkflow::Stop
             }
         }
     }

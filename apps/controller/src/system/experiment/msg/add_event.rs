@@ -75,8 +75,8 @@ pub fn add_event(actor: &mut ExperimentActor, runner_id: DRunnerId, event: DEven
             Err(anyhow!("This experiment has been already completed"))
         }
 
-        ExperimentStatus::Zombie { .. } => {
-            Err(anyhow!("This experiment has been abandoned by its runner and has become a zombie - it can be manually aborted or restarted"))
+        ExperimentStatus::Stopped { .. } => {
+            Err(anyhow!("This experiment has been already stopped"))
         }
     }
 }
