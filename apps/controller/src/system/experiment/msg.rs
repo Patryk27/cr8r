@@ -5,7 +5,7 @@ use derivative::Derivative;
 use log::*;
 
 use lib_core_channel::{OTx, SendTo, URx};
-use lib_interop::domain::{DAssignment, DEvent, DExperiment, DReport, DRunnerId};
+use lib_interop::domain::{DEvent, DExperiment, DReport, DRunnerId};
 
 use super::ExperimentActor;
 
@@ -15,6 +15,13 @@ pub enum ExperimentMsg {
     AddEvent {
         runner_id: DRunnerId,
         event: DEvent,
+
+        #[derivative(Debug = "ignore")]
+        tx: OTx<Result<()>>,
+    },
+
+    Claim {
+        runner_id: DRunnerId,
 
         #[derivative(Debug = "ignore")]
         tx: OTx<Result<()>>,
@@ -30,13 +37,6 @@ pub enum ExperimentMsg {
         tx: OTx<Vec<Arc<DReport>>>,
     },
 
-    Start {
-        runner_id: DRunnerId,
-
-        #[derivative(Debug = "ignore")]
-        tx: OTx<Result<DAssignment>>,
-    },
-
     Stop,
 
     Watch {
@@ -46,9 +46,9 @@ pub enum ExperimentMsg {
 }
 
 mod add_event;
+mod claim;
 mod get_model;
 mod get_reports;
-mod start;
 mod stop;
 mod watch;
 
@@ -64,6 +64,11 @@ impl ExperimentMsg {
                     .send_to(tx)
             }
 
+            Claim { runner_id, tx } => {
+                claim::claim(actor, runner_id)
+                    .send_to(tx)
+            }
+
             GetModel { tx } => {
                 get_model::get_model(actor)
                     .send_to(tx)
@@ -71,11 +76,6 @@ impl ExperimentMsg {
 
             GetReports { tx } => {
                 get_reports::get_reports(actor)
-                    .send_to(tx)
-            }
-
-            Start { runner_id, tx } => {
-                start::start(actor, runner_id)
                     .send_to(tx)
             }
 

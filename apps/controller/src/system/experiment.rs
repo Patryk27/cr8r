@@ -43,16 +43,16 @@ impl Experiment {
         ask!(self.tx, ExperimentMsg::AddEvent { runner_id, event })
     }
 
+    pub async fn claim(&self, runner_id: DRunnerId) -> Result<()> {
+        ask!(self.tx, ExperimentMsg::Claim { runner_id })
+    }
+
     pub async fn get_model(&self) -> DExperiment {
         ask!(self.tx, ExperimentMsg::GetModel)
     }
 
     pub async fn get_reports(&self) -> Vec<Arc<DReport>> {
         ask!(self.tx, ExperimentMsg::GetReports)
-    }
-
-    pub async fn start(&self, runner_id: DRunnerId) -> Result<()> {
-        ask!(self.tx, ExperimentMsg::Start { runner_id })
     }
 
     pub fn stop(&self) {

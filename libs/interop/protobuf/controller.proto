@@ -3,7 +3,7 @@ syntax = "proto3";
 package cr8r.controller;
 
 import "controller/howdy.proto";
-import "controller/assignment/get.proto";
+import "controller/assignment/prepare.proto";
 import "controller/attachment/download.proto";
 import "controller/attachment/upload.proto";
 import "controller/event/add.proto";
@@ -22,7 +22,7 @@ service Controller {
     rpc Howdy (PHowdyRequest) returns (PHowdyReply);
 
     // Assignment-oriented methods
-    rpc GetAssignment (PGetAssignmentRequest) returns (PGetAssignmentReply);
+    rpc PrepareAssignment (PPrepareAssignmentRequest) returns (PPrepareAssignmentReply);
 
     // Attachment-oriented methods
     rpc DownloadAttachment (PDownloadAttachmentRequest) returns (stream PDownloadAttachmentReply);

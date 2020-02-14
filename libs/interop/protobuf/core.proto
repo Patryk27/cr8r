@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package cr8r.core;
 
-import "core/assignment.proto";
+import "core/attachment.proto";
 import "core/definition.proto";
 import "core/event.proto";
 import "core/experiment.proto";

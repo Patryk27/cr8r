@@ -7,7 +7,7 @@ pub fn stop(actor: &mut ExperimentActor) {
         return;
     }
 
-    if let ExperimentStatus::Running { reports, .. } = &actor.status {
+    if let ExperimentStatus::Running { .. } = &actor.status {
         // @todo kill watchers
         // @todo notify runner
     }

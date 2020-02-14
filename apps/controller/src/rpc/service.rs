@@ -2,6 +2,7 @@ use anyhow::*;
 use tokio::stream::Stream;
 use tonic::{Request, Response, Status, Streaming};
 
+use lib_core_channel::URx;
 use lib_interop::proto::controller::*;
 use lib_interop::proto::controller::controller_server::Controller;
 use lib_interop::proto::core::PReport;
@@ -47,17 +48,17 @@ impl Controller for ControllerService {
         ))
     }
 
-    async fn get_assignment(
+    async fn prepare_assignment(
         &self,
-        request: Request<PGetAssignmentRequest>,
-    ) -> Result<Response<PGetAssignmentReply>, Status> {
-        get_assignment(&self.system, request.into_inner())
+        request: Request<PPrepareAssignmentRequest>,
+    ) -> Result<Response<PPrepareAssignmentReply>, Status> {
+        prepare_assignment(&self.system, request.into_inner())
             .await
             .map(Response::new)
             .map_err(transform_error)
     }
 
-    type DownloadAttachmentStream = tokio::sync::mpsc::UnboundedReceiver<Result<PDownloadAttachmentReply, Status>>;
+    type DownloadAttachmentStream = URx<Result<PDownloadAttachmentReply, Status>>;
 
     async fn download_attachment(
         &self,

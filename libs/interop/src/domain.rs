@@ -1,5 +1,4 @@
 pub use self::{
-    assignment::DAssignment,
     attachment::{DAttachmentId, DAttachmentName},
     definition::DDefinition,
     error::*,
@@ -12,7 +11,6 @@ pub use self::{
 
 mod macros;
 
-pub mod assignment;
 pub mod attachment;
 pub mod definition;
 pub mod error;

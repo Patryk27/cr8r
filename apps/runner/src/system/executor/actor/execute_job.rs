@@ -65,10 +65,14 @@ impl ExecutorActor {
     }
 
     async fn execute_opcodes(&mut self, opcodes: Vec<DJobOpcode>) -> Result<ActorWorkflow> {
-        for opcode in opcodes {
+        for (opcode_id, opcode) in opcodes.into_iter().enumerate() {
+            debug!("Starting opcode [id={}]", opcode_id);
+
             if self.execute_opcode(opcode).await?.actor_should_stop() {
                 return Ok(ActorWorkflow::Stop);
             }
+
+            debug!("Completed opcode [id={}]", opcode_id);
         }
 
         Ok(ActorWorkflow::Continue)

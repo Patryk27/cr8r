@@ -2,12 +2,12 @@ use anyhow::*;
 use log::*;
 use tokio::time::{delay_for, Duration};
 
-use lib_interop::domain::DAssignment;
+use lib_interop::domain::DExperimentId;
 
 use crate::system::{Dispatcher, Executor, ExecutorStatus, Logger};
 
 impl Dispatcher {
-    pub(super) async fn conduct_assignment(&mut self, assignment: DAssignment) -> Result<()> {
+    pub(super) async fn conduct_assignment(&mut self, experiment_id: DExperimentId) -> Result<()> {
         let sandbox = {
             debug!("Preparing sandbox");
 
@@ -21,7 +21,7 @@ impl Dispatcher {
 
             Logger::new(
                 self.session.clone(),
-                assignment.experiment.id,
+                experiment_id,
             )
         };
 
@@ -30,9 +30,9 @@ impl Dispatcher {
 
             Executor::new(
                 self.session.clone(),
-                assignment,
                 sandbox,
                 logger,
+                experiment_id,
             )
         };
 

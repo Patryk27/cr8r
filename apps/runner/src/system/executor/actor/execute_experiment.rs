@@ -1,15 +1,23 @@
+use log::*;
+
 use lib_core_actor::*;
-use lib_interop::domain::{DAssignment, DEventType};
+use lib_interop::domain::{DEventType, DJob};
 
 use super::ExecutorActor;
 
 impl ExecutorActor {
-    pub(super) async fn execute_assignment(&mut self, assignment: DAssignment) -> ActorWorkflow {
+    pub(super) async fn execute_experiment(&mut self) -> ActorWorkflow {
         if self.handle_messages().actor_should_stop() {
             return ActorWorkflow::Stop;
         }
 
-        for (id, job) in assignment.jobs.into_iter().enumerate() {
+        // @todo download attachments
+
+        let jobs: Vec<DJob> = unimplemented!();
+
+        for (id, job) in jobs.into_iter().enumerate() {
+            debug!("Starting job [id={}, name={}]", id, job.name);
+
             self.logger.add(DEventType::JobStarted { id });
 
             let result = self
@@ -22,6 +30,8 @@ impl ExecutorActor {
                 }
 
                 result => {
+                    debug!("Completed job [id={}]", id);
+
                     let result = result
                         .map(|_| ())
                         .map_err(|err| format!("{:#?}", err)); // @todo this could be nicer

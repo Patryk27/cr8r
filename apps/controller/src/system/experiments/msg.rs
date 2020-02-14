@@ -3,7 +3,7 @@ use derivative::Derivative;
 use log::*;
 
 use lib_core_channel::{OTx, SendTo};
-use lib_interop::domain::{DDefinition, DExperimentId};
+use lib_interop::domain::{DDefinition, DExperimentId, DRunnerId};
 
 use crate::system::Experiment;
 
@@ -37,15 +37,23 @@ pub enum ExperimentsMsg {
         #[derivative(Debug = "ignore")]
         tx: OTx<DExperimentId>,
     },
+
+    PrepareAssignment {
+        runner_id: DRunnerId,
+
+        #[derivative(Debug = "ignore")]
+        tx: OTx<Result<Option<DExperimentId>>>,
+    },
 }
 
 mod delete;
 mod find_all;
 mod find_one;
 mod launch;
+mod prepare_assignment;
 
 impl ExperimentsMsg {
-    pub fn handle(self, actor: &mut ExperimentsActor) {
+    pub async fn handle(self, actor: &mut ExperimentsActor) {
         use ExperimentsMsg::*;
 
         trace!("Handling message: {:?}", self);
@@ -68,6 +76,12 @@ impl ExperimentsMsg {
 
             Launch { definition, tx } => {
                 launch::launch(actor, definition)
+                    .send_to(tx);
+            }
+
+            PrepareAssignment { runner_id, tx } => {
+                prepare_assignment::prepare_assignment(actor, runner_id)
+                    .await
                     .send_to(tx);
             }
         }

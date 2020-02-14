@@ -4,7 +4,7 @@ use tokio::task::spawn;
 
 use lib_core_actor::*;
 use lib_core_channel::UTx;
-use lib_interop::domain::{DDefinition, DExperimentId};
+use lib_interop::domain::{DDefinition, DExperimentId, DRunnerId};
 
 use crate::system::{Compiler, Experiment};
 
@@ -49,5 +49,9 @@ impl Experiments {
 
     pub async fn launch(&self, definition: DDefinition) -> DExperimentId {
         ask!(self.tx, ExperimentsMsg::Launch { definition })
+    }
+
+    pub async fn prepare_assignment(&self, runner_id: DRunnerId) -> Result<Option<DExperimentId>> {
+        ask!(self.tx, ExperimentsMsg::PrepareAssignment { runner_id })
     }
 }

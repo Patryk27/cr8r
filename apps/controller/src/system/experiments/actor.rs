@@ -22,7 +22,8 @@ impl ExperimentsActor {
         trace!("Actor started");
 
         while let Some(msg) = mailbox.next().await {
-            msg.handle(&mut self);
+            msg.handle(&mut self)
+                .await;
         }
 
         trace!("Actor halted");

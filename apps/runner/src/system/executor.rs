@@ -1,8 +1,9 @@
-use tokio::{sync::mpsc, task};
+use tokio::sync::mpsc::unbounded_channel;
+use tokio::task::spawn;
 
 use lib_core_actor::*;
 use lib_core_channel::UTx;
-use lib_interop::domain::DAssignment;
+use lib_interop::domain::DExperimentId;
 use lib_sandbox::Sandbox;
 
 use crate::rpc::ControllerSession;
@@ -25,18 +26,20 @@ pub struct Executor {
 impl Executor {
     pub fn new(
         session: ControllerSession,
-        assignment: DAssignment,
         sandbox: Sandbox,
         logger: Logger,
+        experiment_id: DExperimentId,
     ) -> Self {
-        let (tx, mailbox) = mpsc::unbounded_channel();
+        let (tx, mailbox) = unbounded_channel();
 
-        task::spawn(ExecutorActor {
-            mailbox,
+        spawn(ExecutorActor {
+            session,
             sandbox,
             logger,
+            mailbox,
+            experiment_id,
             status: ExecutorStatus::Running,
-        }.start(assignment));
+        }.start());
 
         Self { tx }
     }
