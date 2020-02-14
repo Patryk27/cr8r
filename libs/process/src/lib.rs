@@ -5,10 +5,11 @@ use std::io;
 use std::path::Path;
 use std::process::{ExitStatus, Stdio};
 
-use tokio::{sync::mpsc, task};
 use tokio::io::AsyncRead;
 use tokio::process::Command;
 use tokio::stream::StreamExt;
+use tokio::sync::mpsc::{unbounded_channel, UnboundedSender};
+use tokio::task::spawn;
 use tokio_util::codec::{FramedRead, LinesCodec};
 
 pub struct Process<'a> {
@@ -45,7 +46,7 @@ impl<'a> Process<'a> {
             .stderr(Stdio::piped())
             .spawn()?;
 
-        let (tx, mut rx) = mpsc::unbounded_channel();
+        let (tx, mut rx) = unbounded_channel();
 
         if let Some(mut listener) = self.listener {
             if let Some(stdout) = child.stdout.take() {
@@ -65,10 +66,10 @@ impl<'a> Process<'a> {
     }
 }
 
-fn spawn_stream(tx: mpsc::UnboundedSender<String>, stream: impl AsyncRead + Unpin + Send + 'static) {
+fn spawn_stream(tx: UnboundedSender<String>, stream: impl AsyncRead + Unpin + Send + 'static) {
     let mut stream = FramedRead::new(stream, LinesCodec::new());
 
-    task::spawn(async move {
+    spawn(async move {
         while let Some(line) = stream.next().await {
             if let Ok(line) = line {
                 if tx.send(line).is_err() {

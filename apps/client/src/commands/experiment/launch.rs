@@ -2,7 +2,7 @@ use anyhow::*;
 use colored::Colorize;
 use indicatif::{ProgressBar, ProgressStyle};
 use tokio::stream::StreamExt;
-use tokio::task;
+use tokio::task::spawn;
 
 use lib_core_channel::URx;
 use lib_core_ui::*;
@@ -15,7 +15,7 @@ use crate::modules::experiment::{ExperimentCreator, ExperimentCreatorProgress};
 pub async fn launch(ctxt: &mut AppContext, watch: bool, definition: DefinitionArg) -> Result<()> {
     let (creator, mut rx) = ExperimentCreator::new(ctxt);
 
-    let ui = task::spawn(async move {
+    let ui = spawn(async move {
         while let Some(evt) = rx.next().await {
             print(watch, evt, &mut rx)
                 .await;

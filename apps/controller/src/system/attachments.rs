@@ -1,5 +1,6 @@
 use anyhow::*;
-use tokio::{sync::mpsc, task};
+use tokio::sync::mpsc::unbounded_channel;
+use tokio::task::spawn;
 
 use lib_core_actor::*;
 use lib_core_channel::UTx;
@@ -29,13 +30,13 @@ pub struct Attachments {
 
 impl Attachments {
     pub fn new(config: AttachmentsConfig) -> Result<Self> {
-        let (tx, rx) = mpsc::unbounded_channel();
+        let (tx, rx) = unbounded_channel();
 
         ensure!(config.store_path.exists(), AttachmentsError::StoreNotExists {
             path: config.store_path,
         });
 
-        task::spawn(AttachmentsActor {
+        spawn(AttachmentsActor {
             remaining_size: config.store_size,
             attachments: Default::default(),
             next_id: Default::default(),

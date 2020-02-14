@@ -1,5 +1,5 @@
 use anyhow::*;
-use tokio::task;
+use tokio::task::spawn;
 use tonic::Streaming;
 
 use lib_interop::proto::controller::*;
@@ -74,7 +74,7 @@ pub async fn upload_attachment(
         Err(err) => {
             let attachments = system.attachments.clone();
 
-            task::spawn(async move {
+            spawn(async move {
                 let _ = attachments
                     .remove(id)
                     .await;

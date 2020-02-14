@@ -1,7 +1,8 @@
 use std::collections::VecDeque;
 
 use chrono::Utc;
-use tokio::{sync::mpsc, task};
+use tokio::sync::mpsc::unbounded_channel;
+use tokio::task::spawn;
 
 use lib_core_actor::*;
 use lib_core_channel::UTx;
@@ -24,9 +25,9 @@ pub struct Logger {
 
 impl Logger {
     pub fn new(session: ControllerSession, experiment_id: DExperimentId) -> Self {
-        let (tx, rx) = mpsc::unbounded_channel();
+        let (tx, rx) = unbounded_channel();
 
-        task::spawn(LoggerActor {
+        spawn(LoggerActor {
             session,
             experiment_id,
             pending_events: VecDeque::new(),

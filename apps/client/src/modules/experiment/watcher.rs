@@ -1,8 +1,8 @@
 use std::convert::TryInto;
 
 use anyhow::*;
-use tokio::sync::mpsc;
-use tokio::task;
+use tokio::sync::mpsc::unbounded_channel;
+use tokio::task::spawn;
 
 use lib_core_channel::{SendTo, URx};
 use lib_interop::domain::{DExperimentId, DReport};
@@ -25,9 +25,9 @@ impl<'c> ExperimentWatcher<'c> {
             .watch_experiment(id.into())
             .await?;
 
-        let (tx, rx) = mpsc::unbounded_channel();
+        let (tx, rx) = unbounded_channel();
 
-        task::spawn(async move {
+        spawn(async move {
             loop {
                 let report = reports
                     .message()

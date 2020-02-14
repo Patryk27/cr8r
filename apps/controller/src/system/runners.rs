@@ -1,5 +1,6 @@
 use anyhow::*;
-use tokio::{sync::mpsc, task};
+use tokio::sync::mpsc::unbounded_channel;
+use tokio::task::spawn;
 
 use lib_core_actor::*;
 use lib_core_channel::UTx;
@@ -22,9 +23,9 @@ pub struct Runners {
 
 impl Runners {
     pub fn new() -> Self {
-        let (tx, rx) = mpsc::unbounded_channel();
+        let (tx, rx) = unbounded_channel();
 
-        task::spawn(
+        spawn(
             RunnersActor::default()
                 .start(rx)
         );

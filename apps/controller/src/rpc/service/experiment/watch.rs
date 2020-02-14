@@ -1,8 +1,9 @@
 use std::result;
 
 use anyhow::*;
-use tokio::{sync::mpsc, task};
 use tokio::stream::{Stream, StreamExt};
+use tokio::sync::mpsc::channel;
+use tokio::task::spawn;
 use tonic::Status;
 
 use lib_interop::proto::controller::PWatchExperimentRequest;
@@ -25,9 +26,9 @@ pub async fn watch_experiment(
         .watch()
         .await?;
 
-    let (mut tx, rx) = mpsc::channel(4);
+    let (mut tx, rx) = channel(4);
 
-    task::spawn(async move {
+    spawn(async move {
         while let Some(report) = reports.next().await {
             let report = (&*report).into();
 
