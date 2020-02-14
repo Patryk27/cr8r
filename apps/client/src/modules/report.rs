@@ -2,7 +2,7 @@ use anyhow::*;
 
 use lib_interop::convert;
 use lib_interop::domain::{DExperimentId, DReport};
-use lib_interop::proto::controller::PFindReportsRequest;
+use lib_interop::proto::services::PFindReportsRequest;
 
 use crate::modules::app::AppContext;
 

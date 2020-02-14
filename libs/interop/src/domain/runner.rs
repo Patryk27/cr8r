@@ -4,7 +4,7 @@ use chrono::{DateTime, Utc};
 
 use crate::convert;
 use crate::domain::{DomainError, DomainResult};
-use crate::proto::core::PRunner;
+use crate::proto::models::PRunner;
 
 pub use self::{
     id::*,

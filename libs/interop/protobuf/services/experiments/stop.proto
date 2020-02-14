@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package cr8r.services;
+
+message PStopExperimentRequest {
+    uint32 id = 1;
+}
+
+message PStopExperimentReply {
+    //
+}

@@ -2,7 +2,7 @@ use std::convert::TryFrom;
 
 use crate::convert;
 use crate::domain::{DomainError, DomainResult};
-use crate::proto::core::PDefinition;
+use crate::proto::models::PDefinition;
 
 pub use self::{
     dependency::*,

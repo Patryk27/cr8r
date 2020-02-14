@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package cr8r.services;
+
+import "models/report.proto";
+
+message PFindReportsRequest {
+    uint32 experiment_id = 1;
+}
+
+message PFindReportsReply {
+    repeated models.PReport reports = 1;
+}

@@ -5,7 +5,7 @@ use tokio::sync::mpsc::unbounded_channel;
 
 use lib_core_channel::{URx, UTx};
 use lib_interop::domain::DExperimentId;
-use lib_interop::proto::core::PAttachmentId;
+use lib_interop::proto::models::PAttachmentId;
 
 use crate::modules::app::AppContext;
 use crate::modules::attachment::AttachmentUploaderProgress;

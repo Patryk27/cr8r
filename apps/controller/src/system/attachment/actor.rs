@@ -6,7 +6,7 @@ use tokio::stream::StreamExt;
 
 use lib_core_channel::URx;
 use lib_interop::domain::{DAttachmentId, DAttachmentName};
-use lib_interop::proto::core::PAttachmentSize;
+use lib_interop::proto::models::PAttachmentSize;
 
 use super::{AttachmentMsg, AttachmentStatus};
 

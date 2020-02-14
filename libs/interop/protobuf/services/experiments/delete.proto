@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package cr8r.services;
+
+message PDeleteExperimentRequest {
+    uint32 id = 1;
+}
+
+message PDeleteExperimentReply {
+    //
+}

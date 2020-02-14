@@ -2,7 +2,7 @@ use anyhow::*;
 use log::*;
 use tokio::io::AsyncWriteExt;
 
-use lib_interop::proto::core::PAttachmentSize;
+use lib_interop::proto::models::PAttachmentSize;
 
 use super::super::{AttachmentActor, AttachmentStatus};
 

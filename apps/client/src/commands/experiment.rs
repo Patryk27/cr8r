@@ -1,7 +1,7 @@
 use anyhow::*;
 use structopt::StructOpt;
 
-use lib_interop::proto::core::PExperimentId;
+use lib_interop::proto::models::PExperimentId;
 
 use crate::modules::app::AppContext;
 use crate::modules::definition::DefinitionArg;

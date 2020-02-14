@@ -6,12 +6,12 @@ use tokio::stream::StreamExt;
 use lib_core_channel::URx;
 use lib_interop::domain::{DEvent, DExperimentId};
 
-use crate::rpc::ControllerSession;
+use crate::rpc::Session;
 
 use super::LoggerMsg;
 
 pub struct LoggerActor {
-    pub session: ControllerSession,
+    pub session: Session,
     pub experiment_id: DExperimentId,
     pub pending_events: VecDeque<DEvent>,
 }

@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package cr8r.services;
+
+import "models/definition.proto";
+
+// @todo rename -> Launch
+message PCreateExperimentRequest {
+    models.PDefinition definition = 1;
+}
+
+message PCreateExperimentReply {
+    uint32 id = 1;
+}

@@ -5,7 +5,7 @@ use tokio::task::spawn;
 use lib_core_actor::*;
 use lib_core_channel::UTx;
 use lib_interop::domain::{DAttachmentId, DAttachmentName};
-use lib_interop::proto::core::PAttachmentSize;
+use lib_interop::proto::models::PAttachmentSize;
 
 use crate::system::Attachment;
 

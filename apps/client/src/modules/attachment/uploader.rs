@@ -4,7 +4,7 @@ use anyhow::*;
 use tokio::sync::mpsc;
 
 use lib_core_channel::{URx, UTx};
-use lib_interop::proto::core::PAttachmentId;
+use lib_interop::proto::models::PAttachmentId;
 
 use crate::modules::app::AppContext;
 

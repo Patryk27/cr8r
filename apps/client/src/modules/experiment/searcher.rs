@@ -3,7 +3,7 @@ use std::convert::TryInto;
 use anyhow::*;
 
 use lib_interop::domain::{DExperiment, DExperimentId};
-use lib_interop::proto::controller::PFindExperimentsRequest;
+use lib_interop::proto::services::PFindExperimentsRequest;
 
 use crate::modules::app::AppContext;
 

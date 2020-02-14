@@ -6,7 +6,7 @@ use lib_core_channel::UTx;
 use lib_interop::domain::DExperimentId;
 use lib_sandbox::Sandbox;
 
-use crate::rpc::ControllerSession;
+use crate::rpc::Session;
 use crate::system::Logger;
 
 use self::{
@@ -25,7 +25,7 @@ pub struct Executor {
 
 impl Executor {
     pub fn new(
-        session: ControllerSession,
+        session: Session,
         sandbox: Sandbox,
         logger: Logger,
         experiment_id: DExperimentId,

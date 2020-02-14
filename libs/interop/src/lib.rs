@@ -1,6 +1,6 @@
 #![feature(crate_visibility_modifier)]
 #![feature(type_ascription)]
 
-pub mod client;
+pub mod connection;
 pub mod domain;
 pub mod proto;

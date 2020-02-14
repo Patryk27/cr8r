@@ -3,9 +3,9 @@ use tokio::stream::Stream;
 use tonic::{Request, Response, Status, Streaming};
 
 use lib_core_channel::URx;
-use lib_interop::proto::controller::*;
-use lib_interop::proto::controller::controller_server::Controller;
-use lib_interop::proto::core::PReport;
+use lib_interop::proto::services::*;
+use lib_interop::proto::services::controller_server::Controller;
+use lib_interop::proto::models::PReport;
 
 use crate::system::System;
 
@@ -15,6 +15,7 @@ use self::{
     event::*,
     experiment::*,
     howdy::*,
+    job::*,
     report::*,
     runner::*,
 };
@@ -24,6 +25,7 @@ mod attachment;
 mod event;
 mod experiment;
 mod howdy;
+mod job;
 mod report;
 mod runner;
 
@@ -167,6 +169,13 @@ impl Controller for ControllerService {
             .await
             .map(Response::new)
             .map_err(transform_error)
+    }
+
+    async fn find_jobs(
+        &self,
+        request: Request<PFindJobsRequest>,
+    ) -> Result<Response<PFindJobsReply>, Status> {
+        unimplemented!()
     }
 }
 

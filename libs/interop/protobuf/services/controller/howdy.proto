@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package cr8r.services;
+
+message PHowdyRequest {
+    //
+}
+
+message PHowdyReply {
+    string version = 1;
+    uint64 uptime = 2;
+}

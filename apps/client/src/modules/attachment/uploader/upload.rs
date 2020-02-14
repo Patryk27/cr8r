@@ -9,9 +9,9 @@ use tokio::sync::mpsc;
 use tokio::task::{JoinError, spawn};
 
 use lib_core_channel::{BRx, SendTo};
-use lib_interop::proto::controller::p_upload_attachment_request::{Chunk, PContent, PMetadata};
-use lib_interop::proto::controller::PUploadAttachmentRequest;
-use lib_interop::proto::core::PAttachmentId;
+use lib_interop::proto::services::p_upload_attachment_request::{Chunk, PContent, PMetadata};
+use lib_interop::proto::services::PUploadAttachmentRequest;
+use lib_interop::proto::models::PAttachmentId;
 
 use super::{AttachmentUploader, AttachmentUploaderProgress::*};
 

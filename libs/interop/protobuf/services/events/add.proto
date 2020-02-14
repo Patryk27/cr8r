@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package cr8r.services;
+
+import "models/event.proto";
+
+message PAddEventRequest {
+    uint32 runner_id = 1;
+    uint32 experiment_id = 2;
+    models.PEvent event = 3;
+}
+
+message PAddEventReply {
+    //
+}
+

@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package cr8r.services;
+
+message PPrepareAssignmentRequest {
+    uint32 runner_id = 1;
+}
+
+message PPrepareAssignmentReply {
+    oneof assignment {
+        uint32 experiment_id = 1;
+    }
+}

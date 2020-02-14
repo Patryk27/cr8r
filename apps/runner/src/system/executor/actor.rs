@@ -4,7 +4,7 @@ use lib_core_channel::URx;
 use lib_interop::domain::{DEventType, DExperimentId};
 use lib_sandbox::Sandbox;
 
-use crate::rpc::ControllerSession;
+use crate::rpc::Session;
 use crate::system::{ExecutorStatus, Logger};
 
 use super::ExecutorMsg;
@@ -15,7 +15,7 @@ mod execute_opcode;
 mod handle_messages;
 
 pub struct ExecutorActor {
-    pub session: ControllerSession,
+    pub session: Session,
     pub sandbox: Sandbox,
     pub logger: Logger,
     pub mailbox: URx<ExecutorMsg>,

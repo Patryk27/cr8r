@@ -4,7 +4,7 @@ use chrono::{DateTime, Utc};
 
 use crate::convert;
 use crate::domain::{DomainError, DomainResult};
-use crate::proto::core::{PReport, PReportType};
+use crate::proto::models::{PReport, PReportType};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DReport {

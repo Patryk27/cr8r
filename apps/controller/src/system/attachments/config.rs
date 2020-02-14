@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use serde::Deserialize;
 
-use lib_interop::proto::core::PAttachmentSize;
+use lib_interop::proto::models::PAttachmentSize;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]

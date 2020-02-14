@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package cr8r.services;
+
+import "models/runner.proto";
+
+message PFindRunnersRequest {
+    //
+}
+
+message PFindRunnersReply {
+    repeated models.PRunner runners = 1;
+}

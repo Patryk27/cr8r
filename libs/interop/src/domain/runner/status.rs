@@ -4,7 +4,7 @@ use chrono::{DateTime, Utc};
 
 use crate::convert;
 use crate::domain::{DExperimentId, DomainError, DomainResult};
-use crate::proto::core::PRunnerStatus;
+use crate::proto::models::PRunnerStatus;
 
 #[derive(Clone, Debug)]
 pub enum DRunnerStatus {
@@ -26,7 +26,7 @@ impl TryFrom<PRunnerStatus> for DRunnerStatus {
     type Error = DomainError;
 
     fn try_from(PRunnerStatus { ty }: PRunnerStatus) -> DomainResult<Self> {
-        use crate::proto::core::p_runner_status::*;
+        use crate::proto::models::p_runner_status::*;
 
         Ok(match convert!(ty?) {
             Ty::Idle(PIdle { since }) => {
@@ -53,7 +53,7 @@ impl TryFrom<PRunnerStatus> for DRunnerStatus {
 
 impl Into<PRunnerStatus> for DRunnerStatus {
     fn into(self) -> PRunnerStatus {
-        use crate::proto::core::p_runner_status::*;
+        use crate::proto::models::p_runner_status::*;
 
         let ty = match self {
             DRunnerStatus::Idle { since } => {

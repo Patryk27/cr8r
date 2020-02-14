@@ -2,8 +2,8 @@ use std::convert::TryFrom;
 
 use crate::convert;
 use crate::domain::{DAttachmentId, DomainError, DomainResult};
-use crate::proto::core::p_definition::*;
-use crate::proto::core::p_definition::p_dependency_def::PDependencyDefSource;
+use crate::proto::models::p_definition::*;
+use crate::proto::models::p_definition::p_dependency_def::PDependencyDefSource;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DDependencyDef {

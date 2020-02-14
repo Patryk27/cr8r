@@ -5,7 +5,7 @@ use log::*;
 use lib_core_actor::ActorWorkflow;
 use lib_core_channel::{OTx, SendTo};
 use lib_interop::domain::DAttachmentName;
-use lib_interop::proto::core::PAttachmentSize;
+use lib_interop::proto::models::PAttachmentSize;
 
 use super::AttachmentActor;
 

@@ -1,19 +1,29 @@
 use anyhow::*;
+use tonic::transport::Channel;
 
-use lib_interop::client::ControllerClient;
+use lib_interop::connection::ControllerConnection;
+use lib_interop::proto::services::{
+    assignments_client::AssignmentsClient,
+    attachments_client::AttachmentsClient,
+    controller_client::ControllerClient,
+    events_client::EventsClient,
+    experiments_client::ExperimentsClient,
+    jobs_client::JobsClient,
+    reports_client::ReportsClient,
+};
 
 use crate::modules::app::AppConfig;
 
 pub struct AppContext {
     config: AppConfig,
-    client: Option<ControllerClient>,
+    conn: Option<ControllerConnection>,
 }
 
 impl AppContext {
     pub fn new(config: AppConfig) -> Self {
         Self {
             config,
-            client: None,
+            conn: None,
         }
     }
 
@@ -21,20 +31,58 @@ impl AppContext {
         &self.config
     }
 
-    pub async fn client(&mut self) -> Result<&mut ControllerClient> {
-        if self.client.is_none() {
-            let controller = &self.config.controller;
+    pub async fn assignments(&mut self) -> Result<AssignmentsClient<Channel>> {
+        self.conn()
+            .await
+            .map(|conn| conn.assignments())
+    }
 
-            let client = ControllerClient::connect(
-                controller.address.to_owned(),
-                controller.secret.to_owned(),
-            ).await?;
+    pub async fn attachments(&mut self) -> Result<AttachmentsClient<Channel>> {
+        self.conn()
+            .await
+            .map(|conn| conn.attachments())
+    }
 
-            self.client = Some(client);
+    pub async fn controller(&mut self) -> Result<ControllerClient<Channel>> {
+        self.conn()
+            .await
+            .map(|conn| conn.controller())
+    }
+
+    pub async fn events(&mut self) -> Result<EventsClient<Channel>> {
+        self.conn()
+            .await
+            .map(|conn| conn.events())
+    }
+
+    pub async fn experiments(&mut self) -> Result<ExperimentsClient<Channel>> {
+        self.conn()
+            .await
+            .map(|conn| conn.experiments())
+    }
+
+    pub async fn jobs(&mut self) -> Result<JobsClient<Channel>> {
+        self.conn()
+            .await
+            .map(|conn| conn.jobs())
+    }
+
+    pub async fn reports(&mut self) -> Result<ReportsClient<Channel>> {
+        self.conn()
+            .await
+            .map(|conn| conn.reports())
+    }
+
+    async fn conn(&mut self) -> Result<&ControllerConnection> {
+        if self.conn.is_none() {
+            let config = &self.config.controller;
+
+            self.conn = Some(ControllerConnection::new(
+                config.address.to_owned(),
+                config.secret.to_owned(),
+            ).await?);
         }
 
-        Ok(self.client
-            .as_mut()
-            .unwrap())
+        Ok(self.conn.as_mut().unwrap())
     }
 }

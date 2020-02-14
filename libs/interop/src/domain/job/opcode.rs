@@ -3,7 +3,7 @@ use std::convert::TryFrom;
 use crate::convert;
 use crate::domain::{DomainError, DomainResult};
 use crate::domain::definition::{DDependencyDef, DToolchainDef};
-use crate::proto::core::PJobOpcode;
+use crate::proto::models::PJobOpcode;
 
 #[derive(Clone, Debug)]
 pub enum DJobOpcode {
@@ -68,7 +68,7 @@ impl TryFrom<PJobOpcode> for DJobOpcode {
     type Error = DomainError;
 
     fn try_from(PJobOpcode { ty }: PJobOpcode) -> DomainResult<Self> {
-        use crate::proto::core::p_job_opcode::*;
+        use crate::proto::models::p_job_opcode::*;
 
         Ok(match convert!(ty?) {
             Ty::LogSystemMsg(PLogSystemMsg { msg }) => {
@@ -102,7 +102,7 @@ impl TryFrom<PJobOpcode> for DJobOpcode {
 
 impl Into<PJobOpcode> for DJobOpcode {
     fn into(self) -> PJobOpcode {
-        use crate::proto::core::p_job_opcode::*;
+        use crate::proto::models::p_job_opcode::*;
 
         let ty = match self {
             DJobOpcode::LogSystemMsg { msg } => {

@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package cr8r.services;
+
+import "models/job.proto";
+
+message PFindJobsRequest {
+    uint32 experiment_id = 1;
+}
+
+message PFindJobsReply {
+    repeated models.PJob jobs = 1;
+}

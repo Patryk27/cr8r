@@ -1,6 +1,6 @@
 use anyhow::*;
 
-use lib_interop::proto::core::PExperimentId;
+use lib_interop::proto::models::PExperimentId;
 
 use crate::modules::app::AppContext;
 

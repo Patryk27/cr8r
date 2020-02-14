@@ -4,7 +4,7 @@ use anyhow::*;
 
 use lib_core_ui::*;
 use lib_interop::domain::DExperimentId;
-use lib_interop::proto::core::PExperimentId;
+use lib_interop::proto::models::PExperimentId;
 
 use crate::modules::app::AppContext;
 use crate::modules::experiment::ExperimentSearcher;

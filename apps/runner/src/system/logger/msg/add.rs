@@ -1,4 +1,5 @@
 use lib_interop::domain::DEvent;
+use lib_interop::proto::services::PAddEventRequest;
 
 use super::super::LoggerActor;
 
@@ -9,15 +10,16 @@ pub async fn add(
     pending_events.push_back(event);
 
     while let Some(event) = pending_events.pop_front() {
-        let result = session.invoke(|client, runner_id| {
-            client.add_event(
-                runner_id,
-                experiment_id.as_num(),
-                event.clone().into(),
-            )
-        }).await;
+        let reply = session
+            .events()
+            .add_event(PAddEventRequest {
+                runner_id: session.runner_id,
+                experiment_id: experiment_id.as_num(),
+                event: Some(event.clone().into()),
+            })
+            .await;
 
-        if result.is_err() {
+        if reply.is_err() {
             pending_events.push_front(event);
             break;
         }

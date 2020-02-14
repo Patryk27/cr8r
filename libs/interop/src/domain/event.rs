@@ -5,7 +5,7 @@ use chrono::{DateTime, Utc};
 
 use crate::convert;
 use crate::domain::{DomainError, DomainResult};
-use crate::proto::core::PEvent;
+use crate::proto::models::PEvent;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DEvent {
@@ -47,7 +47,7 @@ impl TryFrom<PEvent> for DEvent {
     type Error = DomainError;
 
     fn try_from(PEvent { at, ty }: PEvent) -> DomainResult<Self> {
-        use crate::proto::core::p_event::*;
+        use crate::proto::models::p_event::*;
 
         let ty = match convert!(ty?) {
             Ty::Ping(_) => {
@@ -98,7 +98,7 @@ impl TryFrom<PEvent> for DEvent {
 
 impl Into<PEvent> for DEvent {
     fn into(self) -> PEvent {
-        use crate::proto::core::p_event::*;
+        use crate::proto::models::p_event::*;
 
         let ty = match self.ty {
             DEventType::Ping => {

@@ -4,7 +4,7 @@ use log::*;
 
 use lib_core_channel::{OTx, SendTo};
 use lib_interop::domain::{DAttachmentId, DAttachmentName};
-use lib_interop::proto::core::PAttachmentSize;
+use lib_interop::proto::models::PAttachmentSize;
 
 use crate::system::Attachment;
 

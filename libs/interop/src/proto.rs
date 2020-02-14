@@ -1,5 +1,5 @@
-pub mod core {
-    include!("../protobuf/.artifacts/cr8r.core.rs");
+pub mod models {
+    include!("../protobuf/.artifacts/cr8r.models.rs");
 
     // Attachment-oriented types
     pub type PAttachmentId = u32;
@@ -15,6 +15,6 @@ pub mod core {
     pub type PRunnerSecret = String;
 }
 
-pub mod controller {
-    include!("../protobuf/.artifacts/cr8r.controller.rs");
+pub mod services {
+    include!("../protobuf/.artifacts/cr8r.services.rs");
 }

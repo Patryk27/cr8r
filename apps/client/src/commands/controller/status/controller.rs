@@ -4,6 +4,7 @@ use anyhow::*;
 use colored::Colorize;
 
 use lib_core_ui::*;
+use lib_interop::proto::services::PHowdyRequest;
 
 use crate::modules::app::AppContext;
 
@@ -17,10 +18,11 @@ pub async fn print(ctxt: &mut AppContext) -> Result<()> {
     );
 
     let status = spinner! {
-        ctxt.client()
+        ctxt.controller()
             .await?
-            .howdy()
+            .howdy(PHowdyRequest {})
             .await?
+            .into_inner()
     };
 
     // @todo extract it to a separate component

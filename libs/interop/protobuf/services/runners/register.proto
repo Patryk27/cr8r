@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package cr8r.services;
+
+message PRegisterRunnerRequest {
+    string name = 1;
+}
+
+message PRegisterRunnerReply {
+    uint32 id = 1;
+}

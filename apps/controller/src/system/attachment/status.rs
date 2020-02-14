@@ -1,6 +1,6 @@
 use tokio::fs::File;
 
-use lib_interop::proto::core::PAttachmentSize;
+use lib_interop::proto::models::PAttachmentSize;
 
 pub enum AttachmentStatus {
     Uninitialized,

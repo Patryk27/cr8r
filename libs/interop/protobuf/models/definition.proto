@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package cr8r.models;
+
+message PDefinition {
+    message PToolchainDef {
+        string toolchain = 1;
+    }
+
+    message PDependencyDef {
+        message PDependencyDefSource {
+            message PBranchSource {
+                string branch = 1;
+            }
+
+            message PTagSource {
+                string tag = 1;
+            }
+
+            message PVersionSource {
+                string version = 1;
+            }
+
+            message PPathSource {
+                uint32 attachment_id = 1;
+            }
+
+            oneof ty {
+                PBranchSource branch = 1;
+                PTagSource tag = 2;
+                PVersionSource version = 3;
+                PPathSource path = 4;
+            }
+        }
+
+        string name = 1;
+        PDependencyDefSource source = 2;
+    }
+
+    PToolchainDef toolchain = 1;
+    repeated PDependencyDef dependencies = 2;
+}

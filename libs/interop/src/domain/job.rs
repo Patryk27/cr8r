@@ -2,7 +2,7 @@ use std::convert::TryFrom;
 
 use crate::convert;
 use crate::domain::{DomainError, DomainResult};
-use crate::proto::core::PJob;
+use crate::proto::models::PJob;
 
 pub use self::opcode::DJobOpcode;
 

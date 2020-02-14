@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package cr8r.models;
+
+import "models/attachment.proto";
+import "models/definition.proto";
+import "models/event.proto";
+import "models/experiment.proto";
+import "models/job.proto";
+import "models/report.proto";
+import "models/runner.proto";

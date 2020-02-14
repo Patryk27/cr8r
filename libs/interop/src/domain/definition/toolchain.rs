@@ -1,7 +1,7 @@
 use std::convert::TryFrom;
 
 use crate::domain::{DomainError, DomainResult};
-use crate::proto::core::p_definition::PToolchainDef;
+use crate::proto::models::p_definition::PToolchainDef;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DToolchainDef {

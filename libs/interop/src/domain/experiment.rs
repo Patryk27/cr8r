@@ -4,7 +4,7 @@ use chrono::{DateTime, Utc};
 
 use crate::convert;
 use crate::domain::{DomainError, DomainResult};
-use crate::proto::core::PExperiment;
+use crate::proto::models::PExperiment;
 
 pub use self::{
     id::*,
