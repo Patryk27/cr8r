@@ -2,13 +2,15 @@ use anyhow::*;
 
 use lib_interop::proto::services::{PRegisterRunnerReply, PRegisterRunnerRequest};
 
-use crate::system::System;
+use crate::system::Runners;
 
-pub async fn register_runner(system: &System, request: PRegisterRunnerRequest) -> Result<PRegisterRunnerReply> {
+pub async fn register_runner(
+    runners: &Runners,
+    request: PRegisterRunnerRequest,
+) -> Result<PRegisterRunnerReply> {
     let name = request.name.into();
 
-    let id = system
-        .runners
+    let id = runners
         .register(name)
         .await?;
 

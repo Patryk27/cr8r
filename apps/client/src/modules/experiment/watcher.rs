@@ -6,6 +6,7 @@ use tokio::task::spawn;
 
 use lib_core_channel::{SendTo, URx};
 use lib_interop::domain::{DExperimentId, DReport};
+use lib_interop::proto::services::PWatchExperimentRequest;
 
 use crate::modules::app::AppContext;
 
@@ -20,10 +21,11 @@ impl<'c> ExperimentWatcher<'c> {
 
     pub async fn watch(&mut self, id: DExperimentId) -> Result<URx<Result<DReport>>> {
         let mut reports = self.ctxt
-            .client()
+            .experiments()
             .await?
-            .watch_experiment(id.into())
-            .await?;
+            .watch_experiment(PWatchExperimentRequest { id: id.into() })
+            .await?
+            .into_inner();
 
         let (tx, rx) = unbounded_channel();
 

@@ -3,6 +3,7 @@ use anyhow::*;
 use lib_core_channel::SendTo;
 use lib_interop::domain::{DDefinition, DExperimentId};
 use lib_interop::domain::definition::{DDependencyDef, DDependencySourceDef, DToolchainDef};
+use lib_interop::proto::services::PCreateExperimentRequest;
 
 use crate::modules::definition::{DefinitionArg, DependencyArg, DependencySourceArg, ToolchainArg};
 
@@ -13,15 +14,16 @@ impl<'c> ExperimentCreator<'c> {
         CreatingExperiment
             .send_to(&self.progress);
 
-        let experiment = self
+        let definition = self
             .build_def(definition)
             .into();
 
         let id: DExperimentId = self.ctxt
-            .client()
+            .experiments()
             .await?
-            .create_experiment(experiment)
+            .create_experiment(PCreateExperimentRequest { definition: Some(definition) })
             .await?
+            .into_inner()
             .id
             .into();
 

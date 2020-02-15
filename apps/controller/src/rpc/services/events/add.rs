@@ -4,10 +4,10 @@ use anyhow::*;
 
 use lib_interop::proto::services::{PAddEventReply, PAddEventRequest};
 
-use crate::system::System;
+use crate::system::Experiments;
 
 pub async fn add_event(
-    system: &System,
+    experiments: &Experiments,
     request: PAddEventRequest,
 ) -> Result<PAddEventReply> {
     let event = request.event
@@ -17,8 +17,7 @@ pub async fn add_event(
     let experiment_id = request.experiment_id.into();
     let runner_id = request.runner_id.into();
 
-    let experiment = system
-        .experiments
+    let experiment = experiments
         .find_one(experiment_id)
         .await?;
 

@@ -1,3 +1,6 @@
+use anyhow::Error;
+use tonic::Status;
+
 pub use self::{
     assignments::*,
     attachments::*,
@@ -6,6 +9,7 @@ pub use self::{
     experiments::*,
     jobs::*,
     reports::*,
+    runners::*,
 };
 
 mod assignments;
@@ -15,3 +19,9 @@ mod events;
 mod experiments;
 mod jobs;
 mod reports;
+mod runners;
+
+fn transform_error(err: Error) -> Status {
+    // @todo we could return more contextual status codes
+    Status::unknown(err.to_string())
+}

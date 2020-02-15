@@ -1,7 +1,9 @@
-use tonic::{Request, Response, Status, Streaming};
+use tonic::{Request, Response, Status};
 
 use lib_interop::proto::services::*;
 use lib_interop::proto::services::controller_server::Controller;
+
+mod howdy;
 
 pub struct ControllerService;
 
@@ -9,8 +11,10 @@ pub struct ControllerService;
 impl Controller for ControllerService {
     async fn howdy(
         &self,
-        request: Request<PHowdyRequest>,
+        _: Request<PHowdyRequest>,
     ) -> Result<Response<PHowdyReply>, Status> {
-        unimplemented!()
+        Ok(Response::new(
+            howdy::howdy()
+        ))
     }
 }

@@ -2,13 +2,13 @@ use anyhow::*;
 use tokio::task::spawn;
 use tonic::Streaming;
 
-use lib_interop::proto::services::*;
+use lib_interop::proto::services::{PUploadAttachmentReply, PUploadAttachmentRequest};
 use lib_interop::proto::services::p_upload_attachment_request::*;
 
-use crate::system::System;
+use crate::system::Attachments;
 
 pub async fn upload_attachment(
-    system: &System,
+    attachments: &Attachments,
     mut request: Streaming<PUploadAttachmentRequest>,
 ) -> Result<PUploadAttachmentReply> {
     let metadata = request
@@ -28,14 +28,12 @@ pub async fn upload_attachment(
         anyhow!("Protocol error: First chunk was expected to carry attachment's metadata")
     })?;
 
-    let id = system
-        .attachments
+    let id = attachments
         .create(metadata.name.into(), metadata.size)
         .await?;
 
     let uploading_result = try {
-        let attachment = system
-            .attachments
+        let attachment = attachments
             .get(id)
             .await?;
 
@@ -72,7 +70,7 @@ pub async fn upload_attachment(
         }
 
         Err(err) => {
-            let attachments = system.attachments.clone();
+            let attachments = attachments.to_owned();
 
             spawn(async move {
                 let _ = attachments

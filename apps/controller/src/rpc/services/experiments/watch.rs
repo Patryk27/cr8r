@@ -6,19 +6,18 @@ use tokio::sync::mpsc::channel;
 use tokio::task::spawn;
 use tonic::Status;
 
-use lib_interop::proto::services::PWatchExperimentRequest;
 use lib_interop::proto::models::PReport;
+use lib_interop::proto::services::PWatchExperimentRequest;
 
-use crate::system::System;
+use crate::system::Experiments;
 
 pub async fn watch_experiment(
-    system: &System,
+    experiments: &Experiments,
     request: PWatchExperimentRequest,
 ) -> Result<impl Stream<Item=result::Result<PReport, Status>>> {
     let id = request.id.into();
 
-    let experiment = system
-        .experiments
+    let experiment = experiments
         .find_one(id)
         .await?;
 

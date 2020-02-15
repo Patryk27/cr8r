@@ -1,6 +1,7 @@
 use anyhow::*;
 
 use lib_interop::proto::models::PExperimentId;
+use lib_interop::proto::services::PStopExperimentRequest;
 
 use crate::modules::app::AppContext;
 
@@ -15,9 +16,9 @@ impl<'c> ExperimentStopper<'c> {
 
     pub async fn stop(&mut self, id: PExperimentId) -> Result<()> {
         self.ctxt
-            .client()
+            .experiments()
             .await?
-            .stop_experiment(id)
+            .stop_experiment(PStopExperimentRequest { id })
             .await?;
 
         Ok(())

@@ -10,6 +10,7 @@ use lib_interop::proto::services::{
     experiments_client::ExperimentsClient,
     jobs_client::JobsClient,
     reports_client::ReportsClient,
+    runners_client::RunnersClient,
 };
 
 use crate::modules::app::AppConfig;
@@ -71,6 +72,12 @@ impl AppContext {
         self.conn()
             .await
             .map(|conn| conn.reports())
+    }
+
+    pub async fn runners(&mut self) -> Result<RunnersClient<Channel>> {
+        self.conn()
+            .await
+            .map(|conn| conn.runners())
     }
 
     async fn conn(&mut self) -> Result<&ControllerConnection> {

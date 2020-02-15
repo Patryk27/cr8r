@@ -1,6 +1,7 @@
 use anyhow::*;
 
 use lib_interop::proto::models::PExperimentId;
+use lib_interop::proto::services::PDeleteExperimentRequest;
 
 use crate::modules::app::AppContext;
 
@@ -15,9 +16,9 @@ impl<'c> ExperimentDeleter<'c> {
 
     pub async fn delete(&mut self, id: PExperimentId) -> Result<()> {
         self.ctxt
-            .client()
+            .experiments()
             .await?
-            .delete_experiment(id)
+            .delete_experiment(PDeleteExperimentRequest { id })
             .await?;
 
         Ok(())

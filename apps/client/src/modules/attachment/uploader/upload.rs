@@ -9,9 +9,9 @@ use tokio::sync::mpsc;
 use tokio::task::{JoinError, spawn};
 
 use lib_core_channel::{BRx, SendTo};
+use lib_interop::proto::models::PAttachmentId;
 use lib_interop::proto::services::p_upload_attachment_request::{Chunk, PContent, PMetadata};
 use lib_interop::proto::services::PUploadAttachmentRequest;
-use lib_interop::proto::models::PAttachmentId;
 
 use super::{AttachmentUploader, AttachmentUploaderProgress::*};
 
@@ -24,10 +24,11 @@ impl<'c> AttachmentUploader<'c> {
         let (stream, stream_task) = self.spawn_uploading_stream(archive);
 
         let reply = self.ctxt
-            .client()
+            .attachments()
             .await?
             .upload_attachment(stream)
-            .await?;
+            .await?
+            .into_inner();
 
         // @todo we gotta check whether we shouldn't use `select!` here (in case that the stream fails, silently, and
         //       then `upload_attachment()` fails first because of the lost channel)

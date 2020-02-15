@@ -18,10 +18,11 @@ impl<'c> ExperimentSearcher<'c> {
 
     pub async fn find_by_id(&mut self, id: DExperimentId) -> Result<Option<DExperiment>> {
         let mut experiments = self.ctxt
-            .client()
+            .experiments()
             .await?
             .find_experiments(PFindExperimentsRequest { id: id.into() })
             .await?
+            .into_inner()
             .experiments;
 
         let experiments = experiments

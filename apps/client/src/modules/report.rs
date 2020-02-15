@@ -17,10 +17,11 @@ impl<'c> ReportSearcher<'c> {
 
     pub async fn find_by_experiment_id(&mut self, experiment_id: DExperimentId) -> Result<Vec<DReport>> {
         let reports = self.ctxt
-            .client()
+            .reports()
             .await?
             .find_reports(PFindReportsRequest { experiment_id: experiment_id.into() })
             .await?
+            .into_inner()
             .reports;
 
         Ok(convert!(reports as [_?]))

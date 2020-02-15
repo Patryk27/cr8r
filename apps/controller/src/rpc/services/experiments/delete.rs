@@ -2,12 +2,15 @@ use anyhow::*;
 
 use lib_interop::proto::services::{PDeleteExperimentReply, PDeleteExperimentRequest};
 
-use crate::system::System;
+use crate::system::Experiments;
 
-pub async fn delete_experiment(system: &System, request: PDeleteExperimentRequest) -> Result<PDeleteExperimentReply> {
+pub async fn delete_experiment(
+    experiments: &Experiments,
+    request: PDeleteExperimentRequest,
+) -> Result<PDeleteExperimentReply> {
     let id = request.id.into();
 
-    system.experiments
+    experiments
         .delete(id)
         .await?;
 

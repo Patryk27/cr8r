@@ -4,15 +4,17 @@ use anyhow::*;
 
 use lib_interop::proto::services::{PCreateExperimentReply, PCreateExperimentRequest};
 
-use crate::system::System;
+use crate::system::Experiments;
 
-pub async fn create_experiment(system: &System, request: PCreateExperimentRequest) -> Result<PCreateExperimentReply> {
+pub async fn create_experiment(
+    experiments: &Experiments,
+    request: PCreateExperimentRequest,
+) -> Result<PCreateExperimentReply> {
     let definition = request.definition
         .ok_or_else(|| anyhow!("No experiment definition has been provided"))?
         .try_into()?;
 
-    let id = system
-        .experiments
+    let id = experiments
         .launch(definition)
         .await;
 
