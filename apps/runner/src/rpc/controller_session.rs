@@ -1,5 +1,4 @@
 use anyhow::*;
-use log::*;
 use tonic::transport::Channel;
 
 use lib_interop::connection::ControllerConnection;
@@ -16,11 +15,6 @@ pub struct Session {
 
 impl Session {
     pub async fn open(mut conn: ControllerConnection, runner_name: PRunnerName) -> Result<Self> {
-        info!("Opening session");
-
-        // Ensure we're compatible with the controller
-        debug!("Confirming protocol's compatibility");
-
         let version = conn
             .controller()
             .howdy(PHowdyRequest {})
@@ -28,11 +22,7 @@ impl Session {
             .into_inner()
             .version;
 
-        debug!("... controller's protocol version: {}", version);
-        debug!("... ok, we should be compatible"); // @todo
-
-        // Register us
-        debug!("Registering");
+        // @todo ensure we're compatible with controller
 
         let runner_id = conn
             .runners()
@@ -40,8 +30,6 @@ impl Session {
             .await?
             .into_inner()
             .id;
-
-        debug!("... ok, we've been registered as id={}", runner_id);
 
         Ok(Self { conn, runner_id })
     }

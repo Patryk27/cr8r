@@ -2,6 +2,9 @@
 #![feature(try_blocks)]
 #![feature(type_ascription)]
 
+#[allow(dead_code)]
+mod build;
+
 mod config;
 mod rpc;
 mod system;
@@ -25,8 +28,8 @@ async fn main() {
     }: Result<()>;
 
     if let Err(err) = result {
-        ErrorWidget::new(&err)
-            .eprintln();
+        ErrorWidget::new(err)
+            .eprint();
 
         exit(1);
     }

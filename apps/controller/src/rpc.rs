@@ -6,6 +6,7 @@ use log::*;
 use tonic::Interceptor;
 use tonic::transport::Server;
 
+use lib_core_ui::Logo;
 use lib_interop::proto::services::{
     assignments_server::AssignmentsServer,
     attachments_server::AttachmentsServer,
@@ -17,6 +18,7 @@ use lib_interop::proto::services::{
     runners_server::RunnersServer,
 };
 
+use crate::build;
 use crate::system::System;
 
 pub use self::config::*;
@@ -93,6 +95,12 @@ pub async fn start(config: RpcConfig, system: System) -> Result<()> {
         for RunnersServer
         use RunnersService(runners),
     });
+
+    Logo {
+        app: build::PKG_NAME,
+        version: build::PKG_VERSION,
+        commit: build::GIT_VERSION.unwrap(),
+    }.log();
 
     info!("🚀 Listening on: {}", address.to_string().green());
 

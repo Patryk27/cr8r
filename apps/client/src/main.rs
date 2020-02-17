@@ -12,11 +12,11 @@ mod widgets;
 #[tokio::main]
 async fn main() {
     use anyhow::*;
+    use lib_core_ui::*;
     use std::process::exit;
     use structopt::StructOpt;
     use self::commands::AppCommand;
     use self::modules::app::{AppConfig, AppContext};
-    use self::widgets::AppErrorWidget;
 
     let result = try {
         let cmd = AppCommand::from_args();
@@ -31,7 +31,8 @@ async fn main() {
     }: Result<()>;
 
     if let Err(err) = result {
-        AppErrorWidget::print(err);
+        ErrorWidget::new(err)
+            .eprint();
 
         exit(1);
     }

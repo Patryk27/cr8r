@@ -1,6 +1,7 @@
 use std::path::Path;
 
 use anyhow::*;
+use tokio::fs::metadata;
 
 use async_trait::async_trait;
 
@@ -17,6 +18,19 @@ pub struct ShellSandboxEngine {
 }
 
 impl ShellSandboxEngine {
+    pub async fn validate(config: &ShellSandboxConfig) -> Result<()> {
+        let meta = metadata(&config.root)
+            .await
+            .with_context(|| format!("Could not access root directory: {}", config.root.display()))?;
+
+        ensure!(
+            meta.is_dir(),
+            "Root directory is not actually a directory: {}", config.root.display(),
+        );
+
+        Ok(())
+    }
+
     pub async fn create(config: ShellSandboxConfig) -> Result<Self> {
         Ok(Self {
             config,

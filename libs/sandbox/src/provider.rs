@@ -1,24 +1,41 @@
 use anyhow::*;
 
 use crate::{Sandbox, SandboxConfig};
+use crate::engines::*;
 
-pub struct SandboxProvider;
+pub struct SandboxProvider {
+    config: SandboxConfig,
+}
 
 impl SandboxProvider {
-    pub fn new() -> Self {
-        Self
+    pub async fn new(config: SandboxConfig) -> Result<Self> {
+        use SandboxConfig::*;
+
+        match &config {
+            Lxd(config) => {
+                LxdSandboxEngine::validate(config)
+                    .await?;
+            }
+
+            Shell(config) => {
+                ShellSandboxEngine::validate(config)
+                    .await?;
+            }
+        }
+
+        Ok(Self { config })
     }
 
-    pub async fn create(&self, definition: SandboxConfig) -> Result<Sandbox> {
-        use crate::engines::*;
+    pub async fn create(&self) -> Result<Sandbox> {
+        use SandboxConfig::*;
 
-        let engine = match definition {
-            SandboxConfig::Lxd(definition) => {
-                box LxdSandboxEngine::create(definition)
+        let engine = match self.config.clone() {
+            Lxd(config) => {
+                box LxdSandboxEngine::create(config)
                     .await? as _
             }
 
-            SandboxConfig::Shell(definition) => {
+            Shell(definition) => {
                 box ShellSandboxEngine::create(definition)
                     .await? as _
             }

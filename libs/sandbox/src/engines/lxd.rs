@@ -19,6 +19,13 @@ pub struct LxdSandboxEngine {
 }
 
 impl LxdSandboxEngine {
+    pub async fn validate(config: &LxdSandboxConfig) -> Result<()> {
+        LxdClient::autodetect()
+            .await?;
+
+        Ok(())
+    }
+
     pub async fn create(config: LxdSandboxConfig) -> Result<Self> {
         Ok(Self {
             config,

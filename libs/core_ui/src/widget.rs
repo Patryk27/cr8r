@@ -1,6 +1,9 @@
-use std::fmt::Display;
+use std::fmt;
 
 pub trait Widget {
+    fn write(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result;
+    fn writeln(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result;
+
     fn print(&self);
     fn println(&self);
 
@@ -8,7 +11,15 @@ pub trait Widget {
     fn eprintln(&self);
 }
 
-impl<T> Widget for T where T: Display {
+impl<T> Widget for T where T: fmt::Display {
+    fn write(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self)
+    }
+
+    fn writeln(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "{}", self)
+    }
+
     fn print(&self) {
         print!("{}", self);
     }

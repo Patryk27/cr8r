@@ -4,6 +4,9 @@
 #![feature(type_alias_impl_trait)]
 #![feature(type_ascription)]
 
+#[allow(dead_code)]
+mod build;
+
 mod system;
 mod config;
 mod rpc;
@@ -11,8 +14,8 @@ mod rpc;
 #[tokio::main]
 async fn main() {
     use anyhow::*;
+    use lib_core_ui::*;
     use std::process::exit;
-
     use self::config::*;
 
     let result = try {
@@ -31,7 +34,8 @@ async fn main() {
     }: Result<()>;
 
     if let Err(err) = result {
-        eprintln!("{}", lib_core_ui::ErrorWidget::new(&err));
+        ErrorWidget::new(err)
+            .eprint();
 
         exit(1);
     }

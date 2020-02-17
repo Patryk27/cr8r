@@ -1,8 +1,7 @@
 use anyhow::*;
+use lib_interop::domain::DExperimentId;
 use log::*;
 use tokio::time::{delay_for, Duration};
-
-use lib_interop::domain::DExperimentId;
 
 use crate::system::{Dispatcher, Executor, ExecutorStatus, Logger};
 
@@ -11,8 +10,7 @@ impl Dispatcher {
         let sandbox = {
             debug!("Preparing sandbox");
 
-            self.sandbox_provider
-                .create(self.sandbox_config.clone())
+            self.sandbox_provider.create()
                 .await?
         };
 

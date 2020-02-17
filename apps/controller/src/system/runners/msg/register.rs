@@ -22,14 +22,12 @@ pub fn register(actor: &mut RunnersActor, name: DRunnerName) -> Result<DRunnerId
 
     let id = actor.next_id.inc();
 
-    info!("Got a new runner: id={}, name={}", id, name);
-
-    let runner = Runner::new(
-        id, name.clone(),
-    );
+    actor.runners.insert(id, Runner::new(
+        id,
+        name.clone(),
+    ));
 
     actor.index.insert(id, name);
-    actor.runners.insert(id, runner);
 
     Ok(id)
 }

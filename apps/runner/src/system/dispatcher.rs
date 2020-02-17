@@ -1,7 +1,7 @@
 use anyhow::*;
 use log::*;
 
-use lib_sandbox::{SandboxConfig, SandboxProvider};
+use lib_sandbox::SandboxProvider;
 
 use crate::rpc::Session;
 
@@ -9,7 +9,6 @@ mod await_assignment;
 mod conduct_assignment;
 
 pub struct Dispatcher {
-    pub sandbox_config: SandboxConfig,
     pub sandbox_provider: SandboxProvider,
     pub session: Session,
 }
