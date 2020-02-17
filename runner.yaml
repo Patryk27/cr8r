@@ -5,6 +5,9 @@ controller:
   address: 'http://127.0.0.1:1234'
   secret: 'top-secret'
 
+attachments:
+  store-path: /tmp/runner-attachments
+
 sandbox:
   type: shell
   config:

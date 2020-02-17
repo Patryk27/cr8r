@@ -26,6 +26,7 @@ async fn main() {
             .context("Could not load configuration(from `controller.yaml`)")?;
 
         let system = system::start(config.system)
+            .await
             .context("Could not start system")?;
 
         rpc::start(config.rpc, system)

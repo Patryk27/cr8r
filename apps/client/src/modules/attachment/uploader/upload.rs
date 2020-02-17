@@ -5,12 +5,12 @@ use std::result;
 use anyhow::*;
 use tokio::fs::File;
 use tokio::io::{AsyncReadExt, BufReader};
-use tokio::sync::mpsc;
+use tokio::sync::mpsc::channel;
 use tokio::task::{JoinError, spawn};
 
 use lib_core_channel::{BRx, SendTo};
 use lib_interop::proto::models::PAttachmentId;
-use lib_interop::proto::services::p_upload_attachment_request::{Chunk, PContent, PMetadata};
+use lib_interop::proto::services::p_upload_attachment_request::{Chunk, PBody, PMetadata};
 use lib_interop::proto::services::PUploadAttachmentRequest;
 
 use super::{AttachmentUploader, AttachmentUploaderProgress::*};
@@ -43,7 +43,7 @@ impl<'c> AttachmentUploader<'c> {
     fn spawn_uploading_stream(&self, archive: PathBuf) -> (BRx<PUploadAttachmentRequest>, impl Future<Output=JoinResult<Result<()>>>) {
         let progress = self.progress.clone();
 
-        let (mut stream, stream_rx) = mpsc::channel(1);
+        let (mut stream, stream_rx) = channel(1);
 
         let stream_task = spawn(async move {
             let archive = File::open(archive)
@@ -78,13 +78,11 @@ impl<'c> AttachmentUploader<'c> {
                 }
 
                 let chunk = {
-                    let mut content = chunk.to_vec();
+                    let mut body = chunk.to_vec();
 
-                    content.truncate(chunk_size);
+                    body.truncate(chunk_size);
 
-                    Chunk::Content(PContent {
-                        content,
-                    })
+                    Chunk::Body(PBody { body })
                 };
 
                 stream

@@ -3,14 +3,16 @@ use log::*;
 
 use lib_sandbox::SandboxProvider;
 
-use crate::rpc::Session;
+use crate::rpc::ControllerSession;
+use crate::system::AttachmentStore;
 
 mod await_assignment;
 mod conduct_assignment;
 
 pub struct Dispatcher {
+    pub attachment_store: AttachmentStore,
     pub sandbox_provider: SandboxProvider,
-    pub session: Session,
+    pub session: ControllerSession,
 }
 
 impl Dispatcher {

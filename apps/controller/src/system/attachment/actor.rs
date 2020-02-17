@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use chrono::{DateTime, Utc};
 use log::*;
 use tokio::fs::{File, remove_file};
 use tokio::stream::StreamExt;
@@ -14,6 +15,7 @@ pub struct AttachmentActor {
     pub id: DAttachmentId,
     pub name: DAttachmentName,
     pub size: PAttachmentSize,
+    pub created_at: DateTime<Utc>,
     pub status: AttachmentStatus,
 }
 

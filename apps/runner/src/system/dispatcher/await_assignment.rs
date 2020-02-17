@@ -12,7 +12,7 @@ impl Dispatcher {
         loop {
             debug!("Polling controller for a new assignment");
 
-            let assignment = self.session
+            let assignment = self.session.conn
                 .assignments()
                 .prepare_assignment(PPrepareAssignmentRequest { runner_id: self.session.runner_id })
                 .await

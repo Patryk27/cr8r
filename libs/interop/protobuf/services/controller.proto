@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package cr8r.services;
+
+import "services/controller/howdy.proto";
+
+service Controller {
+    rpc Howdy (PHowdyRequest) returns (PHowdyReply);
+}

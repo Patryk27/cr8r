@@ -2,7 +2,7 @@ use std::convert::TryFrom;
 
 use chrono::{DateTime, Utc};
 
-use crate::convert;
+use crate::conv;
 use crate::domain::{DomainError, DomainResult};
 use crate::proto::models::PRunner;
 
@@ -30,11 +30,11 @@ impl TryFrom<PRunner> for DRunner {
 
     fn try_from(PRunner { id, name, joined_at, last_heartbeat_at, status }: PRunner) -> DomainResult<Self> {
         Ok(Self {
-            id: convert!(id as _),
-            name: convert!(name as _),
-            joined_at: convert!(joined_at as DateTime),
-            last_heartbeat_at: convert!(last_heartbeat_at as DateTime),
-            status: convert!(status? as _?),
+            id: conv!(id as _),
+            name: conv!(name as _),
+            joined_at: conv!(joined_at as DateTime),
+            last_heartbeat_at: conv!(last_heartbeat_at as DateTime),
+            status: conv!(status? as _?),
         })
     }
 }
@@ -44,11 +44,11 @@ impl Into<PRunner> for DRunner {
         let Self { id, name, joined_at, last_heartbeat_at, status } = self;
 
         PRunner {
-            id: convert!(id as _),
-            name: convert!(name as _),
+            id: conv!(id as _),
+            name: conv!(name as _),
             joined_at: joined_at.to_rfc3339(),
             last_heartbeat_at: last_heartbeat_at.to_rfc3339(),
-            status: Some(convert!(status as _)),
+            status: Some(conv!(status as _)),
         }
     }
 }

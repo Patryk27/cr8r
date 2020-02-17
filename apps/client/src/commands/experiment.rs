@@ -30,8 +30,11 @@ pub enum ExperimentCommand {
     Show {
         id: PExperimentId,
 
-        #[structopt(short = "a", long = "show-all")]
+        #[structopt(short = "s", long = "show-all")]
         show_all: bool,
+
+        #[structopt(short = "a", long = "show-attachments")]
+        show_attachments: bool,
 
         #[structopt(short = "j", long = "show-jobs")]
         show_jobs: bool,
@@ -60,8 +63,14 @@ impl ExperimentCommand {
                 launch::launch(ctxt, watch, definition).await
             }
 
-            ExperimentCommand::Show { id, show_all, show_jobs, show_reports } => {
-                show::show(ctxt, id, show_all || show_jobs, show_all || show_reports).await
+            ExperimentCommand::Show { id, show_all, show_attachments, show_jobs, show_reports } => {
+                show::show(
+                    ctxt,
+                    id,
+                    show_all || show_attachments,
+                    show_all || show_jobs,
+                    show_all || show_reports,
+                ).await
             }
 
             ExperimentCommand::Stop { id } => {

@@ -1,21 +1,25 @@
+use anyhow::*;
 use log::*;
 
 use lib_core_channel::URx;
 use lib_interop::domain::{DEventType, DExperimentId};
 use lib_sandbox::Sandbox;
 
-use crate::rpc::Session;
-use crate::system::{ExecutorStatus, Logger};
+use crate::rpc::ControllerSession;
+use crate::system::{AttachmentStore, ExecutorStatus, Logger};
 
 use super::ExecutorMsg;
 
 mod execute_experiment;
 mod execute_job;
 mod execute_opcode;
+mod fetch_attachments;
+mod fetch_jobs;
 mod handle_messages;
 
 pub struct ExecutorActor {
-    pub session: Session,
+    pub attachment_store: AttachmentStore,
+    pub session: ControllerSession,
     pub sandbox: Sandbox,
     pub logger: Logger,
     pub mailbox: URx<ExecutorMsg>,
@@ -30,19 +34,42 @@ impl ExecutorActor {
 
         self.logger.add(DEventType::ExperimentStarted);
 
-        let workflow = self
-            .execute_experiment()
-            .await;
+        let result = try {
+            let attachments = self
+                .fetch_attachments()
+                .await
+                .context("Could not download experiment's attachments")?;
 
-        if workflow.actor_should_continue() {
-            self.logger.add(DEventType::ExperimentCompleted);
-            self.status = ExecutorStatus::Completed;
-        } else {
-            // @todo notify logger?
-            self.status = ExecutorStatus::Stopped;
+            let jobs = self
+                .fetch_jobs()
+                .await
+                .context("Could not fetch experiment's jobs")?;
+
+            let workflow = self
+                .execute_experiment(attachments, jobs)
+                .await;
+
+            if workflow.actor_should_continue() {
+                self.logger.add(DEventType::ExperimentCompleted);
+                self.status = ExecutorStatus::Completed;
+            } else {
+                // @todo notify logger?
+                self.status = ExecutorStatus::Stopped;
+            }
+        }: Result<_>;
+
+        match result {
+            Ok(()) => {
+                self.handle_messages_until_orphaning()
+                    .await
+            }
+
+            Err(_) => {
+                // @todo notify controller? try again in a minute? give up?
+                unimplemented!()
+            }
         }
 
-        self.handle_messages_until_orphaning()
-            .await
+        trace!("Actor halted");
     }
 }

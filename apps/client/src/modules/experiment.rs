@@ -1,13 +1,9 @@
 pub use self::{
     creator::*,
-    deleter::*,
-    searcher::*,
-    stopper::*,
+    repository::*,
     watcher::*,
 };
 
 mod creator;
-mod deleter;
-mod searcher;
-mod stopper;
+mod repository;
 mod watcher;

@@ -1,19 +1,23 @@
+use std::collections::HashMap;
+
 use log::*;
 
 use lib_core_actor::*;
-use lib_interop::domain::{DEventType, DJob};
+use lib_interop::domain::{DAttachmentId, DEventType, DJob};
+
+use crate::system::Attachment;
 
 use super::ExecutorActor;
 
 impl ExecutorActor {
-    pub(super) async fn execute_experiment(&mut self) -> ActorWorkflow {
+    pub(super) async fn execute_experiment(
+        &mut self,
+        attachments: HashMap<DAttachmentId, Attachment>,
+        jobs: Vec<DJob>,
+    ) -> ActorWorkflow {
         if self.handle_messages().actor_should_stop() {
             return ActorWorkflow::Stop;
         }
-
-        // @todo download attachments
-
-        let jobs: Vec<DJob> = unimplemented!();
 
         for (id, job) in jobs.into_iter().enumerate() {
             debug!("Starting job [id={}, name={}]", id, job.name);

@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 
 use anyhow::*;
+use chrono::Utc;
 use tokio::fs::File;
 use tokio::sync::mpsc::unbounded_channel;
 use tokio::task::spawn;
@@ -8,6 +9,7 @@ use tokio::task::spawn;
 use lib_core_actor::*;
 use lib_core_channel::UTx;
 use lib_interop::domain::{DAttachmentId, DAttachmentName};
+use lib_interop::domain::attachment::DAttachment;
 use lib_interop::proto::models::PAttachmentSize;
 
 use self::{
@@ -33,6 +35,7 @@ impl Attachment {
             id,
             name,
             size,
+            created_at: Utc::now(),
             status: Default::default(),
         }.start(path, file, rx));
 
@@ -47,12 +50,8 @@ impl Attachment {
         ask!(self.tx, AttachmentMsg::Commit)
     }
 
-    pub async fn get_name(&self) -> DAttachmentName {
-        ask!(self.tx, AttachmentMsg::GetName)
-    }
-
-    pub async fn get_size(&self) -> PAttachmentSize {
-        ask!(self.tx, AttachmentMsg::GetSize)
+    pub async fn get_model(&self) -> DAttachment {
+        ask!(self.tx, AttachmentMsg::GetModel)
     }
 
     pub fn kill(&self) {

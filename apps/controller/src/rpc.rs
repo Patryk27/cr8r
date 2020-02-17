@@ -72,28 +72,28 @@ pub async fn start(config: RpcConfig, system: System) -> Result<()> {
 
     let server = server!(config, system, interceptor, {
         for AssignmentsServer
-        use AssignmentsService(experiments),
+        use AssignmentsService(experiment_store),
 
         for AttachmentsServer
-        use AttachmentsService(attachments),
+        use AttachmentsService(attachment_store, experiment_store),
 
         for ControllerServer
         use ControllerService(),
 
         for EventsServer
-        use EventsService(experiments),
+        use EventsService(experiment_store),
 
         for ExperimentsServer
-        use ExperimentsService(experiments),
+        use ExperimentsService(experiment_store),
 
         for JobsServer
-        use JobsService(experiments),
+        use JobsService(experiment_store),
 
         for ReportsServer
-        use ReportsService(experiments),
+        use ReportsService(experiment_store),
 
         for RunnersServer
-        use RunnersService(runners),
+        use RunnersService(runner_store),
     });
 
     Logo {

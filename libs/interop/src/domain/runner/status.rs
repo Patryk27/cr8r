@@ -2,7 +2,7 @@ use std::convert::TryFrom;
 
 use chrono::{DateTime, Utc};
 
-use crate::convert;
+use crate::conv;
 use crate::domain::{DExperimentId, DomainError, DomainResult};
 use crate::proto::models::PRunnerStatus;
 
@@ -28,23 +28,23 @@ impl TryFrom<PRunnerStatus> for DRunnerStatus {
     fn try_from(PRunnerStatus { ty }: PRunnerStatus) -> DomainResult<Self> {
         use crate::proto::models::p_runner_status::*;
 
-        Ok(match convert!(ty?) {
+        Ok(match conv!(ty?) {
             Ty::Idle(PIdle { since }) => {
                 DRunnerStatus::Idle {
-                    since: convert!(since as DateTime),
+                    since: conv!(since as DateTime),
                 }
             }
 
             Ty::Working(PWorking { since, experiment_id }) => {
                 DRunnerStatus::Working {
-                    since: convert!(since as DateTime),
-                    experiment_id: convert!(experiment_id as _),
+                    since: conv!(since as DateTime),
+                    experiment_id: conv!(experiment_id as _),
                 }
             }
 
             Ty::Zombie(PZombie { since }) => {
                 DRunnerStatus::Zombie {
-                    since: convert!(since as DateTime),
+                    since: conv!(since as DateTime),
                 }
             }
         })

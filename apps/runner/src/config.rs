@@ -5,11 +5,14 @@ use serde::Deserialize;
 
 use lib_sandbox::SandboxConfig;
 
+use crate::system::AttachmentStoreConfig;
+
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
     pub runner: RunnerConfig,
     pub controller: ControllerConfig,
+    pub attachments: AttachmentStoreConfig,
     pub sandbox: SandboxConfig,
 }
 

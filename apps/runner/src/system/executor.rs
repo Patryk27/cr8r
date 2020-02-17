@@ -6,8 +6,8 @@ use lib_core_channel::UTx;
 use lib_interop::domain::DExperimentId;
 use lib_sandbox::Sandbox;
 
-use crate::rpc::Session;
-use crate::system::Logger;
+use crate::rpc::ControllerSession;
+use crate::system::{AttachmentStore, Logger};
 
 use self::{
     actor::*,
@@ -25,7 +25,8 @@ pub struct Executor {
 
 impl Executor {
     pub fn new(
-        session: Session,
+        attachment_store: AttachmentStore,
+        session: ControllerSession,
         sandbox: Sandbox,
         logger: Logger,
         experiment_id: DExperimentId,
@@ -33,12 +34,13 @@ impl Executor {
         let (tx, mailbox) = unbounded_channel();
 
         spawn(ExecutorActor {
+            attachment_store,
             session,
             sandbox,
             logger,
             mailbox,
             experiment_id,
-            status: ExecutorStatus::Running,
+            status: Default::default(),
         }.start());
 
         Self { tx }

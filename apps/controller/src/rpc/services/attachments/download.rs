@@ -7,10 +7,10 @@ use tonic::Status;
 
 use lib_interop::proto::services::{PDownloadAttachmentReply, PDownloadAttachmentRequest};
 
-use crate::system::Attachments;
+use crate::system::AttachmentStore;
 
 pub async fn download_attachment(
-    attachments: &Attachments,
+    attachment_store: &AttachmentStore,
     request: PDownloadAttachmentRequest,
 ) -> Result<impl Stream<Item=result::Result<PDownloadAttachmentReply, Status>>> {
     let (tx, rx) = unbounded_channel();

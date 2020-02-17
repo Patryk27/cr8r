@@ -3,7 +3,7 @@ use std::result;
 
 use chrono::{DateTime, Utc};
 
-use crate::convert;
+use crate::conv;
 use crate::domain::{DomainError, DomainResult};
 use crate::proto::models::PEvent;
 
@@ -49,7 +49,7 @@ impl TryFrom<PEvent> for DEvent {
     fn try_from(PEvent { at, ty }: PEvent) -> DomainResult<Self> {
         use crate::proto::models::p_event::*;
 
-        let ty = match convert!(ty?) {
+        let ty = match conv!(ty?) {
             Ty::Ping(_) => {
                 DEventType::Ping
             }
@@ -90,7 +90,7 @@ impl TryFrom<PEvent> for DEvent {
         };
 
         Ok(Self {
-            at: convert!(at as DateTime),
+            at: conv!(at as DateTime),
             ty,
         })
     }

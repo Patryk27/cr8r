@@ -8,7 +8,7 @@ use lib_core_actor::*;
 use lib_core_channel::UTx;
 use lib_interop::domain::{DEvent, DEventType, DExperimentId};
 
-use crate::rpc::Session;
+use crate::rpc::ControllerSession;
 
 use self::{
     actor::*,
@@ -24,7 +24,7 @@ pub struct Logger {
 }
 
 impl Logger {
-    pub fn new(session: Session, experiment_id: DExperimentId) -> Self {
+    pub fn new(session: ControllerSession, experiment_id: DExperimentId) -> Self {
         let (tx, rx) = unbounded_channel();
 
         spawn(LoggerActor {

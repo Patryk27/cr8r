@@ -2,57 +2,11 @@ syntax = "proto3";
 
 package cr8r.services;
 
-import "services/assignments/prepare.proto";
-import "services/attachments/download.proto";
-import "services/attachments/upload.proto";
-import "services/controller/howdy.proto";
-import "services/events/add.proto";
-import "services/experiments/create.proto";
-import "services/experiments/delete.proto";
-import "services/experiments/find.proto";
-import "services/experiments/stop.proto";
-import "services/experiments/watch.proto";
-import "services/jobs/find.proto";
-import "services/reports/find.proto";
-import "services/runners/find.proto";
-import "services/runners/register.proto";
-
-import "models/report.proto";
-
-service Assignments {
-    rpc PrepareAssignment (PPrepareAssignmentRequest) returns (PPrepareAssignmentReply);
-}
-
-service Attachments {
-    rpc DownloadAttachment (PDownloadAttachmentRequest) returns (stream PDownloadAttachmentReply);
-    rpc UploadAttachment (stream PUploadAttachmentRequest) returns (PUploadAttachmentReply);
-}
-
-service Controller {
-    rpc Howdy (PHowdyRequest) returns (PHowdyReply);
-}
-
-service Events {
-    rpc AddEvent (PAddEventRequest) returns (PAddEventReply);
-}
-
-service Experiments {
-    rpc CreateExperiment (PCreateExperimentRequest) returns (PCreateExperimentReply);
-    rpc DeleteExperiment (PDeleteExperimentRequest) returns (PDeleteExperimentReply);
-    rpc FindExperiments (PFindExperimentsRequest) returns (PFindExperimentsReply);
-    rpc StopExperiment (PStopExperimentRequest) returns (PStopExperimentReply);
-    rpc WatchExperiment (PWatchExperimentRequest) returns (stream models.PReport);
-}
-
-service Jobs {
-    rpc FindJobs (PFindJobsRequest) returns (PFindJobsReply);
-}
-
-service Reports {
-    rpc FindReports (PFindReportsRequest) returns (PFindReportsReply);
-}
-
-service Runners {
-    rpc FindRunners (PFindRunnersRequest) returns (PFindRunnersReply);
-    rpc RegisterRunner (PRegisterRunnerRequest) returns (PRegisterRunnerReply);
-}
+import "services/assignments.proto";
+import "services/attachments.proto";
+import "services/controller.proto";
+import "services/events.proto";
+import "services/experiments.proto";
+import "services/jobs.proto";
+import "services/reports.proto";
+import "services/runners.proto";

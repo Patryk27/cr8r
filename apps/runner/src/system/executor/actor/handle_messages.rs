@@ -8,7 +8,7 @@ impl ExecutorActor {
     pub(super) fn handle_messages(&mut self) -> ActorWorkflow {
         while let Ok(msg) = self.mailbox.try_recv() {
             if msg.handle(self).actor_should_stop() {
-                trace!("Received termination signal, actor will get stopped.");
+                trace!("Received termination signal, actor will get stopped");
                 return ActorWorkflow::Stop;
             }
         }
@@ -21,11 +21,9 @@ impl ExecutorActor {
 
         while let Some(msg) = self.mailbox.recv().await {
             if msg.handle(&mut self).actor_should_stop() {
-                trace!("Received termination signal, actor will get stopped.");
+                trace!("Received termination signal, actor will get stopped");
                 return;
             }
         }
-
-        trace!("Actor halted");
     }
 }

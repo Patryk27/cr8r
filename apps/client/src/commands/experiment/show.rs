@@ -7,13 +7,16 @@ use lib_interop::domain::DExperimentId;
 use lib_interop::proto::models::PExperimentId;
 
 use crate::modules::app::AppContext;
-use crate::modules::experiment::ExperimentSearcher;
-use crate::modules::report::ReportSearcher;
+use crate::modules::attachment::AttachmentRepository;
+use crate::modules::experiment::ExperimentRepository;
+use crate::modules::job::JobRepository;
+use crate::modules::report::ReportRepository;
 use crate::widgets::{ExperimentDetailsWidget, ReportListWidget};
 
 pub async fn show(
     ctxt: &mut AppContext,
     id: PExperimentId,
+    show_attachments: bool,
     show_jobs: bool,
     show_reports: bool,
 ) -> Result<()> {
@@ -22,13 +25,14 @@ pub async fn show(
         .context("Given experiment id is not valid")?;
 
     let experiment = spinner! {
-        ExperimentSearcher::new(ctxt)
-            .find_by_id(id)
+        ExperimentRepository::new(ctxt)
+            .await?
+            .find_one(id)
             .await?
             .ok_or_else(|| anyhow!("No such experiment exists"))?
     };
 
-    if show_jobs || show_reports {
+    if show_attachments || show_jobs || show_reports {
         HeaderWidget::new("Experiment")
             .println();
     }
@@ -36,35 +40,66 @@ pub async fn show(
     ExperimentDetailsWidget::new(&experiment)
         .println();
 
+    if show_attachments {
+        print_attachments(ctxt, id)
+            .await?;
+    }
+
     if show_jobs {
-        do_show_jobs(ctxt, id)
+        print_jobs(ctxt, id)
             .await?;
     }
 
     if show_reports {
-        do_show_reports(ctxt, id)
+        print_reports(ctxt, id)
             .await?;
     }
 
     Ok(())
 }
 
-async fn do_show_jobs(ctxt: &mut AppContext, id: DExperimentId) -> Result<()> {
-    HeaderWidget::new("Jobs")
+async fn print_attachments(ctxt: &mut AppContext, id: DExperimentId) -> Result<()> {
+    HeaderWidget::new("Attachments")
         .println();
 
-    // @todo
+    let attachments = spinner! {
+        AttachmentRepository::new(ctxt)
+            .await?
+            .find(id)
+            .await?
+    };
+
+    println!("{:#?}", attachments); // @todo
+    println!();
 
     Ok(())
 }
 
-async fn do_show_reports(ctxt: &mut AppContext, id: DExperimentId) -> Result<()> {
+async fn print_jobs(ctxt: &mut AppContext, id: DExperimentId) -> Result<()> {
+    HeaderWidget::new("Jobs")
+        .println();
+
+    let jobs = spinner! {
+        JobRepository::new(ctxt)
+            .await?
+            .find(id)
+            .await?
+    };
+
+    println!("{:#?}", jobs); // @todo
+    println!();
+
+    Ok(())
+}
+
+async fn print_reports(ctxt: &mut AppContext, id: DExperimentId) -> Result<()> {
     HeaderWidget::new("Reports")
         .println();
 
     let reports = spinner! {
-        ReportSearcher::new(ctxt)
-            .find_by_experiment_id(id)
+        ReportRepository::new(ctxt)
+            .await?
+            .find(id)
             .await?
     };
 

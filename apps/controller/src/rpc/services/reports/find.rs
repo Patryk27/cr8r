@@ -2,15 +2,15 @@ use anyhow::*;
 
 use lib_interop::proto::services::{PFindReportsReply, PFindReportsRequest};
 
-use crate::system::Experiments;
+use crate::system::ExperimentStore;
 
 pub async fn find_reports(
-    experiments: &Experiments,
+    experiment_store: &ExperimentStore,
     request: PFindReportsRequest,
 ) -> Result<PFindReportsReply> {
     let experiment_id = request.experiment_id.into();
 
-    let experiment = experiments
+    let experiment = experiment_store
         .find_one(experiment_id)
         .await?;
 

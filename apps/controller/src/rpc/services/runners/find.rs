@@ -2,24 +2,24 @@ use anyhow::*;
 
 use lib_interop::proto::services::PFindRunnersReply;
 
-use crate::system::Runners;
+use crate::system::RunnerStore;
 
-pub async fn find_runners(runners: &Runners) -> Result<PFindRunnersReply> {
-    let mut found_runners = Vec::new();
+pub async fn find_runners(runner_store: &RunnerStore) -> Result<PFindRunnersReply> {
+    let mut runners = Vec::new();
 
-    for runner in runners.find_all().await {
+    for runner in runner_store.find_all().await {
         let runner = runner
             .get_model()
             .await;
 
-        found_runners.push(runner);
+        runners.push(runner);
     }
 
-    found_runners.sort_unstable_by(|a, b| {
+    runners.sort_unstable_by(|a, b| {
         a.name.cmp(&b.name)
     });
 
-    let runners = found_runners
+    let runners = runners
         .into_iter()
         .map(Into::into)
         .collect();

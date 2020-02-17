@@ -1,7 +1,8 @@
 use anyhow::*;
-use lib_interop::domain::DExperimentId;
 use log::*;
 use tokio::time::{delay_for, Duration};
+
+use lib_interop::domain::DExperimentId;
 
 use crate::system::{Dispatcher, Executor, ExecutorStatus, Logger};
 
@@ -27,6 +28,7 @@ impl Dispatcher {
             debug!("Preparing executor");
 
             Executor::new(
+                self.attachment_store.clone(),
                 self.session.clone(),
                 sandbox,
                 logger,

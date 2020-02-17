@@ -7,17 +7,11 @@ message PDownloadAttachmentRequest {
 }
 
 message PDownloadAttachmentReply {
-    message PMetadata {
-        string name = 1;
-        uint64 size = 2;
-    }
-
-    message PContent {
-        bytes content = 1;
+    message PBody {
+        bytes body = 1;
     }
 
     oneof chunk {
-        PMetadata metadata = 1;
-        PContent content = 2;
+        PBody body = 1;
     }
 }

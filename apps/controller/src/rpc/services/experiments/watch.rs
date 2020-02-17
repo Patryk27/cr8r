@@ -9,15 +9,15 @@ use tonic::Status;
 use lib_interop::proto::models::PReport;
 use lib_interop::proto::services::PWatchExperimentRequest;
 
-use crate::system::Experiments;
+use crate::system::ExperimentStore;
 
 pub async fn watch_experiment(
-    experiments: &Experiments,
+    experiment_store: &ExperimentStore,
     request: PWatchExperimentRequest,
 ) -> Result<impl Stream<Item=result::Result<PReport, Status>>> {
     let id = request.id.into();
 
-    let experiment = experiments
+    let experiment = experiment_store
         .find_one(id)
         .await?;
 

@@ -5,10 +5,10 @@ use tonic::Streaming;
 use lib_interop::proto::services::{PUploadAttachmentReply, PUploadAttachmentRequest};
 use lib_interop::proto::services::p_upload_attachment_request::*;
 
-use crate::system::Attachments;
+use crate::system::AttachmentStore;
 
 pub async fn upload_attachment(
-    attachments: &Attachments,
+    attachment_store: &AttachmentStore,
     mut request: Streaming<PUploadAttachmentRequest>,
 ) -> Result<PUploadAttachmentReply> {
     let metadata = request
@@ -28,32 +28,32 @@ pub async fn upload_attachment(
         anyhow!("Protocol error: First chunk was expected to carry attachment's metadata")
     })?;
 
-    let id = attachments
+    let id = attachment_store
         .create(metadata.name.into(), metadata.size)
         .await?;
 
     let uploading_result = try {
-        let attachment = attachments
-            .get(id)
+        let attachment = attachment_store
+            .find_one(id)
             .await?;
 
         while let Some(request) = request.message().await? {
-            let content = request
+            let body = request
                 .chunk
                 .map(|chunk| {
                     match chunk {
-                        Chunk::Content(content) => Some(content),
+                        Chunk::Body(body) => Some(body),
                         _ => None,
                     }
                 })
                 .flatten();
 
-            let content = content.ok_or_else(|| {
-                anyhow!("Protocol error: Next chunk was expected to carry attachment's contents")
+            let content = body.ok_or_else(|| {
+                anyhow!("Protocol error: Next chunk was expected to carry attachment's body")
             })?;
 
             attachment
-                .add_chunk(content.content)
+                .add_chunk(content.body)
                 .await?;
         }
 
@@ -70,7 +70,7 @@ pub async fn upload_attachment(
         }
 
         Err(err) => {
-            let attachments = attachments.to_owned();
+            let attachments = attachment_store.to_owned();
 
             spawn(async move {
                 let _ = attachments

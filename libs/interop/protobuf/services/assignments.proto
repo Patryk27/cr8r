@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package cr8r.services;
+
+import "services/assignments/prepare.proto";
+
+service Assignments {
+    rpc PrepareAssignment (PPrepareAssignmentRequest) returns (PPrepareAssignmentReply);
+}

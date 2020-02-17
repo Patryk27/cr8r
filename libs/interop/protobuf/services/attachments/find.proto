@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package cr8r.services;
+
+import "models/attachment.proto";
+
+message PFindAttachmentsRequest {
+    uint32 experiment_id = 1;
+}
+
+message PFindAttachmentsReply {
+    repeated models.PAttachment attachments = 1;
+}

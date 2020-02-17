@@ -84,14 +84,14 @@ macro_rules! newtype {
 }
 
 #[macro_export]
-macro_rules! convert {
+macro_rules! conv {
     ($field:ident? $($tt:tt)*) => {{
         use $crate::domain::DomainError;
 
         let field = $field
             .ok_or_else(|| DomainError::MissingField { name: stringify!($field) })?;
 
-        convert!(field $($tt)*)
+        conv!(field $($tt)*)
     }};
 
     ($field:ident) => {
@@ -133,8 +133,8 @@ macro_rules! convert {
         $field
             .into_iter()
             .map(|(key, value)| {
-                let key = convert!(key as _);
-                let value = convert!(value as _);
+                let key = conv!(key as _);
+                let value = conv!(value as _);
 
                 (key, value)
             })
@@ -147,8 +147,8 @@ macro_rules! convert {
         let fields = $field
             .into_iter()
             .map(|(key, value)| {
-                let key = convert!(key as _);
-                let value = convert!(value as _?);
+                let key = conv!(key as _);
+                let value = conv!(value as _?);
 
                 Ok((key, value))
             })

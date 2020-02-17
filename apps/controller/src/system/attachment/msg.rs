@@ -4,13 +4,13 @@ use log::*;
 
 use lib_core_actor::ActorWorkflow;
 use lib_core_channel::{OTx, SendTo};
-use lib_interop::domain::DAttachmentName;
-use lib_interop::proto::models::PAttachmentSize;
+use lib_interop::domain::attachment::DAttachment;
 
 use super::AttachmentActor;
 
 mod add_chunk;
 mod commit;
+mod get_model;
 
 #[derive(Derivative)]
 #[derivative(Debug)]
@@ -27,14 +27,9 @@ pub enum AttachmentMsg {
         tx: OTx<Result<()>>,
     },
 
-    GetName {
+    GetModel {
         #[derivative(Debug = "ignore")]
-        tx: OTx<DAttachmentName>,
-    },
-
-    GetSize {
-        #[derivative(Debug = "ignore")]
-        tx: OTx<PAttachmentSize>,
+        tx: OTx<DAttachment>,
     },
 
     Kill,
@@ -63,16 +58,10 @@ impl AttachmentMsg {
                 ActorWorkflow::Continue
             }
 
-            GetName { tx } => {
-                actor.name
-                    .clone()
+            GetModel { tx } => {
+                get_model::get_model(actor)
                     .send_to(tx);
 
-                ActorWorkflow::Continue
-            }
-
-            GetSize { tx } => {
-                actor.size.send_to(tx);
                 ActorWorkflow::Continue
             }
 

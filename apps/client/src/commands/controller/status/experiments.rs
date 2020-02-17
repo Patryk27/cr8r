@@ -1,7 +1,7 @@
 use anyhow::*;
 
 use lib_core_ui::*;
-use lib_interop::convert;
+use lib_interop::conv;
 use lib_interop::proto::services::PFindExperimentsRequest;
 
 use crate::modules::app::AppContext;
@@ -20,7 +20,7 @@ pub async fn print(ctxt: &mut AppContext) -> Result<()> {
             .experiments
     };
 
-    let experiments = convert!(experiments as [_?]);
+    let experiments = conv!(experiments as [_?]);
 
     ExperimentListWidget::new(&experiments)
         .print();

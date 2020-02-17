@@ -1,6 +1,6 @@
 use std::convert::TryFrom;
 
-use crate::convert;
+use crate::conv;
 use crate::domain::{DomainError, DomainResult};
 use crate::proto::models::PDefinition;
 
@@ -23,10 +23,10 @@ impl TryFrom<PDefinition> for DDefinition {
 
     fn try_from(PDefinition { toolchain, dependencies }: PDefinition) -> DomainResult<Self> {
         let toolchain = toolchain
-            .map(|toolchain| Ok(convert!(toolchain as _?)))
+            .map(|toolchain| Ok(conv!(toolchain as _?)))
             .transpose()?;
 
-        let dependencies = convert!(dependencies as [_?]);
+        let dependencies = conv!(dependencies as [_?]);
 
         Ok(Self { toolchain, dependencies })
     }
@@ -36,8 +36,8 @@ impl Into<PDefinition> for DDefinition {
     fn into(self) -> PDefinition {
         let Self { toolchain, dependencies } = self;
 
-        let toolchain = toolchain.map(|toolchain| convert!(toolchain as _));
-        let dependencies = convert!(dependencies as [_]);
+        let toolchain = toolchain.map(|toolchain| conv!(toolchain as _));
+        let dependencies = conv!(dependencies as [_]);
 
         PDefinition { toolchain, dependencies }
     }

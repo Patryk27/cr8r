@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package cr8r.services;
+
+import "services/runners/find.proto";
+import "services/runners/register.proto";
+
+service Runners {
+    rpc FindRunners (PFindRunnersRequest) returns (PFindRunnersReply);
+    rpc RegisterRunner (PRegisterRunnerRequest) returns (PRegisterRunnerReply);
+}

@@ -1,6 +1,6 @@
 use std::convert::TryFrom;
 
-use crate::convert;
+use crate::conv;
 use crate::domain::{DomainError, DomainResult};
 use crate::domain::definition::{DDependencyDef, DToolchainDef};
 use crate::proto::models::PJobOpcode;
@@ -70,7 +70,7 @@ impl TryFrom<PJobOpcode> for DJobOpcode {
     fn try_from(PJobOpcode { ty }: PJobOpcode) -> DomainResult<Self> {
         use crate::proto::models::p_job_opcode::*;
 
-        Ok(match convert!(ty?) {
+        Ok(match conv!(ty?) {
             Ty::LogSystemMsg(PLogSystemMsg { msg }) => {
                 DJobOpcode::LogSystemMsg { msg }
             }
@@ -86,14 +86,14 @@ impl TryFrom<PJobOpcode> for DJobOpcode {
             Ty::AlterToolchain(PAlterToolchain { project, toolchain }) => {
                 DJobOpcode::AlterToolchain {
                     project,
-                    toolchain: convert!(toolchain? as _?),
+                    toolchain: conv!(toolchain? as _?),
                 }
             }
 
             Ty::AlterDependency(PAlterDependency { project, dependency }) => {
                 DJobOpcode::AlterDependency {
                     project,
-                    dependency: convert!(dependency? as _?),
+                    dependency: conv!(dependency? as _?),
                 }
             }
         })
@@ -120,14 +120,14 @@ impl Into<PJobOpcode> for DJobOpcode {
             DJobOpcode::AlterToolchain { project, toolchain } => {
                 Ty::AlterToolchain(PAlterToolchain {
                     project,
-                    toolchain: Some(convert!(toolchain as _)),
+                    toolchain: Some(conv!(toolchain as _)),
                 })
             }
 
             DJobOpcode::AlterDependency { project, dependency } => {
                 Ty::AlterDependency(PAlterDependency {
                     project,
-                    dependency: Some(convert!(dependency as _)),
+                    dependency: Some(conv!(dependency as _)),
                 })
             }
         };

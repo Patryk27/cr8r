@@ -237,7 +237,7 @@ dependencies = [
 
 [[package]]
 name = "client"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "anyhow 1.0.26 (registry+https://github.com/rust-lang/crates.io-index)",
  "chrono 0.4.10 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -247,7 +247,7 @@ dependencies = [
  "lib_core_channel 0.1.0",
  "lib_core_tempfile 0.1.0",
  "lib_core_ui 0.1.0",
- "lib_interop 0.1.0",
+ "lib_interop 0.0.1",
  "nom 5.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "prettytable-rs 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -296,7 +296,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "controller"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "anyhow 1.0.26 (registry+https://github.com/rust-lang/crates.io-index)",
  "bimap 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -310,7 +310,7 @@ dependencies = [
  "lib_core_log 0.1.0",
  "lib_core_tempfile 0.1.0",
  "lib_core_ui 0.1.0",
- "lib_interop 0.1.0",
+ "lib_interop 0.0.1",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.104 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_yaml 0.8.11 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -746,7 +746,7 @@ name = "lib_compiler"
 version = "0.1.0"
 dependencies = [
  "anyhow 1.0.26 (registry+https://github.com/rust-lang/crates.io-index)",
- "lib_interop 0.1.0",
+ "lib_interop 0.0.1",
  "thiserror 1.0.11 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -793,7 +793,7 @@ dependencies = [
 
 [[package]]
 name = "lib_interop"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "anyhow 1.0.26 (registry+https://github.com/rust-lang/crates.io-index)",
  "bytes 0.4.12 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1321,7 +1321,7 @@ dependencies = [
 
 [[package]]
 name = "runner"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "anyhow 1.0.26 (registry+https://github.com/rust-lang/crates.io-index)",
  "built 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1334,7 +1334,7 @@ dependencies = [
  "lib_core_channel 0.1.0",
  "lib_core_log 0.1.0",
  "lib_core_ui 0.1.0",
- "lib_interop 0.1.0",
+ "lib_interop 0.0.1",
  "lib_sandbox 0.1.0",
  "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "pretty_assertions 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",

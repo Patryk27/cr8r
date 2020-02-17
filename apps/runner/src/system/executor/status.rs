@@ -4,3 +4,9 @@ pub enum ExecutorStatus {
     Completed,
     Stopped,
 }
+
+impl Default for ExecutorStatus {
+    fn default() -> Self {
+        ExecutorStatus::Running
+    }
+}

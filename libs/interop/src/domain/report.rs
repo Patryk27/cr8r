@@ -2,7 +2,7 @@ use std::convert::TryFrom;
 
 use chrono::{DateTime, Utc};
 
-use crate::convert;
+use crate::conv;
 use crate::domain::{DomainError, DomainResult};
 use crate::proto::models::{PReport, PReportType};
 
@@ -57,7 +57,7 @@ impl TryFrom<PReport> for DReport {
         };
 
         Ok(Self {
-            at: convert!(at as DateTime),
+            at: conv!(at as DateTime),
             ty,
             msg,
         })

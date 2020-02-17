@@ -3,7 +3,7 @@ use anyhow::*;
 use lib_core_actor::*;
 use lib_interop::domain::DJobOpcode;
 
-use super::super::ExecutorActor;
+use super::ExecutorActor;
 
 mod do_alter_dependency;
 mod do_execute;

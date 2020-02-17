@@ -1,6 +1,6 @@
 use std::convert::TryFrom;
 
-use crate::convert;
+use crate::conv;
 use crate::domain::{DAttachmentId, DomainError, DomainResult};
 use crate::proto::models::p_definition::*;
 use crate::proto::models::p_definition::p_dependency_def::PDependencyDefSource;
@@ -36,9 +36,9 @@ impl TryFrom<PDependencyDef> for DDependencyDef {
     fn try_from(PDependencyDef { name, source }: PDependencyDef) -> DomainResult<Self> {
         use p_dependency_def::p_dependency_def_source::*;
 
-        let source_ty = convert!(source?).ty;
+        let source_ty = conv!(source?).ty;
 
-        let source = match convert!(source_ty?) {
+        let source = match conv!(source_ty?) {
             Ty::Branch(PBranchSource { branch }) => {
                 DDependencySourceDef::Branch { branch }
             }
@@ -53,7 +53,7 @@ impl TryFrom<PDependencyDef> for DDependencyDef {
 
             Ty::Path(PPathSource { attachment_id }) => {
                 DDependencySourceDef::Path {
-                    attachment_id: convert!(attachment_id as _),
+                    attachment_id: conv!(attachment_id as _),
                 }
             }
         };
@@ -83,7 +83,7 @@ impl Into<PDependencyDef> for DDependencyDef {
 
             DDependencySourceDef::Path { attachment_id } => {
                 Ty::Path(PPathSource {
-                    attachment_id: convert!(attachment_id as _),
+                    attachment_id: conv!(attachment_id as _),
                 })
             }
         });

@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package cr8r.services;
+
+import "services/attachments/download.proto";
+import "services/attachments/find.proto";
+import "services/attachments/upload.proto";
+
+service Attachments {
+    rpc DownloadAttachment (PDownloadAttachmentRequest) returns (stream PDownloadAttachmentReply);
+    rpc FindAttachments (PFindAttachmentsRequest) returns (PFindAttachmentsReply);
+    rpc UploadAttachment (stream PUploadAttachmentRequest) returns (PUploadAttachmentReply);
+}

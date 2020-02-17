@@ -9,6 +9,8 @@ use lib_core_actor::*;
 use lib_core_channel::{URx, UTx};
 use lib_interop::domain::{DEvent, DExperiment, DExperimentId, DJob, DReport, DRunnerId};
 
+use crate::system::Attachment;
+
 use self::{
     actor::*,
     msg::*,
@@ -25,11 +27,12 @@ pub struct Experiment {
 }
 
 impl Experiment {
-    pub fn new(id: DExperimentId, jobs: Vec<DJob>) -> Self {
+    pub fn new(id: DExperimentId, attachments: Vec<Attachment>, jobs: Vec<DJob>) -> Self {
         let (tx, rx) = unbounded_channel();
 
         spawn(ExperimentActor {
             id,
+            attachments,
             jobs,
             created_at: Utc::now(),
             watchers: Default::default(),
@@ -45,6 +48,14 @@ impl Experiment {
 
     pub async fn claim(&self, runner_id: DRunnerId) -> Result<()> {
         ask!(self.tx, ExperimentMsg::Claim { runner_id })
+    }
+
+    pub async fn get_attachments(&self) -> Vec<Attachment> {
+        ask!(self.tx, ExperimentMsg::GetAttachments)
+    }
+
+    pub async fn get_jobs(&self) -> Vec<DJob> {
+        ask!(self.tx, ExperimentMsg::GetJobs)
     }
 
     pub async fn get_model(&self) -> DExperiment {

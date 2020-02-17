@@ -10,7 +10,7 @@ pub async fn add(
     pending_events.push_back(event);
 
     while let Some(event) = pending_events.pop_front() {
-        let reply = session
+        let reply = session.conn
             .events()
             .add_event(PAddEventRequest {
                 runner_id: session.runner_id,

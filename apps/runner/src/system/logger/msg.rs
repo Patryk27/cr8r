@@ -4,14 +4,14 @@ use lib_interop::domain::DEvent;
 
 use super::LoggerActor;
 
+mod add;
+
 #[derive(Debug)]
 pub enum LoggerMsg {
     Add {
         event: DEvent,
     },
 }
-
-mod add;
 
 impl LoggerMsg {
     pub async fn handle(self, actor: &mut LoggerActor) {

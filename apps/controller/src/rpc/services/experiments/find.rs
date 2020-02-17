@@ -2,16 +2,16 @@ use anyhow::*;
 
 use lib_interop::proto::services::{PFindExperimentsReply, PFindExperimentsRequest};
 
-use crate::system::Experiments;
+use crate::system::ExperimentStore;
 
 // @todo filtering should happen inside the `Experiments` module, not here
 pub async fn find_experiments(
-    experiments: &Experiments,
+    experiment_store: &ExperimentStore,
     request: PFindExperimentsRequest,
 ) -> Result<PFindExperimentsReply> {
-    let mut found_experiments = Vec::new();
+    let mut experiments = Vec::new();
 
-    for experiment in experiments.find_all().await {
+    for experiment in experiment_store.find_all().await {
         let experiment = experiment
             .get_model()
             .await;
@@ -20,17 +20,17 @@ pub async fn find_experiments(
             continue;
         }
 
-        found_experiments.push(experiment);
+        experiments.push(experiment);
     }
 
-    found_experiments.sort_unstable_by(|a, b| {
+    experiments.sort_unstable_by(|a, b| {
         let a = a.id.as_num();
         let b = b.id.as_num();
 
         a.cmp(&b).reverse()
     });
 
-    let experiments = found_experiments
+    let experiments = experiments
         .into_iter()
         .map(Into::into)
         .collect();

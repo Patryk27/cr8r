@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package cr8r.services;
+
+import "services/reports/find.proto";
+
+service Reports {
+    rpc FindReports (PFindReportsRequest) returns (PFindReportsReply);
+}

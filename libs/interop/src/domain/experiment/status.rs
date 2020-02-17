@@ -3,7 +3,7 @@ use std::result;
 
 use chrono::{DateTime, Utc};
 
-use crate::convert;
+use crate::conv;
 use crate::domain::{DomainError, DomainResult};
 use crate::proto::models::PExperimentStatus;
 
@@ -36,17 +36,17 @@ impl TryFrom<PExperimentStatus> for DExperimentStatus {
     fn try_from(PExperimentStatus { ty }: PExperimentStatus) -> DomainResult<Self> {
         use crate::proto::models::p_experiment_status::*;
 
-        Ok(match convert!(ty?) {
+        Ok(match conv!(ty?) {
             Ty::Idle(PIdle { since }) => {
                 DExperimentStatus::Idle {
-                    since: convert!(since as DateTime),
+                    since: conv!(since as DateTime),
                 }
             }
 
             Ty::Running(PRunning { since, last_heartbeat_at, completed_jobs, total_jobs }) => {
                 DExperimentStatus::Running {
-                    since: convert!(since as DateTime),
-                    last_heartbeat_at: convert!(last_heartbeat_at as DateTime),
+                    since: conv!(since as DateTime),
+                    last_heartbeat_at: conv!(last_heartbeat_at as DateTime),
                     completed_jobs,
                     total_jobs,
                 }
@@ -60,14 +60,14 @@ impl TryFrom<PExperimentStatus> for DExperimentStatus {
                 };
 
                 DExperimentStatus::Completed {
-                    since: convert!(since as DateTime),
+                    since: conv!(since as DateTime),
                     result,
                 }
             }
 
             Ty::Stopped(PStopped { since }) => {
                 DExperimentStatus::Stopped {
-                    since: convert!(since as DateTime),
+                    since: conv!(since as DateTime),
                 }
             }
         })

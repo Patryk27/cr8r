@@ -5,7 +5,7 @@ use lib_interop::proto::models::PReport;
 use lib_interop::proto::services::*;
 use lib_interop::proto::services::experiments_server::Experiments;
 
-use crate::system;
+use crate::system::ExperimentStore;
 
 use super::transform_error;
 
@@ -16,7 +16,7 @@ mod stop;
 mod watch;
 
 pub struct ExperimentsService {
-    pub experiments: system::Experiments,
+    pub experiment_store: ExperimentStore,
 }
 
 #[tonic::async_trait]
@@ -25,7 +25,7 @@ impl Experiments for ExperimentsService {
         &self,
         request: Request<PCreateExperimentRequest>,
     ) -> Result<Response<PCreateExperimentReply>, Status> {
-        create::create_experiment(&self.experiments, request.into_inner())
+        create::create_experiment(&self.experiment_store, request.into_inner())
             .await
             .map(Response::new)
             .map_err(transform_error)
@@ -35,7 +35,7 @@ impl Experiments for ExperimentsService {
         &self,
         request: Request<PDeleteExperimentRequest>,
     ) -> Result<Response<PDeleteExperimentReply>, Status> {
-        delete::delete_experiment(&self.experiments, request.into_inner())
+        delete::delete_experiment(&self.experiment_store, request.into_inner())
             .await
             .map(Response::new)
             .map_err(transform_error)
@@ -45,7 +45,7 @@ impl Experiments for ExperimentsService {
         &self,
         request: Request<PFindExperimentsRequest>,
     ) -> Result<Response<PFindExperimentsReply>, Status> {
-        find::find_experiments(&self.experiments, request.into_inner())
+        find::find_experiments(&self.experiment_store, request.into_inner())
             .await
             .map(Response::new)
             .map_err(transform_error)
@@ -55,7 +55,7 @@ impl Experiments for ExperimentsService {
         &self,
         request: Request<PStopExperimentRequest>,
     ) -> Result<Response<PStopExperimentReply>, Status> {
-        stop::stop_experiment(&self.experiments, request.into_inner())
+        stop::stop_experiment(&self.experiment_store, request.into_inner())
             .await
             .map(Response::new)
             .map_err(transform_error)
@@ -67,7 +67,7 @@ impl Experiments for ExperimentsService {
         &self,
         request: Request<PWatchExperimentRequest>,
     ) -> Result<Response<Self::WatchExperimentStream>, Status> {
-        watch::watch_experiment(&self.experiments, request.into_inner())
+        watch::watch_experiment(&self.experiment_store, request.into_inner())
             .await
             .map(Response::new)
             .map_err(transform_error)

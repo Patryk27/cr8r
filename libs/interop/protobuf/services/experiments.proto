@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package cr8r.services;
+
+import "services/experiments/create.proto";
+import "services/experiments/delete.proto";
+import "services/experiments/find.proto";
+import "services/experiments/stop.proto";
+import "services/experiments/watch.proto";
+import "models/report.proto";
+
+service Experiments {
+    rpc CreateExperiment (PCreateExperimentRequest) returns (PCreateExperimentReply);
+    rpc DeleteExperiment (PDeleteExperimentRequest) returns (PDeleteExperimentReply);
+    rpc FindExperiments (PFindExperimentsRequest) returns (PFindExperimentsReply);
+    rpc StopExperiment (PStopExperimentRequest) returns (PStopExperimentReply);
+    rpc WatchExperiment (PWatchExperimentRequest) returns (stream models.PReport);
+}

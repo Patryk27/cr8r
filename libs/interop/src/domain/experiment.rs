@@ -2,7 +2,7 @@ use std::convert::TryFrom;
 
 use chrono::{DateTime, Utc};
 
-use crate::convert;
+use crate::conv;
 use crate::domain::{DomainError, DomainResult};
 use crate::proto::models::PExperiment;
 
@@ -26,9 +26,9 @@ impl TryFrom<PExperiment> for DExperiment {
 
     fn try_from(PExperiment { id, created_at, status }: PExperiment) -> DomainResult<Self> {
         Ok(Self {
-            id: convert!(id as _),
-            created_at: convert!(created_at as DateTime),
-            status: convert!(status? as _?),
+            id: conv!(id as _),
+            created_at: conv!(created_at as DateTime),
+            status: conv!(status? as _?),
         })
     }
 }
@@ -38,9 +38,9 @@ impl Into<PExperiment> for DExperiment {
         let Self { id, created_at, status } = self;
 
         PExperiment {
-            id: convert!(id as _),
+            id: conv!(id as _),
             created_at: created_at.to_rfc3339(),
-            status: Some(convert!(status as _)),
+            status: Some(conv!(status as _)),
         }
     }
 }

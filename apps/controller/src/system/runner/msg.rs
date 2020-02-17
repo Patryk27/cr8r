@@ -7,6 +7,8 @@ use lib_interop::domain::DRunner;
 
 use super::RunnerActor;
 
+mod get_model;
+
 #[derive(Derivative)]
 #[derivative(Debug)]
 pub enum RunnerMsg {
@@ -17,8 +19,6 @@ pub enum RunnerMsg {
 
     Kill,
 }
-
-mod get_model;
 
 impl RunnerMsg {
     pub fn handle(self, actor: &mut RunnerActor) -> ActorWorkflow {

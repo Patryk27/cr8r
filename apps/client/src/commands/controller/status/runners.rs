@@ -1,7 +1,7 @@
 use anyhow::*;
 
 use lib_core_ui::*;
-use lib_interop::convert;
+use lib_interop::conv;
 use lib_interop::proto::services::PFindRunnersRequest;
 
 use crate::modules::app::AppContext;
@@ -20,7 +20,7 @@ pub async fn print(ctxt: &mut AppContext) -> Result<()> {
             .runners
     };
 
-    let runners = convert!(runners as [_?]);
+    let runners = conv!(runners as [_?]);
 
     RunnerListWidget::new(&runners)
         .print();

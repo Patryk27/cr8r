@@ -2,43 +2,46 @@ use anyhow::*;
 
 pub use self::{
     attachment::*,
-    attachments::*,
+    attachment_store::*,
     compiler::*,
     config::*,
     ecosystem::*,
     experiment::*,
-    experiments::*,
+    experiment_store::*,
     runner::*,
-    runners::*,
+    runner_store::*,
 };
 
 mod attachment;
-mod attachments;
+mod attachment_store;
 mod compiler;
 mod config;
 mod ecosystem;
 mod experiment;
-mod experiments;
+mod experiment_store;
 mod runner;
-mod runners;
+mod runner_store;
 
 pub struct System {
-    pub attachments: Attachments,
-    pub experiments: Experiments,
-    pub runners: Runners,
+    pub attachment_store: AttachmentStore,
+    pub experiment_store: ExperimentStore,
+    pub runner_store: RunnerStore,
 }
 
-pub fn start(config: SystemConfig) -> Result<System> {
+pub async fn start(config: SystemConfig) -> Result<System> {
     let compiler = Compiler::new(config.ecosystem)
         .context("Could not initialize experiment compiler")?;
 
-    let attachments = Attachments::new(config.attachments)?;
-    let experiments = Experiments::new(compiler);
-    let runners = Runners::new();
+    let attachment_store = AttachmentStore::new(config.attachments)
+        .await
+        .context("Could not initialize attachment store")?;
+
+    let experiment_store = ExperimentStore::new(attachment_store.clone(), compiler);
+    let runner_store = RunnerStore::new();
 
     Ok(System {
-        attachments,
-        experiments,
-        runners,
+        attachment_store,
+        experiment_store,
+        runner_store,
     })
 }

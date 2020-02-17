@@ -1,6 +1,6 @@
 use std::convert::TryFrom;
 
-use crate::convert;
+use crate::conv;
 use crate::domain::{DomainError, DomainResult};
 use crate::proto::models::PJob;
 
@@ -20,7 +20,7 @@ impl TryFrom<PJob> for DJob {
     fn try_from(PJob { name, opcodes }: PJob) -> DomainResult<Self> {
         Ok(Self {
             name,
-            opcodes: convert!(opcodes as [_?]),
+            opcodes: conv!(opcodes as [_?]),
         })
     }
 }
@@ -31,7 +31,7 @@ impl Into<PJob> for DJob {
 
         PJob {
             name,
-            opcodes: convert!(opcodes as [_]),
+            opcodes: conv!(opcodes as [_]),
         }
     }
 }
