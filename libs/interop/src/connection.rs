@@ -5,24 +5,15 @@ use tonic::{Interceptor, Request};
 use tonic::metadata::MetadataValue;
 use tonic::transport::{Channel, Uri};
 
-use crate::proto::services::{
-    assignments_client::AssignmentsClient,
-    attachments_client::AttachmentsClient,
-    controller_client::ControllerClient,
-    events_client::EventsClient,
-    experiments_client::ExperimentsClient,
-    jobs_client::JobsClient,
-    reports_client::ReportsClient,
-    runners_client::RunnersClient,
-};
+use crate::clients::*;
 
 #[derive(Clone)]
-pub struct ControllerConnection {
-    channel: Channel,
-    interceptor: Interceptor,
+pub struct Connection {
+    crate channel: Channel,
+    crate interceptor: Interceptor,
 }
 
-impl ControllerConnection {
+impl Connection {
     pub async fn new(address: String, secret: Option<String>) -> Result<Self> {
         let uri = Uri::from_str(&address)
             .context("Could not understand controller's address")?;
@@ -51,59 +42,35 @@ impl ControllerConnection {
         })
     }
 
-    pub fn assignments(&self) -> AssignmentsClient<Channel> {
-        AssignmentsClient::with_interceptor(
-            self.channel.clone(),
-            self.interceptor.clone(),
-        )
+    pub fn assignments(&self) -> AssignmentClient {
+        AssignmentClient::new(self.clone())
     }
 
-    pub fn attachments(&self) -> AttachmentsClient<Channel> {
-        AttachmentsClient::with_interceptor(
-            self.channel.clone(),
-            self.interceptor.clone(),
-        )
+    pub fn attachments(&self) -> AttachmentClient {
+        AttachmentClient::new(self.clone())
     }
 
-    pub fn controller(&self) -> ControllerClient<Channel> {
-        ControllerClient::with_interceptor(
-            self.channel.clone(),
-            self.interceptor.clone(),
-        )
+    pub fn controller(&self) -> ControllerClient {
+        ControllerClient::new(self.clone())
     }
 
-    pub fn events(&self) -> EventsClient<Channel> {
-        EventsClient::with_interceptor(
-            self.channel.clone(),
-            self.interceptor.clone(),
-        )
+    pub fn events(&self) -> EventClient {
+        EventClient::new(self.clone())
     }
 
-    pub fn experiments(&self) -> ExperimentsClient<Channel> {
-        ExperimentsClient::with_interceptor(
-            self.channel.clone(),
-            self.interceptor.clone(),
-        )
+    pub fn experiments(&self) -> ExperimentClient {
+        ExperimentClient::new(self.clone())
     }
 
-    pub fn jobs(&self) -> JobsClient<Channel> {
-        JobsClient::with_interceptor(
-            self.channel.clone(),
-            self.interceptor.clone(),
-        )
+    pub fn jobs(&self) -> JobClient {
+        JobClient::new(self.clone())
     }
 
-    pub fn reports(&self) -> ReportsClient<Channel> {
-        ReportsClient::with_interceptor(
-            self.channel.clone(),
-            self.interceptor.clone(),
-        )
+    pub fn reports(&self) -> ReportClient {
+        ReportClient::new(self.clone())
     }
 
-    pub fn runners(&self) -> RunnersClient<Channel> {
-        RunnersClient::with_interceptor(
-            self.channel.clone(),
-            self.interceptor.clone(),
-        )
+    pub fn runners(&self) -> RunnerClient {
+        RunnerClient::new(self.clone())
     }
 }

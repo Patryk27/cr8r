@@ -1,20 +1,15 @@
-use std::collections::HashMap;
-
-use log::*;
-
+use anyhow::*;
 use lib_core_actor::*;
-use lib_interop::domain::{DAttachmentId, DEventType, DJob};
+use lib_interop::models::{DAttachmentId, DEventType, DJob};
+use log::*;
+use std::collections::HashMap;
 
 use crate::system::Attachment;
 
 use super::ExecutorActor;
 
 impl ExecutorActor {
-    pub(super) async fn execute_experiment(
-        &mut self,
-        attachments: HashMap<DAttachmentId, Attachment>,
-        jobs: Vec<DJob>,
-    ) -> ActorWorkflow {
+    pub(super) async fn execute_experiment(&mut self, mut context: ExecutorContext) -> ActorWorkflow {
         if self.handle_messages().actor_should_stop() {
             return ActorWorkflow::Stop;
         }
@@ -25,7 +20,7 @@ impl ExecutorActor {
             self.logger.add(DEventType::JobStarted { id });
 
             let result = self
-                .execute_job(job)
+                .execute_job(&attachments, job)
                 .await;
 
             match result {
@@ -38,7 +33,7 @@ impl ExecutorActor {
 
                     let result = result
                         .map(|_| ())
-                        .map_err(|err| format!("{:#?}", err)); // @todo this could be nicer
+                        .map_err(print_error);
 
                     self.logger.add(DEventType::JobCompleted { id, result });
                 }
@@ -47,4 +42,16 @@ impl ExecutorActor {
 
         ActorWorkflow::Continue
     }
+}
+
+fn print_error(error: Error) -> String {
+    let mut result = String::new();
+
+    result.push_str(&error.to_string());
+
+    for cause in error.chain().skip(1) {
+        result.push_str(&format!(".. caused by: {}", cause.to_string()));
+    }
+
+    result
 }

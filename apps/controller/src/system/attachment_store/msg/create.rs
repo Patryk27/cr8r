@@ -1,7 +1,7 @@
 use anyhow::*;
 use tokio::fs::File;
 
-use lib_interop::domain::{DAttachmentId, DAttachmentName};
+use lib_interop::models::{DAttachmentId, DAttachmentName};
 use lib_interop::proto::models::PAttachmentSize;
 
 use crate::system::Attachment;

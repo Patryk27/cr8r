@@ -1,6 +1,6 @@
 use anyhow::*;
 
-use lib_interop::domain::{DExperimentId, DRunnerId};
+use lib_interop::models::{DExperimentId, DRunnerId};
 
 use super::super::ExperimentStoreActor;
 

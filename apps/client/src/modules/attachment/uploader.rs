@@ -4,16 +4,14 @@ use anyhow::*;
 use tokio::sync::mpsc::unbounded_channel;
 
 use lib_core_channel::{URx, UTx};
-use lib_interop::proto::models::PAttachmentId;
-
-use crate::modules::app::AppContext;
+use lib_interop::clients::AttachmentClient;
+use lib_interop::models::DAttachmentId;
 
 mod compress_dir;
 mod upload;
 
-// @todo use `AttachmentsClient` directly
-pub struct AttachmentUploader<'c> {
-    ctxt: &'c mut AppContext,
+pub struct AttachmentUploader {
+    client: AttachmentClient,
     progress: UTx<AttachmentUploaderProgress>,
 }
 
@@ -31,15 +29,14 @@ pub enum AttachmentUploaderProgress {
     AttachmentUploaded,
 }
 
-impl<'c> AttachmentUploader<'c> {
-    pub fn new(ctxt: &'c mut AppContext) -> (Self, URx<AttachmentUploaderProgress>) {
-        let (tx, rx) = unbounded_channel();
+impl AttachmentUploader {
+    pub fn new(client: AttachmentClient) -> (Self, URx<AttachmentUploaderProgress>) {
+        let (progress, progress_rx) = unbounded_channel();
 
-        (Self { ctxt, progress: tx }, rx)
+        (Self { client, progress }, progress_rx)
     }
 
-    /// Compresses specified directory and sends it into the Controller.
-    pub async fn upload_dir(&mut self, path: impl Into<PathBuf>) -> Result<PAttachmentId> {
+    pub async fn upload_dir(&mut self, path: impl Into<PathBuf>) -> Result<DAttachmentId> {
         let path = path.into();
 
         let archive = self

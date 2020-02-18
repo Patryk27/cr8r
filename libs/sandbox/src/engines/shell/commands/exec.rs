@@ -12,7 +12,8 @@ pub async fn exec(engine: &mut ShellSandboxEngine, cmd: &str) -> Result<()> {
         handler(cmd.to_string());
     }
 
-    let status = Process::new("/usr/bin/bash")
+    // @todo `/bin/bash` shouldn't be hard-coded
+    let status = Process::new("/bin/bash")
         .current_dir(&engine.config.root)
         .args(&["-c", cmd])
         .listener(box |line| {

@@ -2,12 +2,11 @@ use anyhow::*;
 use tokio::fs::metadata;
 use tokio::sync::mpsc::unbounded_channel;
 use tokio::task::spawn;
-use tonic::transport::Channel;
 
 use lib_core_actor::*;
 use lib_core_channel::UTx;
-use lib_interop::domain::DAttachmentId;
-use lib_interop::proto::services::attachments_client::AttachmentsClient;
+use lib_interop::clients::AttachmentClient;
+use lib_interop::models::DAttachmentId;
 
 use crate::system::Attachment;
 
@@ -31,7 +30,7 @@ pub struct AttachmentStore {
 }
 
 impl AttachmentStore {
-    pub async fn new(config: AttachmentStoreConfig, client: AttachmentsClient<Channel>) -> Result<Self> {
+    pub async fn new(config: AttachmentStoreConfig, client: AttachmentClient) -> Result<Self> {
         let (tx, rx) = unbounded_channel();
 
         ensure!(metadata(&config.store_path).await.is_ok(), AttachmentStoreError::StoreNotFound {

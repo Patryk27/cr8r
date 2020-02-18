@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use chrono::{DateTime, Utc};
 
-use lib_interop::domain::{DEvent, DReport, DRunnerId};
+use lib_interop::models::{DEvent, DReport, DRunnerId};
 
 #[derive(PartialEq)]
 pub enum ExperimentStatus {

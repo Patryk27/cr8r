@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use thiserror::Error;
 
-use lib_interop::domain::DAttachmentId;
+use lib_interop::models::DAttachmentId;
 use lib_interop::proto::models::PAttachmentSize;
 
 #[derive(Error, Debug)]

@@ -1,3 +1,3 @@
-pub use self::controller_session::*;
+pub use self::session::*;
 
-mod controller_session;
+mod session;

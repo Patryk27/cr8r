@@ -1,31 +1,24 @@
 use anyhow::*;
 
 use lib_core_channel::SendTo;
-use lib_interop::domain::{DDefinition, DExperimentId};
-use lib_interop::domain::definition::{DDependencyDef, DDependencySourceDef, DToolchainDef};
-use lib_interop::proto::services::PCreateExperimentRequest;
+use lib_interop::models::{DDefinition, DExperimentId};
+use lib_interop::models::definition::{DDependencyDef, DDependencySourceDef, DToolchainDef};
 
 use crate::modules::definition::{DefinitionArg, DependencyArg, DependencySourceArg, ToolchainArg};
 
 use super::{ExperimentCreator, ExperimentCreatorProgress::*};
 
-impl<'c> ExperimentCreator<'c> {
+impl ExperimentCreator {
     pub(super) async fn create_experiment(&mut self, definition: DefinitionArg) -> Result<DExperimentId> {
         CreatingExperiment
             .send_to(&self.progress);
 
-        let definition = self
-            .build_def(definition)
-            .into();
+        let definition = self.build_def(definition);
 
-        let id: DExperimentId = self.ctxt
+        let id = self.conn
             .experiments()
-            .await?
-            .create_experiment(PCreateExperimentRequest { definition: Some(definition) })
-            .await?
-            .into_inner()
-            .id
-            .into();
+            .create(definition)
+            .await?;
 
         ExperimentCreated { id }
             .send_to(&self.progress);
@@ -55,12 +48,12 @@ impl<'c> ExperimentCreator<'c> {
         })
     }
 
-    fn build_dependency_def(&self, dependency: DependencyArg) -> DDependencyDef {
+    fn build_dependency_def(&self, dep: DependencyArg) -> DDependencyDef {
         use DependencySourceArg::*;
 
-        let name = dependency.name.0;
+        let name = dep.name.0;
 
-        let source = match dependency.source {
+        let source = match dep.source {
             Branch(branch) => {
                 DDependencySourceDef::Branch { branch }
             }

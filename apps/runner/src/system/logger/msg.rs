@@ -1,6 +1,6 @@
 use log::*;
 
-use lib_interop::domain::DEvent;
+use lib_interop::models::DEvent;
 
 use super::LoggerActor;
 

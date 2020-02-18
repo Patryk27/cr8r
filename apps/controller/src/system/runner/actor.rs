@@ -3,7 +3,7 @@ use log::*;
 use tokio::stream::StreamExt;
 
 use lib_core_channel::URx;
-use lib_interop::domain::{DRunnerId, DRunnerName};
+use lib_interop::models::{DRunnerId, DRunnerName};
 
 use super::{RunnerMsg, RunnerStatus};
 

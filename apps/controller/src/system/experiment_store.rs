@@ -4,7 +4,7 @@ use tokio::task::spawn;
 
 use lib_core_actor::*;
 use lib_core_channel::UTx;
-use lib_interop::domain::{DDefinition, DExperimentId, DRunnerId};
+use lib_interop::models::{DDefinition, DExperimentId, DRunnerId};
 
 use crate::system::{AttachmentStore, Compiler, Experiment};
 

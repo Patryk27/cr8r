@@ -1,10 +1,8 @@
+use anyhow::*;
+use lib_cargo_manifest::{CargoDependencyPatch, CargoManifest};
+use lib_interop::models::definition::{DDependencyDef, DDependencySourceDef};
 use std::path::PathBuf;
 use std::str::FromStr;
-
-use anyhow::*;
-
-use lib_cargo_manifest::{CargoDependencyPatch, CargoManifest};
-use lib_interop::domain::definition::{DDependencyDef, DDependencySourceDef};
 
 use super::super::ExecutorActor;
 
@@ -48,8 +46,8 @@ impl ExecutorActor {
                     )
                 }
 
-                _ => {
-                    unimplemented!();
+                DDependencySourceDef::Path { attachment_id } => {
+                    unimplemented!()
                 }
             }.context("Could not update `Cargo.toml`")?;
 

@@ -2,7 +2,7 @@ use std::fmt;
 
 use colored::Colorize;
 
-use lib_interop::domain::{DReport, DReportType};
+use lib_interop::models::{DReport, DReportType};
 
 pub struct ReportMessageWidget<'a> {
     report: &'a DReport,

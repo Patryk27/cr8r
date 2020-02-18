@@ -1,8 +1,6 @@
 use anyhow::*;
 
 use lib_core_ui::*;
-use lib_interop::conv;
-use lib_interop::proto::services::PFindRunnersRequest;
 
 use crate::modules::app::AppContext;
 use crate::widgets::RunnerListWidget;
@@ -12,15 +10,12 @@ pub async fn print(ctxt: &mut AppContext) -> Result<()> {
         .println();
 
     let runners = spinner! {
-        ctxt.runners()
+        ctxt.conn()
             .await?
-            .find_runners(PFindRunnersRequest::default())
+            .runners()
+            .find_many()
             .await?
-            .into_inner()
-            .runners
     };
-
-    let runners = conv!(runners as [_?]);
 
     RunnerListWidget::new(&runners)
         .print();

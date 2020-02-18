@@ -32,9 +32,7 @@ impl str::FromStr for DependencyArg {
             dep_source,
         ))(s);
 
-        let (_, (name, source)) = dep.map_err(|err| {
-            anyhow!("Dependency contains syntax error; for reference, the parser returned: {:?}", err)
-        })?;
+        let (_, (name, source)) = dep.map_err(|_| anyhow!("Unknown syntax"))?;
 
         Ok(Self {
             name,

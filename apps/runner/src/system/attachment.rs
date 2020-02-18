@@ -1,6 +1,6 @@
 use std::path::{Path, PathBuf};
 
-use lib_interop::domain::DAttachmentId;
+use lib_interop::models::DAttachmentId;
 
 use crate::system::AttachmentStore;
 

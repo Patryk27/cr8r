@@ -4,7 +4,7 @@ use colored::Colorize;
 use prettytable::{cell, row};
 
 use lib_core_ui::*;
-use lib_interop::domain::DReport;
+use lib_interop::models::DReport;
 
 use crate::widgets::{ReportMessageWidget, ReportTypeWidget};
 

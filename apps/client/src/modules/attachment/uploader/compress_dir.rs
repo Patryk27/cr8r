@@ -10,7 +10,7 @@ use lib_core_tempfile::TempFile;
 
 use super::{AttachmentUploader, AttachmentUploaderProgress::*};
 
-impl<'c> AttachmentUploader<'c> {
+impl AttachmentUploader {
     pub(super) async fn compress_dir(&mut self, path: PathBuf) -> Result<TempFile> {
         CompressingAttachment.send_to(&self.progress);
 

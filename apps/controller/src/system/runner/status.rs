@@ -1,6 +1,6 @@
 use chrono::{DateTime, Utc};
 
-use lib_interop::domain::DExperimentId;
+use lib_interop::models::DExperimentId;
 
 use crate::system::Experiment;
 

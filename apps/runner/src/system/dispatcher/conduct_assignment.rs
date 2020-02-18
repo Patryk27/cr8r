@@ -2,7 +2,7 @@ use anyhow::*;
 use log::*;
 use tokio::time::{delay_for, Duration};
 
-use lib_interop::domain::DExperimentId;
+use lib_interop::models::DExperimentId;
 
 use crate::system::{Dispatcher, Executor, ExecutorStatus, Logger};
 

@@ -4,7 +4,7 @@ use tokio::task::spawn;
 
 use lib_core_actor::*;
 use lib_core_channel::UTx;
-use lib_interop::domain::{DRunner, DRunnerId, DRunnerName};
+use lib_interop::models::{DRunner, DRunnerId, DRunnerName};
 
 use self::{
     actor::*,

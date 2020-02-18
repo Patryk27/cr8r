@@ -2,7 +2,7 @@ use std::fmt;
 
 use colored::Colorize;
 
-use lib_interop::domain::DExperimentId;
+use lib_interop::models::DExperimentId;
 
 pub struct ExperimentIdWidget<'a> {
     id: &'a DExperimentId,

@@ -1,6 +1,5 @@
 use anyhow::*;
-
-use lib_interop::domain::DEventType;
+use lib_interop::models::DEventType;
 
 use super::super::ExecutorActor;
 

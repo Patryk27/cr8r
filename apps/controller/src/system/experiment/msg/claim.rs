@@ -1,7 +1,7 @@
 use anyhow::*;
 use chrono::Utc;
 
-use lib_interop::domain::DRunnerId;
+use lib_interop::models::DRunnerId;
 
 use super::super::{ExperimentActor, ExperimentStatus};
 

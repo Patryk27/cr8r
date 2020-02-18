@@ -2,74 +2,73 @@ use anyhow::*;
 use log::*;
 
 use lib_core_channel::URx;
-use lib_interop::domain::{DEventType, DExperimentId};
+use lib_interop::models::{DEventType, DExperimentId};
 use lib_sandbox::Sandbox;
 
-use crate::rpc::ControllerSession;
-use crate::system::{AttachmentStore, ExecutorStatus, Logger};
+use crate::rpc::Session;
+use crate::system::{AttachmentStore, Logger};
 
-use super::ExecutorMsg;
+use super::{ExecutorBehavior, ExecutorMsg, ExecutorStatus};
 
-mod execute_experiment;
-mod execute_job;
-mod execute_opcode;
-mod fetch_attachments;
-mod fetch_jobs;
-mod handle_messages;
+// mod download_attachments;
+// mod execute_experiment;
+// mod execute_job;
+// mod execute_opcode;
+// mod handle_messages;
 
 pub struct ExecutorActor {
-    pub attachment_store: AttachmentStore,
-    pub session: ControllerSession,
-    pub sandbox: Sandbox,
+    pub session: Session,
     pub logger: Logger,
-    pub mailbox: URx<ExecutorMsg>,
     pub experiment_id: DExperimentId,
-    pub status: ExecutorStatus,
+    pub mailbox: URx<ExecutorMsg>,
 }
 
 impl ExecutorActor {
-    pub async fn start(mut self) {
+    pub async fn start(mut self, mut behavior: ExecutorBehavior) {
         trace!("Actor started");
         trace!("-> experiment_id = {}", self.experiment_id);
 
-        self.logger.add(DEventType::ExperimentStarted);
+        loop {
+            // @todo process messages
 
-        let result = try {
-            let attachments = self
-                .fetch_attachments()
-                .await
-                .context("Could not download experiment's attachments")?;
-
-            let jobs = self
-                .fetch_jobs()
-                .await
-                .context("Could not fetch experiment's jobs")?;
-
-            let workflow = self
-                .execute_experiment(attachments, jobs)
-                .await;
-
-            if workflow.actor_should_continue() {
-                self.logger.add(DEventType::ExperimentCompleted);
-                self.status = ExecutorStatus::Completed;
-            } else {
-                // @todo notify logger?
-                self.status = ExecutorStatus::Stopped;
-            }
-        }: Result<_>;
-
-        match result {
-            Ok(()) => {
-                self.handle_messages_until_orphaning()
-                    .await
-            }
-
-            Err(_) => {
-                // @todo notify controller? try again in a minute? give up?
-                unimplemented!()
+            match behavior.tick(&mut self).await {
+                Some(next_behavior) => behavior = next_behavior,
+                None => break,
             }
         }
 
         trace!("Actor halted");
     }
+
+    // async fn try_start(&mut self) -> Result<()> {
+    //     let context = {
+    //         let attachments = self
+    //             .download_attachments()
+    //             .await
+    //             .context("Could not download experiment's attachments")?;
+    //
+    //         let jobs = self.session
+    //             .conn()
+    //             .jobs()
+    //             .find_many(self.experiment_id)
+    //             .await
+    //             .context("Could not fetch experiment's jobs")?;
+    //
+    //         ExecutorContext { attachments, jobs }
+    //     };
+    //
+    //     let workflow = self
+    //         .execute_experiment(context)
+    //         .await;
+    //
+    //     if workflow.actor_should_continue() {
+    //         self.logger.add(DEventType::ExperimentCompleted);
+    //         self.status = ExecutorStatus::Completed;
+    //     } else {
+    //         // @todo notify logger?
+    //         self.status = ExecutorStatus::Stopped;
+    //     }
+    //
+    //     Ok(())
+    // }
 }

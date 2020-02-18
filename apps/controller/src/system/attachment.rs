@@ -8,8 +8,8 @@ use tokio::task::spawn;
 
 use lib_core_actor::*;
 use lib_core_channel::UTx;
-use lib_interop::domain::{DAttachmentId, DAttachmentName};
-use lib_interop::domain::attachment::DAttachment;
+use lib_interop::models::{DAttachmentId, DAttachmentName};
+use lib_interop::models::attachment::DAttachment;
 use lib_interop::proto::models::PAttachmentSize;
 
 use self::{

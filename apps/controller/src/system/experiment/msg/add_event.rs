@@ -4,7 +4,7 @@ use anyhow::*;
 use chrono::Utc;
 use log::*;
 
-use lib_interop::domain::{DEvent, DEventType, DJob, DReport, DRunnerId};
+use lib_interop::models::{DEvent, DEventType, DJob, DReport, DRunnerId};
 
 use super::super::{ExperimentActor, ExperimentStatus};
 

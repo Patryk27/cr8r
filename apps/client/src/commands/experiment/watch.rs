@@ -7,7 +7,6 @@ use lib_core_ui::*;
 use lib_interop::proto::models::PExperimentId;
 
 use crate::modules::app::AppContext;
-use crate::modules::experiment::ExperimentWatcher;
 use crate::widgets::InlineReportWidget;
 
 pub async fn watch(ctxt: &mut AppContext, id: PExperimentId) -> Result<()> {
@@ -16,7 +15,9 @@ pub async fn watch(ctxt: &mut AppContext, id: PExperimentId) -> Result<()> {
         .unwrap();
 
     let mut reports = spinner! {
-        ExperimentWatcher::new(ctxt)
+        ctxt.conn()
+            .await?
+            .experiments()
             .watch(id)
             .await?
     };

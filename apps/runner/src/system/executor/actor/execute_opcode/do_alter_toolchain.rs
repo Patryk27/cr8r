@@ -1,6 +1,5 @@
 use anyhow::*;
-
-use lib_interop::domain::definition::DToolchainDef;
+use lib_interop::models::definition::DToolchainDef;
 
 use super::super::ExecutorActor;
 

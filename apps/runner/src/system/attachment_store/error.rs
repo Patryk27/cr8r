@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use thiserror::Error;
 
-use lib_interop::domain::DAttachmentId;
+use lib_interop::models::DAttachmentId;
 
 #[derive(Error, Debug)]
 pub enum AttachmentStoreError {

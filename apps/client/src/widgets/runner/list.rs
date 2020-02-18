@@ -3,7 +3,7 @@ use std::fmt;
 use prettytable::{cell, row};
 
 use lib_core_ui::*;
-use lib_interop::domain::DRunner;
+use lib_interop::models::DRunner;
 
 use crate::widgets::{RunnerNameWidget, RunnerStatusWidget};
 

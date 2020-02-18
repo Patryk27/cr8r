@@ -1,6 +1,5 @@
-use log::*;
-
 use lib_core_actor::*;
+use log::*;
 
 use super::ExecutorActor;
 

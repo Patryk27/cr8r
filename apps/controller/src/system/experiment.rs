@@ -7,7 +7,7 @@ use tokio::task::spawn;
 
 use lib_core_actor::*;
 use lib_core_channel::{URx, UTx};
-use lib_interop::domain::{DEvent, DExperiment, DExperimentId, DJob, DReport, DRunnerId};
+use lib_interop::models::{DEvent, DExperiment, DExperimentId, DJob, DReport, DRunnerId};
 
 use crate::system::Attachment;
 

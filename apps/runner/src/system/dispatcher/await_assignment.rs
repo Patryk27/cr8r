@@ -1,9 +1,7 @@
 use log::*;
 use tokio::time::{delay_for, Duration};
 
-use lib_interop::domain::DExperimentId;
-use lib_interop::proto::services::{PPrepareAssignmentReply, PPrepareAssignmentRequest};
-use lib_interop::proto::services::p_prepare_assignment_reply::Assignment;
+use lib_interop::models::DExperimentId;
 
 use crate::system::Dispatcher;
 
@@ -12,19 +10,19 @@ impl Dispatcher {
         loop {
             debug!("Polling controller for a new assignment");
 
-            let assignment = self.session.conn
+            let assignment = self.session
+                .conn()
                 .assignments()
-                .prepare_assignment(PPrepareAssignmentRequest { runner_id: self.session.runner_id })
-                .await
-                .map(|reply| reply.into_inner());
+                .prepare(self.session.runner_id())
+                .await;
 
             match assignment {
-                Ok(PPrepareAssignmentReply { assignment: Some(Assignment::ExperimentId(experiment_id)) }) => {
+                Ok(Some(experiment_id)) => {
                     info!("We've been assigned experiment [id={}]", experiment_id);
-                    return experiment_id.into();
+                    return experiment_id;
                 }
 
-                Ok(_) => {
+                Ok(None) => {
                     delay_for(Duration::from_secs(1))
                         .await;
                 }

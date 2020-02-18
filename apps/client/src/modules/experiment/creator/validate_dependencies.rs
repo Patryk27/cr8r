@@ -7,7 +7,7 @@ use crate::modules::definition::{DefinitionArg, DependencyArg, DependencySourceA
 
 use super::{ExperimentCreator, ExperimentCreatorProgress::*};
 
-impl<'c> ExperimentCreator<'c> {
+impl ExperimentCreator {
     pub(super) async fn validate_dependencies(&mut self, definition: &DefinitionArg) -> Result<()> {
         if definition.dependencies.is_empty() {
             return Ok(());
@@ -15,12 +15,12 @@ impl<'c> ExperimentCreator<'c> {
 
         ValidatingDependencies.send_to(&self.progress);
 
-        for dependency in &definition.dependencies {
+        for dep in &definition.dependencies {
             ValidatingDependency {
-                name: dependency.name.to_string(),
+                name: dep.name.to_string(),
             }.send_to(&self.progress);
 
-            self.validate_dependency(dependency)
+            self.validate_dependency(dep)
                 .await?;
         }
 
@@ -30,20 +30,16 @@ impl<'c> ExperimentCreator<'c> {
         Ok(())
     }
 
-    async fn validate_dependency(&mut self, dependency: &DependencyArg) -> Result<()> {
+    async fn validate_dependency(&mut self, dep: &DependencyArg) -> Result<()> {
         use DependencySourceArg::*;
 
-        match &dependency.source {
-            Path(path) => {
-                if metadata(path).await.is_err() {
-                    return Err(anyhow!(
-                        "Dependency `{}` refers to a non-existing path `{}`",
-                        dependency.name, path,
-                    ));
-                }
+        if let Path(path) = &dep.source {
+            if metadata(path).await.is_err() {
+                return Err(anyhow!(
+                    "Dependency `{}` refers to a non-existing path `{}`",
+                    dep.name, path,
+                ));
             }
-
-            _ => (),
         }
 
         Ok(())

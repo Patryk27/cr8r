@@ -2,11 +2,10 @@ use std::collections::HashSet;
 
 use log::*;
 use tokio::stream::StreamExt;
-use tonic::transport::Channel;
 
 use lib_core_channel::URx;
-use lib_interop::domain::DAttachmentId;
-use lib_interop::proto::services::attachments_client::AttachmentsClient;
+use lib_interop::clients::AttachmentClient;
+use lib_interop::models::DAttachmentId;
 
 use crate::system::AttachmentStore;
 
@@ -14,7 +13,7 @@ use super::{AttachmentStoreConfig, AttachmentStoreMsg};
 
 pub struct AttachmentStoreActor {
     pub config: AttachmentStoreConfig,
-    pub client: AttachmentsClient<Channel>,
+    pub client: AttachmentClient,
     pub store: AttachmentStore,
     pub attachments: HashSet<DAttachmentId>,
 }

@@ -3,7 +3,7 @@ use derivative::Derivative;
 use log::*;
 
 use lib_core_channel::{OTx, SendTo};
-use lib_interop::domain::DAttachmentId;
+use lib_interop::models::DAttachmentId;
 
 use crate::system::Attachment;
 

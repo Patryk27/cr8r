@@ -13,7 +13,9 @@ use crate::modules::definition::DefinitionArg;
 use crate::modules::experiment::{ExperimentCreator, ExperimentCreatorProgress};
 
 pub async fn launch(ctxt: &mut AppContext, watch: bool, definition: DefinitionArg) -> Result<()> {
-    let (creator, mut rx) = ExperimentCreator::new(ctxt);
+    let (creator, mut rx) = ExperimentCreator::new(
+        ctxt.conn().await?,
+    );
 
     let ui = spawn(async move {
         while let Some(evt) = rx.next().await {

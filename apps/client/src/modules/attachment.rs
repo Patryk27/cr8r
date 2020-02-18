@@ -1,7 +1,3 @@
-pub use self::{
-    repository::*,
-    uploader::*,
-};
+pub use self::uploader::*;
 
-mod repository;
 mod uploader;

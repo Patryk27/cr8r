@@ -5,7 +5,7 @@ use derivative::Derivative;
 use log::*;
 
 use lib_core_channel::{OTx, SendTo, URx};
-use lib_interop::domain::{DEvent, DExperiment, DJob, DReport, DRunnerId};
+use lib_interop::models::{DEvent, DExperiment, DJob, DReport, DRunnerId};
 
 use crate::system::Attachment;
 

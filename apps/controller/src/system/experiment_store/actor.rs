@@ -4,7 +4,7 @@ use log::*;
 use tokio::stream::StreamExt;
 
 use lib_core_channel::URx;
-use lib_interop::domain::DExperimentId;
+use lib_interop::models::DExperimentId;
 
 use crate::system::{AttachmentStore, Compiler, Experiment};
 

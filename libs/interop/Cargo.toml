@@ -9,6 +9,7 @@ anyhow = "1.0"
 bytes = "0.4"
 chrono = "0.4"
 colored = "1.9"
+lib_core_channel = { path = "../core_channel" }
 log = "0.4"
 prost = "0.6"
 prost-derive = "0.6"

@@ -14,6 +14,7 @@ lib_cargo_manifest = { path = "../../libs/cargo_manifest" }
 lib_core_actor = { path = "../../libs/core_actor" }
 lib_core_channel = { path = "../../libs/core_channel" }
 lib_core_log = { path = "../../libs/core_log" }
+lib_core_tempfile = { path = "../../libs/core_tempfile" }
 lib_core_ui = { path = "../../libs/core_ui" }
 lib_interop = { path = "../../libs/interop" }
 lib_sandbox = { path = "../../libs/sandbox" }

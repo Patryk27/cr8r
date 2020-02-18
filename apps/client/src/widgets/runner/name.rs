@@ -2,7 +2,7 @@ use std::fmt;
 
 use colored::Colorize;
 
-use lib_interop::domain::DRunnerName;
+use lib_interop::models::DRunnerName;
 
 pub struct RunnerNameWidget<'a> {
     name: &'a DRunnerName,

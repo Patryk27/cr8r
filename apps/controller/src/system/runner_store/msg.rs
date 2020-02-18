@@ -3,7 +3,7 @@ use derivative::Derivative;
 use log::*;
 
 use lib_core_channel::{OTx, SendTo};
-use lib_interop::domain::{DRunnerId, DRunnerName};
+use lib_interop::models::{DRunnerId, DRunnerName};
 
 use crate::system::Runner;
 

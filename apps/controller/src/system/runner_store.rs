@@ -4,7 +4,7 @@ use tokio::task::spawn;
 
 use lib_core_actor::*;
 use lib_core_channel::UTx;
-use lib_interop::domain::{DRunnerId, DRunnerName};
+use lib_interop::models::{DRunnerId, DRunnerName};
 
 use crate::system::Runner;
 

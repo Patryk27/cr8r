@@ -2,10 +2,10 @@ use anyhow::*;
 use log::*;
 use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
+use tokio::stream::StreamExt;
 
-use lib_interop::domain::DAttachmentId;
+use lib_interop::models::DAttachmentId;
 use lib_interop::proto::services::p_download_attachment_reply::{Chunk, PBody};
-use lib_interop::proto::services::PDownloadAttachmentRequest;
 
 use crate::system::Attachment;
 
@@ -18,18 +18,17 @@ pub async fn download(actor: &mut AttachmentStoreActor, id: DAttachmentId) -> Re
         .store_path
         .join(format!("{}", id));
 
-    info!("Downloading attachment: id={}, path={}", id, path.display());
+    {
+        info!("Downloading attachment: id={}, path={}", id, path.display());
 
-    let mut file = File::create(path)
-        .await?;
+        let mut file = File::create(path)
+            .await?;
 
-    let mut stream = actor.client
-        .download_attachment(PDownloadAttachmentRequest { id: id.into() })
-        .await?
-        .into_inner();
+        let mut chunks = actor.client
+            .download(id)
+            .await?;
 
-    while let Some(msg) = stream.message().await? {
-        if let Some(chunk) = msg.chunk {
+        while let Some(chunk) = chunks.next().await {
             match chunk {
                 Chunk::Body(PBody { body }) => {
                     file.write(&body)
@@ -37,12 +36,16 @@ pub async fn download(actor: &mut AttachmentStoreActor, id: DAttachmentId) -> Re
                 }
             }
         }
+
+        file.sync_all()
+            .await?;
     }
 
-    file.sync_all()
-        .await?;
+    {
+        info!("Extracting attachment: id={}", id);
 
-    info!("Attachment downloaded");
+        // @todo
+    }
 
     actor.attachments.insert(id);
 

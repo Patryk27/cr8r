@@ -3,7 +3,7 @@ use std::fmt;
 use colored::Colorize;
 
 use lib_core_ui::*;
-use lib_interop::domain::DReport;
+use lib_interop::models::DReport;
 
 use crate::widgets::{ReportMessageWidget, ReportTypeWidget};
 

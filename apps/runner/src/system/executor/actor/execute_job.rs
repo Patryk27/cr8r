@@ -1,15 +1,21 @@
 use anyhow::*;
 use closure::*;
-use log::*;
-
 use lib_core_actor::*;
-use lib_interop::domain::{DEventType, DJob, DJobOpcode};
+use lib_interop::models::{DAttachmentId, DEventType, DJob, DJobOpcode};
 use lib_sandbox::SandboxListener;
+use log::*;
+use std::collections::HashMap;
+
+use crate::system::Attachment;
 
 use super::ExecutorActor;
 
 impl ExecutorActor {
-    pub(super) async fn execute_job(&mut self, job: DJob) -> Result<ActorWorkflow> {
+    pub(super) async fn execute_job(
+        &mut self,
+        attachments: &HashMap<DAttachmentId, Attachment>,
+        job: DJob,
+    ) -> Result<ActorWorkflow> {
         if self.handle_messages().actor_should_stop() {
             return Ok(ActorWorkflow::Stop);
         }
@@ -19,7 +25,7 @@ impl ExecutorActor {
             .context("Could not initialize sandbox")?;
 
         let result = self
-            .execute_opcodes(job.opcodes)
+            .execute_opcodes(attachments, job.opcodes)
             .await;
 
         if let Err(err) = self.destroy_sandbox().await {
@@ -64,9 +70,13 @@ impl ExecutorActor {
             .await
     }
 
-    async fn execute_opcodes(&mut self, opcodes: Vec<DJobOpcode>) -> Result<ActorWorkflow> {
+    async fn execute_opcodes(
+        &mut self,
+        attachments: &HashMap<DAttachmentId, Attachment>,
+        opcodes: Vec<DJobOpcode>,
+    ) -> Result<ActorWorkflow> {
         for (opcode_id, opcode) in opcodes.into_iter().enumerate() {
-            debug!("Starting opcode [id={}]", opcode_id);
+            debug!("Starting opcode [id={}]: {:?}", opcode_id, opcode);
 
             if self.execute_opcode(opcode).await?.actor_should_stop() {
                 return Ok(ActorWorkflow::Stop);

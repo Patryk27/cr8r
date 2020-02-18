@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
-use lib_interop::domain::{DDefinition, DJob, DJobOpcode};
-use lib_interop::domain::definition::DToolchainDef;
+use lib_interop::models::{DDefinition, DJob, DJobOpcode};
+use lib_interop::models::definition::DToolchainDef;
 
 use crate::{Environment, ProjectDef, ProjectName, ProviderDef, ProviderName};
 

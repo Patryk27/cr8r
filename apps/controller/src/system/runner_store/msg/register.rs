@@ -1,7 +1,7 @@
 use anyhow::*;
 use log::*;
 
-use lib_interop::domain::{DRunnerId, DRunnerName};
+use lib_interop::models::{DRunnerId, DRunnerName};
 
 use crate::system::Runner;
 use crate::system::runner_store::actor::RunnerStoreActor;

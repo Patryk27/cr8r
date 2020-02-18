@@ -1,4 +1,4 @@
-use lib_interop::domain::{DExperiment, DExperimentStatus};
+use lib_interop::models::{DExperiment, DExperimentStatus};
 
 use super::super::{ExperimentActor, ExperimentStatus};
 
@@ -34,8 +34,8 @@ pub fn get_model(actor: &mut ExperimentActor) -> DExperiment {
     };
 
     DExperiment {
-        id: actor.id.to_owned(),
-        created_at: actor.created_at.to_owned(),
+        id: actor.id,
+        created_at: actor.created_at,
         status,
     }
 }

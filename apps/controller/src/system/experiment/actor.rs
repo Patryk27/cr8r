@@ -5,7 +5,7 @@ use log::*;
 use tokio::stream::StreamExt;
 
 use lib_core_channel::{URx, UTx};
-use lib_interop::domain::{DExperimentId, DJob, DReport};
+use lib_interop::models::{DExperimentId, DJob, DReport};
 
 use crate::system::Attachment;
 

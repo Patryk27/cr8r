@@ -1,7 +1,6 @@
 use anyhow::*;
-
 use lib_core_actor::*;
-use lib_interop::domain::DJobOpcode;
+use lib_interop::models::DJobOpcode;
 
 use super::ExecutorActor;
 

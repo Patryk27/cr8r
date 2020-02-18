@@ -3,7 +3,7 @@ use std::fmt;
 use prettytable::*;
 
 use lib_core_ui::*;
-use lib_interop::domain::DExperiment;
+use lib_interop::models::DExperiment;
 
 use crate::widgets::{ExperimentIdWidget, ExperimentStatusWidget};
 

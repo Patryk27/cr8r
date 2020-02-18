@@ -1,4 +1,4 @@
-use lib_interop::domain::{DRunner, DRunnerStatus};
+use lib_interop::models::{DRunner, DRunnerStatus};
 
 use super::super::{RunnerActor, RunnerStatus};
 

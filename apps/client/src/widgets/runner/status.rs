@@ -3,7 +3,7 @@ use std::fmt;
 use colored::Colorize;
 
 use lib_core_ui::*;
-use lib_interop::domain::DRunnerStatus;
+use lib_interop::models::DRunnerStatus;
 
 pub struct RunnerStatusWidget<'a> {
     status: &'a DRunnerStatus,

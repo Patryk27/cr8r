@@ -3,7 +3,7 @@ use log::*;
 
 use lib_core_actor::*;
 use lib_core_channel::{OTx, SendTo};
-use lib_interop::domain::DRunner;
+use lib_interop::models::DRunner;
 
 use super::RunnerActor;
 

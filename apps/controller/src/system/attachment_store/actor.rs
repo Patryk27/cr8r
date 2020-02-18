@@ -4,7 +4,7 @@ use log::*;
 use tokio::stream::StreamExt;
 
 use lib_core_channel::URx;
-use lib_interop::domain::DAttachmentId;
+use lib_interop::models::DAttachmentId;
 use lib_interop::proto::models::PAttachmentSize;
 
 use crate::system::Attachment;

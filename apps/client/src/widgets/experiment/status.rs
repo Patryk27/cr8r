@@ -3,7 +3,7 @@ use std::fmt;
 use colored::Colorize;
 
 use lib_core_ui::*;
-use lib_interop::domain::DExperimentStatus;
+use lib_interop::models::DExperimentStatus;
 
 pub struct ExperimentStatusWidget<'a> {
     status: &'a DExperimentStatus,

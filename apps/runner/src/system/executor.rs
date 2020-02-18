@@ -3,19 +3,21 @@ use tokio::task::spawn;
 
 use lib_core_actor::*;
 use lib_core_channel::UTx;
-use lib_interop::domain::DExperimentId;
+use lib_interop::models::DExperimentId;
 use lib_sandbox::Sandbox;
 
-use crate::rpc::ControllerSession;
+use crate::rpc::Session;
 use crate::system::{AttachmentStore, Logger};
 
 use self::{
     actor::*,
+    behavior::*,
     msg::*,
 };
 pub use self::status::*;
 
 mod actor;
+mod behavior;
 mod msg;
 mod status;
 
@@ -26,22 +28,24 @@ pub struct Executor {
 impl Executor {
     pub fn new(
         attachment_store: AttachmentStore,
-        session: ControllerSession,
+        session: Session,
         sandbox: Sandbox,
         logger: Logger,
         experiment_id: DExperimentId,
     ) -> Self {
         let (tx, mailbox) = unbounded_channel();
 
-        spawn(ExecutorActor {
+        let behavior = ExecutorBehavior::Initializing {
             attachment_store,
-            session,
             sandbox,
+        };
+
+        spawn(ExecutorActor {
+            session,
             logger,
-            mailbox,
             experiment_id,
-            status: Default::default(),
-        }.start());
+            mailbox,
+        }.start(behavior));
 
         Self { tx }
     }

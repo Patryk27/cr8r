@@ -3,7 +3,7 @@ use derivative::Derivative;
 use log::*;
 
 use lib_core_channel::{OTx, SendTo};
-use lib_interop::domain::{DDefinition, DExperimentId, DRunnerId};
+use lib_interop::models::{DDefinition, DExperimentId, DRunnerId};
 
 use crate::system::Experiment;
 

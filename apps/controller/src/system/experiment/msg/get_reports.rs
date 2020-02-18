@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use lib_interop::domain::DReport;
+use lib_interop::models::DReport;
 
 use super::super::{ExperimentActor, ExperimentStatus};
 

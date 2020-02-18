@@ -7,7 +7,7 @@ use crate::modules::definition::{DefinitionArg, DependencyArg, DependencySourceA
 
 use super::{ExperimentCreator, ExperimentCreatorProgress::*};
 
-impl<'c> ExperimentCreator<'c> {
+impl ExperimentCreator {
     pub(super) async fn upload_dependencies(&mut self, def: &DefinitionArg) -> Result<()> {
         if !def.contains_path_dependencies() {
             return Ok(());
@@ -29,23 +29,21 @@ impl<'c> ExperimentCreator<'c> {
     async fn upload_dependency(&mut self, dep: &DependencyArg) -> Result<()> {
         use DependencySourceArg::*;
 
-        match &dep.source {
-            Path(path) => {
-                let (mut uploader, progress) = AttachmentUploader::new(self.ctxt);
+        if let Path(path) = &dep.source {
+            let (mut uploader, progress) = AttachmentUploader::new(
+                self.conn.attachments(),
+            );
 
-                UploadingDependency {
-                    name: dep.name.to_string(),
-                    progress,
-                }.send_to(&self.progress);
+            UploadingDependency {
+                name: dep.name.to_string(),
+                progress,
+            }.send_to(&self.progress);
 
-                let id = uploader
-                    .upload_dir(path)
-                    .await?;
+            let id = uploader
+                .upload_dir(path)
+                .await?;
 
-                self.attachments.insert(dep.name.to_string(), id);
-            }
-
-            _ => (),
+            self.attachments.insert(dep.name.to_string(), id);
         }
 
         Ok(())

@@ -3,14 +3,11 @@ use std::convert::TryInto;
 use anyhow::*;
 
 use lib_core_ui::*;
-use lib_interop::domain::DExperimentId;
+use lib_interop::connection::Connection;
+use lib_interop::models::DExperimentId;
 use lib_interop::proto::models::PExperimentId;
 
 use crate::modules::app::AppContext;
-use crate::modules::attachment::AttachmentRepository;
-use crate::modules::experiment::ExperimentRepository;
-use crate::modules::job::JobRepository;
-use crate::modules::report::ReportRepository;
 use crate::widgets::{ExperimentDetailsWidget, ReportListWidget};
 
 pub async fn show(
@@ -24,12 +21,14 @@ pub async fn show(
         .try_into()
         .context("Given experiment id is not valid")?;
 
+    let conn = ctxt
+        .conn()
+        .await?;
+
     let experiment = spinner! {
-        ExperimentRepository::new(ctxt)
-            .await?
+        conn.experiments()
             .find_one(id)
             .await?
-            .ok_or_else(|| anyhow!("No such experiment exists"))?
     };
 
     if show_attachments || show_jobs || show_reports {
@@ -41,31 +40,30 @@ pub async fn show(
         .println();
 
     if show_attachments {
-        print_attachments(ctxt, id)
+        print_attachments(conn.clone(), id)
             .await?;
     }
 
     if show_jobs {
-        print_jobs(ctxt, id)
+        print_jobs(conn.clone(), id)
             .await?;
     }
 
     if show_reports {
-        print_reports(ctxt, id)
+        print_reports(conn.clone(), id)
             .await?;
     }
 
     Ok(())
 }
 
-async fn print_attachments(ctxt: &mut AppContext, id: DExperimentId) -> Result<()> {
+async fn print_attachments(conn: Connection, id: DExperimentId) -> Result<()> {
     HeaderWidget::new("Attachments")
         .println();
 
     let attachments = spinner! {
-        AttachmentRepository::new(ctxt)
-            .await?
-            .find(id)
+        conn.attachments()
+            .find_many(id)
             .await?
     };
 
@@ -75,14 +73,13 @@ async fn print_attachments(ctxt: &mut AppContext, id: DExperimentId) -> Result<(
     Ok(())
 }
 
-async fn print_jobs(ctxt: &mut AppContext, id: DExperimentId) -> Result<()> {
+async fn print_jobs(conn: Connection, id: DExperimentId) -> Result<()> {
     HeaderWidget::new("Jobs")
         .println();
 
     let jobs = spinner! {
-        JobRepository::new(ctxt)
-            .await?
-            .find(id)
+        conn.jobs()
+            .find_many(id)
             .await?
     };
 
@@ -92,14 +89,13 @@ async fn print_jobs(ctxt: &mut AppContext, id: DExperimentId) -> Result<()> {
     Ok(())
 }
 
-async fn print_reports(ctxt: &mut AppContext, id: DExperimentId) -> Result<()> {
+async fn print_reports(conn: Connection, id: DExperimentId) -> Result<()> {
     HeaderWidget::new("Reports")
         .println();
 
     let reports = spinner! {
-        ReportRepository::new(ctxt)
-            .await?
-            .find(id)
+        conn.reports()
+            .find_many(id)
             .await?
     };
 

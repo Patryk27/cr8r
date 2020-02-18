@@ -1,7 +1,7 @@
-use lib_interop::domain::DAttachmentId;
+use lib_interop::models::DAttachmentId;
 
 use super::super::AttachmentStoreActor;
 
 pub async fn release(actor: &mut AttachmentStoreActor, id: DAttachmentId) {
-    unimplemented!()
+    // @todo
 }

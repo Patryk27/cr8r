@@ -1,7 +1,7 @@
 use anyhow::*;
 
 use lib_compiler::CompilerBuilder;
-use lib_interop::domain::{DDefinition, DJob};
+use lib_interop::models::{DDefinition, DJob};
 
 use crate::system::{EcosystemConfig, EcosystemEnvironmentConfig, EcosystemProjectsConfig, EcosystemProvidersConfig};
 

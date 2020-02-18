@@ -6,7 +6,7 @@ use tokio::fs::{File, remove_file};
 use tokio::stream::StreamExt;
 
 use lib_core_channel::URx;
-use lib_interop::domain::{DAttachmentId, DAttachmentName};
+use lib_interop::models::{DAttachmentId, DAttachmentName};
 use lib_interop::proto::models::PAttachmentSize;
 
 use super::{AttachmentMsg, AttachmentStatus};

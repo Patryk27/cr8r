@@ -27,8 +27,7 @@ impl ExecutorMsg {
 
         match self {
             GetStatus { tx } => {
-                actor.status.send_to(tx);
-                ActorWorkflow::Continue
+                unimplemented!()
             }
 
             Stop => {

@@ -4,7 +4,7 @@ use anyhow::*;
 use tokio::sync::mpsc::unbounded_channel;
 
 use lib_core_channel::URx;
-use lib_interop::domain::DReport;
+use lib_interop::models::DReport;
 
 use super::super::{ExperimentActor, ExperimentStatus};
 

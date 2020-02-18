@@ -4,7 +4,7 @@ use log::*;
 
 use lib_core_actor::ActorWorkflow;
 use lib_core_channel::{OTx, SendTo};
-use lib_interop::domain::attachment::DAttachment;
+use lib_interop::models::attachment::DAttachment;
 
 use super::AttachmentActor;
 

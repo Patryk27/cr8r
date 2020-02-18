@@ -1,7 +1,7 @@
 use anyhow::*;
 
-use lib_interop::domain::{DDefinition, DExperimentId};
-use lib_interop::domain::definition::DDependencySourceDef;
+use lib_interop::models::{DDefinition, DExperimentId};
+use lib_interop::models::definition::DDependencySourceDef;
 
 use crate::system::Experiment;
 
