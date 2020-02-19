@@ -1,9 +1,10 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 use lib_interop::models::{DDefinition, DJob, DJobOpcode};
 use lib_interop::models::definition::DToolchainDef;
+use lib_interop::models::job::DJobStatus;
 
-use crate::{Environment, ProjectDef, ProjectName, ProviderDef, ProviderName};
+use crate::{Environment, Project, ProjectName, Provider, ProviderName};
 
 pub use self::builder::*;
 
@@ -12,8 +13,8 @@ mod builder;
 #[derive(Debug, Eq, PartialEq)]
 pub struct Compiler {
     crate environment: Environment,
-    crate providers: HashMap<ProviderName, ProviderDef>,
-    crate projects: HashMap<ProjectName, ProjectDef>,
+    crate providers: BTreeMap<ProviderName, Provider>,
+    crate projects: BTreeMap<ProjectName, Project>,
 }
 
 impl Compiler {
@@ -43,7 +44,7 @@ impl Compiler {
         job_id: u32,
         definition: &DDefinition,
         project_name: &ProjectName,
-        project_def: &ProjectDef,
+        project_def: &Project,
     ) -> DJob {
         let mut opcodes = Vec::new();
 
@@ -52,7 +53,7 @@ impl Compiler {
         ));
 
         opcodes.push(DJobOpcode::execute(
-            format!("git clone {} {}", project_def.repository, project_name)
+            format!("git clone {} {}", project_def.source, project_name)
         ));
 
         let req_count = project_def.requirements.len();
@@ -62,21 +63,17 @@ impl Compiler {
 
             opcodes.push(DJobOpcode::emit(format!(
                 "Setting up requirement {}/{} `{}`",
-                req_id,
-                req_count,
-                req_name,
+                req_id, req_count, req_name,
             )));
 
             for command in &req_provider.setup {
-                opcodes.push(DJobOpcode::execute(
-                    command.inner()
-                ));
+                opcodes.push(DJobOpcode::execute(&command.inner));
             }
         }
 
         if definition.toolchain.is_some() || !definition.dependencies.is_empty() {
             opcodes.push(DJobOpcode::emit(
-                "Preparing the environment",
+                "Preparing environment",
             ));
         }
 
@@ -100,26 +97,21 @@ impl Compiler {
             ));
         }
 
-        opcodes.push(DJobOpcode::emit(
-            format!("Building `{}`", project_name)
-        ));
+        for (step_name, step_def) in &project_def.steps {
+            opcodes.push(DJobOpcode::emit(
+                format!("Executing `{}` for `{}`", step_name, project_name)
+            ));
 
-        opcodes.push(DJobOpcode::execute(
-            format!("cd {} && cargo build", project_name)
-        ));
-
-        opcodes.push(DJobOpcode::emit(
-            format!("Testing `{}`", project_name)
-        ));
-
-        opcodes.push(DJobOpcode::execute(
-            format!("cd {} && cargo test", project_name)
-        ));
+            opcodes.push(DJobOpcode::execute(
+                format!("cd {} && {}", project_name, step_def.exec.inner)
+            ));
+        }
 
         DJob {
             id: job_id.into(),
             name: project_name.into(),
             opcodes,
+            status: DJobStatus::Pending,
         }
     }
 }

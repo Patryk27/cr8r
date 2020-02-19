@@ -1,27 +1,20 @@
+use serde::Deserialize;
+
 use crate::Command;
 
 pub type ProviderName = String;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ProviderDef {
+#[derive(Clone, Debug, Eq, PartialEq, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Provider {
     crate setup: Vec<Command>,
 }
 
-impl ProviderDef {
-    pub fn new(setup: Vec<Command>) -> Self {
-        Self { setup }
-    }
-
-    pub fn setup(&self) -> &[Command] {
-        &self.setup
-    }
-}
-
 #[cfg(test)]
-impl Default for ProviderDef {
+impl Default for Provider {
     fn default() -> Self {
         Self {
-            setup: Vec::default(),
+            setup: Default::default(),
         }
     }
 }

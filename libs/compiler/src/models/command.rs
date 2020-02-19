@@ -1,13 +1,12 @@
-#[derive(Clone, Debug, Eq, PartialEq)]
+use serde::Deserialize;
+
+#[derive(Clone, Debug, Eq, PartialEq, Deserialize)]
+#[serde(transparent)]
 pub struct Command {
-    inner: String,
+    crate inner: String,
 }
 
 impl Command {
-    pub fn new(inner: impl Into<String>) -> Self {
-        Self { inner: inner.into() }
-    }
-
     pub fn inner(&self) -> &str {
         &self.inner
     }

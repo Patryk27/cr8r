@@ -30,6 +30,11 @@ impl Experiment {
     pub fn new(bus: SystemEventBus, id: DExperimentId, attachments: Vec<Attachment>, jobs: Vec<DJob>) -> Self {
         let (tx, rx) = unbounded_channel();
 
+        let jobs = jobs
+            .into_iter()
+            .map(|job| (job.id, job))
+            .collect();
+
         spawn(ExperimentActor {
             bus,
             id,

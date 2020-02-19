@@ -1,16 +1,11 @@
-#[derive(Clone, Debug, Eq, PartialEq)]
+use serde::Deserialize;
+
+#[derive(Clone, Debug, Eq, PartialEq, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "kebab-case")]
 pub struct Environment {
+    #[serde(default = "default_toolchain")]
     crate default_toolchain: String,
-}
-
-impl Environment {
-    pub fn new(default_toolchain: String) -> Self {
-        Self { default_toolchain }
-    }
-
-    pub fn default_toolchain(&self) -> &str {
-        &self.default_toolchain
-    }
 }
 
 #[cfg(test)]
@@ -20,4 +15,8 @@ impl Default for Environment {
             default_toolchain: "nightly".into(),
         }
     }
+}
+
+fn default_toolchain() -> String {
+    "nightly".to_string()
 }
