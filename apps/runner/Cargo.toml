@@ -21,6 +21,7 @@ lib_sandbox = { path = "../../libs/sandbox" }
 log = "0.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.8"
+tar = "0.4"
 thiserror = "1.0"
 tokio = { version = "0.2", features = ["full"] }
 tonic = "0.1"

@@ -20,7 +20,6 @@ impl fmt::Display for ReportMessageWidget<'_> {
 
         let msg = match self.report.ty {
             DReportType::SystemMsg => msg.blue(),
-            DReportType::CustomMsg => msg.white(),
             DReportType::ProcessMsg => msg.white().dimmed()
         }.to_string();
 

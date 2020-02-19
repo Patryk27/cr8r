@@ -16,7 +16,6 @@ pub struct DReport {
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum DReportType {
     SystemMsg,
-    CustomMsg,
     ProcessMsg,
 }
 
@@ -25,14 +24,6 @@ impl DReport {
         Self {
             at,
             ty: DReportType::SystemMsg,
-            msg: msg.into(),
-        }
-    }
-
-    pub fn custom_msg(at: DateTime<Utc>, msg: impl Into<String>) -> Self {
-        Self {
-            at,
-            ty: DReportType::CustomMsg,
             msg: msg.into(),
         }
     }
@@ -50,9 +41,8 @@ impl TryFrom<PReport> for DReport {
     type Error = ModelError;
 
     fn try_from(PReport { at, ty, msg }: PReport) -> ModelResult<Self> {
-        let ty = match PReportType::from_i32(ty).unwrap_or(PReportType::CustomMsg) {
+        let ty = match PReportType::from_i32(ty).unwrap_or(PReportType::SystemMsg) {
             PReportType::SystemMsg => DReportType::SystemMsg,
-            PReportType::CustomMsg => DReportType::CustomMsg,
             PReportType::ProcessMsg => DReportType::ProcessMsg,
         };
 
@@ -68,7 +58,6 @@ impl Into<PReport> for &'_ DReport {
     fn into(self) -> PReport {
         let ty = match self.ty {
             DReportType::SystemMsg => PReportType::SystemMsg,
-            DReportType::CustomMsg => PReportType::CustomMsg,
             DReportType::ProcessMsg => PReportType::ProcessMsg,
         } as _;
 

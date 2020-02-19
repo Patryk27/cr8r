@@ -5,6 +5,7 @@ use chrono::{DateTime, Utc};
 
 use crate::conv;
 use crate::models::{ModelError, ModelResult};
+use crate::models::job::DJobId;
 use crate::proto::models::PEvent;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -15,13 +16,9 @@ pub struct DEvent {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DEventType {
-    Ping,
+    Heartbeat,
 
     SystemMsg {
-        msg: String,
-    },
-
-    CustomMsg {
         msg: String,
     },
 
@@ -34,11 +31,11 @@ pub enum DEventType {
     ExperimentCompleted,
 
     JobStarted {
-        id: usize,
+        id: DJobId,
     },
 
     JobCompleted {
-        id: usize,
+        id: DJobId,
         result: result::Result<(), String>,
     },
 }
@@ -50,16 +47,12 @@ impl TryFrom<PEvent> for DEvent {
         use crate::proto::models::p_event::*;
 
         let ty = match conv!(ty?) {
-            Ty::Ping(_) => {
-                DEventType::Ping
+            Ty::Heartbeat(_) => {
+                DEventType::Heartbeat
             }
 
             Ty::SystemMsg(PSystemMsg { msg }) => {
                 DEventType::SystemMsg { msg }
-            }
-
-            Ty::CustomMsg(PCustomMsg { msg }) => {
-                DEventType::CustomMsg { msg }
             }
 
             Ty::ProcessMsg(PProcessMsg { msg }) => {
@@ -75,7 +68,9 @@ impl TryFrom<PEvent> for DEvent {
             }
 
             Ty::JobStarted(PJobStarted { id }) => {
-                DEventType::JobStarted { id: id as _ }
+                DEventType::JobStarted {
+                    id: conv!(id as _),
+                }
             }
 
             Ty::JobCompleted(PJobCompleted { id, failure_cause }) => {
@@ -85,7 +80,10 @@ impl TryFrom<PEvent> for DEvent {
                     Err(failure_cause)
                 };
 
-                DEventType::JobCompleted { id: id as _, result }
+                DEventType::JobCompleted {
+                    id: conv!(id as _),
+                    result,
+                }
             }
         };
 
@@ -101,16 +99,12 @@ impl Into<PEvent> for DEvent {
         use crate::proto::models::p_event::*;
 
         let ty = match self.ty {
-            DEventType::Ping => {
-                Ty::Ping(PPing {})
+            DEventType::Heartbeat => {
+                Ty::Heartbeat(PHeartbeat {})
             }
 
             DEventType::SystemMsg { msg } => {
                 Ty::SystemMsg(PSystemMsg { msg })
-            }
-
-            DEventType::CustomMsg { msg } => {
-                Ty::CustomMsg(PCustomMsg { msg })
             }
 
             DEventType::ProcessMsg { msg } => {
@@ -126,12 +120,14 @@ impl Into<PEvent> for DEvent {
             }
 
             DEventType::JobStarted { id } => {
-                Ty::JobStarted(PJobStarted { id: id as _ })
+                Ty::JobStarted(PJobStarted {
+                    id: conv!(id as _),
+                })
             }
 
             DEventType::JobCompleted { id, result } => {
                 Ty::JobCompleted(PJobCompleted {
-                    id: id as _,
+                    id: conv!(id as _),
                     failure_cause: result.err().unwrap_or_default(),
                 })
             }

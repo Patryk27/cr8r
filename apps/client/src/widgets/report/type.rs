@@ -19,7 +19,6 @@ impl fmt::Display for ReportTypeWidget<'_> {
         //@formatter:off
         let ty = match self.ty {
             DReportType::SystemMsg  => "sys ",
-            DReportType::CustomMsg  => "msg ",
             DReportType::ProcessMsg => "proc",
         };
         //@formatter:on

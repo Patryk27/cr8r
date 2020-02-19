@@ -7,11 +7,7 @@ use crate::proto::models::PJobOpcode;
 
 #[derive(Clone, Debug)]
 pub enum DJobOpcode {
-    LogSystemMsg {
-        msg: String,
-    },
-
-    LogCustomMsg {
+    Emit {
         msg: String,
     },
 
@@ -31,14 +27,8 @@ pub enum DJobOpcode {
 }
 
 impl DJobOpcode {
-    pub fn log_system_msg(msg: impl Into<String>) -> Self {
-        DJobOpcode::LogSystemMsg {
-            msg: msg.into(),
-        }
-    }
-
-    pub fn log_custom_msg(msg: impl Into<String>) -> Self {
-        DJobOpcode::LogCustomMsg {
+    pub fn emit(msg: impl Into<String>) -> Self {
+        DJobOpcode::Emit {
             msg: msg.into(),
         }
     }
@@ -71,12 +61,8 @@ impl TryFrom<PJobOpcode> for DJobOpcode {
         use crate::proto::models::p_job_opcode::*;
 
         Ok(match conv!(ty?) {
-            Ty::LogSystemMsg(PLogSystemMsg { msg }) => {
-                DJobOpcode::LogSystemMsg { msg }
-            }
-
-            Ty::LogCustomMsg(PLogCustomMsg { msg }) => {
-                DJobOpcode::LogCustomMsg { msg }
+            Ty::Emit(PEmit { msg }) => {
+                DJobOpcode::Emit { msg }
             }
 
             Ty::Execute(PExecute { cmd }) => {
@@ -105,12 +91,8 @@ impl Into<PJobOpcode> for DJobOpcode {
         use crate::proto::models::p_job_opcode::*;
 
         let ty = match self {
-            DJobOpcode::LogSystemMsg { msg } => {
-                Ty::LogSystemMsg(PLogSystemMsg { msg })
-            }
-
-            DJobOpcode::LogCustomMsg { msg } => {
-                Ty::LogCustomMsg(PLogCustomMsg { msg })
+            DJobOpcode::Emit { msg } => {
+                Ty::Emit(PEmit { msg })
             }
 
             DJobOpcode::Execute { cmd } => {

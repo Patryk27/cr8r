@@ -5,16 +5,13 @@ package cr8r.models;
 import "models/definition.proto";
 
 message PJob {
-    string name = 1;
+    uint32 id = 1;
+    string name = 2;
     repeated PJobOpcode opcodes = 3;
 }
 
 message PJobOpcode {
-    message PLogSystemMsg {
-        string msg = 1;
-    }
-
-    message PLogCustomMsg {
+    message PEmit {
         string msg = 1;
     }
 
@@ -33,10 +30,9 @@ message PJobOpcode {
     }
 
     oneof ty {
-        PLogSystemMsg log_system_msg = 1;
-        PLogCustomMsg log_custom_msg = 2;
-        PExecute execute = 3;
-        PAlterToolchain alter_toolchain = 4;
-        PAlterDependency alter_dependency = 5;
+        PEmit emit = 1;
+        PExecute execute = 2;
+        PAlterToolchain alter_toolchain = 3;
+        PAlterDependency alter_dependency = 4;
     }
 }

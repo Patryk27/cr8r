@@ -3,32 +3,17 @@ use std::fs;
 use anyhow::*;
 use serde::Deserialize;
 
-use lib_sandbox::SandboxConfig;
-
-use crate::system::AttachmentStoreConfig;
+use crate::rpc::RpcConfig;
+use crate::system::SystemConfig;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Config {
-    pub runner: RunnerConfig,
-    pub controller: ControllerConfig,
-    pub attachments: AttachmentStoreConfig,
-    pub sandbox: SandboxConfig,
-}
+    #[serde(rename = "controller")]
+    pub rpc: RpcConfig,
 
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct RunnerConfig {
-    pub name: String,
-}
-
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct ControllerConfig {
-    pub address: String,
-
-    #[serde(default)]
-    pub secret: Option<String>,
+    #[serde(flatten)]
+    pub system: SystemConfig,
 }
 
 impl Config {

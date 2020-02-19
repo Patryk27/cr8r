@@ -10,6 +10,5 @@ message PReport {
 
 enum PReportType {
     SYSTEM_MSG = 0;
-    CUSTOM_MSG = 1;
-    PROCESS_MSG = 2;
+    PROCESS_MSG = 1;
 }

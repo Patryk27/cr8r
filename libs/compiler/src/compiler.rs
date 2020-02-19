@@ -25,7 +25,10 @@ impl Compiler {
         let mut jobs = Vec::new();
 
         for (project_name, project) in &self.projects {
+            let job_id = 1 + jobs.len() as u32;
+
             jobs.push(self.compile_project(
+                job_id,
                 definition,
                 project_name,
                 project,
@@ -37,13 +40,14 @@ impl Compiler {
 
     fn compile_project(
         &self,
+        job_id: u32,
         definition: &DDefinition,
         project_name: &ProjectName,
         project_def: &ProjectDef,
     ) -> DJob {
         let mut opcodes = Vec::new();
 
-        opcodes.push(DJobOpcode::log_system_msg(
+        opcodes.push(DJobOpcode::emit(
             format!("Cloning `{}`", project_name)
         ));
 
@@ -56,7 +60,7 @@ impl Compiler {
         for (req_id, req_name) in project_def.requirements.iter().enumerate() {
             let req_provider = &self.providers[req_name];
 
-            opcodes.push(DJobOpcode::log_system_msg(format!(
+            opcodes.push(DJobOpcode::emit(format!(
                 "Setting up requirement {}/{} `{}`",
                 req_id,
                 req_count,
@@ -71,7 +75,7 @@ impl Compiler {
         }
 
         if definition.toolchain.is_some() || !definition.dependencies.is_empty() {
-            opcodes.push(DJobOpcode::log_system_msg(
+            opcodes.push(DJobOpcode::emit(
                 "Preparing the environment",
             ));
         }
@@ -96,7 +100,7 @@ impl Compiler {
             ));
         }
 
-        opcodes.push(DJobOpcode::log_system_msg(
+        opcodes.push(DJobOpcode::emit(
             format!("Building `{}`", project_name)
         ));
 
@@ -104,7 +108,7 @@ impl Compiler {
             format!("cd {} && cargo build", project_name)
         ));
 
-        opcodes.push(DJobOpcode::log_system_msg(
+        opcodes.push(DJobOpcode::emit(
             format!("Testing `{}`", project_name)
         ));
 
@@ -113,7 +117,8 @@ impl Compiler {
         ));
 
         DJob {
-            name: project_name.to_string(),
+            id: job_id.into(),
+            name: project_name.into(),
             opcodes,
         }
     }

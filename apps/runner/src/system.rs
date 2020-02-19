@@ -7,39 +7,35 @@ use lib_interop::connection::Connection;
 use lib_sandbox::SandboxProvider;
 
 use crate::build;
-use crate::config::Config;
-use crate::rpc::Session;
+use crate::rpc::{RpcConfig, Session};
 
 pub use self::{
-    attachment::*,
-    attachment_store::*,
-    dispatcher::*,
-    executor::*,
-    logger::*,
+    config::*,
+    modules::*,
 };
 
-mod attachment;
-mod attachment_store;
-mod dispatcher;
-mod executor;
-mod logger;
+mod config;
+mod modules;
 
-pub async fn start(config: Config) -> Result<()> {
-    let sandbox_provider = SandboxProvider::new(config.sandbox)
-        .await
-        .context("Could not initialize sandbox")?;
+pub async fn start(rpc_cfg: RpcConfig, system_cfg: SystemConfig) -> Result<()> {
+    let sandbox_provider = SandboxProvider::new(
+        system_cfg.sandbox,
+    ).await.context("Could not initialize sandbox")?;
 
-    let conn = Connection::new(config.controller.address.clone(), config.controller.secret)
-        .await
-        .context("Could not connect to the controller")?;
+    let conn = Connection::new(
+        rpc_cfg.address.clone(),
+        rpc_cfg.secret,
+    ).await.context("Could not connect to the controller")?;
 
-    let attachment_store = AttachmentStore::new(config.attachments, conn.attachments())
-        .await
-        .context("Could not initialize attachment store")?;
+    let attachment_store = AttachmentStore::new(
+        system_cfg.attachments,
+        conn.attachments(),
+    ).await.context("Could not initialize attachment store")?;
 
-    let session = Session::new(conn, config.runner.name.into())
-        .await
-        .context("Could not open session")?;
+    let session = Session::new(
+        conn,
+        system_cfg.runner.name.into(),
+    ).await.context("Could not open session")?;
 
     Logo {
         app: build::PKG_NAME,
@@ -47,12 +43,19 @@ pub async fn start(config: Config) -> Result<()> {
         commit: build::GIT_VERSION.unwrap(),
     }.log();
 
-    info!("🚀 Connected to: {}", config.controller.address.green());
+    info!(
+        "🚀 Connected to: {}",
+        rpc_cfg.address.green(),
+    );
 
     info!(
         "Authorized as: id={}, name={}",
         session.runner_id().to_string().green(),
         session.runner_name().to_string().green(),
+    );
+
+    HeartbeatSyncer::new(
+        session.clone()
     );
 
     let dispatcher = Dispatcher {

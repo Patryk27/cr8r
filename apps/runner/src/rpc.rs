@@ -1,3 +1,7 @@
-pub use self::session::*;
+pub use self::{
+    config::*,
+    session::*,
+};
 
+mod config;
 mod session;

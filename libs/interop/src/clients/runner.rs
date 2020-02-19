@@ -38,4 +38,10 @@ impl RunnerClient {
 
         Ok(reply.id.into())
     }
+
+    pub async fn sync_heartbeat(&mut self, id: DRunnerId) -> Result<()> {
+        self.inner.sync_runner_heartbeat(PSyncRunnerHeartbeatRequest { id: id.into() }).await?;
+
+        Ok(())
+    }
 }

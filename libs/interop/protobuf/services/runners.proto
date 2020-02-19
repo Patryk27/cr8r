@@ -4,8 +4,10 @@ package cr8r.services;
 
 import "services/runners/find.proto";
 import "services/runners/register.proto";
+import "services/runners/sync_heartbeat.proto";
 
 service Runners {
     rpc FindRunners (PFindRunnersRequest) returns (PFindRunnersReply);
     rpc RegisterRunner (PRegisterRunnerRequest) returns (PRegisterRunnerReply);
+    rpc SyncRunnerHeartbeat (PSyncRunnerHeartbeatRequest) returns (PSyncRunnerHeartbeatReply);
 }

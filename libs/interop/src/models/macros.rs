@@ -69,6 +69,12 @@ macro_rules! newtype {
             }
         }
 
+        impl From<&String> for $name {
+            fn from(str: &String) -> Self {
+                Self(str.to_owned())
+            }
+        }
+
         impl Into<String> for $name {
             fn into(self) -> String {
                 self.0

@@ -1,6 +1,5 @@
 use anyhow::*;
 use tokio::stream::{Stream, StreamExt};
-use tokio::sync::mpsc::channel;
 use tonic::transport::Channel;
 
 use crate::connection::Connection;
@@ -27,10 +26,16 @@ impl AttachmentClient {
         }
     }
 
-    pub async fn download(&mut self, id: DAttachmentId) -> Result<impl Stream<Item=PDownloadChunk>> {
-        let (tx, rx) = channel(1);
+    pub async fn download(&mut self, id: DAttachmentId) -> Result<impl Stream<Item=Result<PDownloadChunk>>> {
+        let chunks = self.inner
+            .download_attachment(PDownloadAttachmentRequest { id: id.into() }).await?
+            .into_inner();
 
-        Ok(rx)
+        let chunks = chunks
+            .map(|chunk| Ok(chunk?.chunk))
+            .filter_map(Result::transpose);
+
+        Ok(chunks)
     }
 
     pub async fn find_many(&mut self, experiment_id: DExperimentId) -> Result<Vec<DAttachment>> {

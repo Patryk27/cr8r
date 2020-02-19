@@ -3,15 +3,11 @@ syntax = "proto3";
 package cr8r.models;
 
 message PEvent {
-    message PPing {
+    message PHeartbeat {
         //
     }
 
     message PSystemMsg {
-        string msg = 1;
-    }
-
-    message PCustomMsg {
         string msg = 1;
     }
 
@@ -39,11 +35,10 @@ message PEvent {
     string at = 1;
 
     oneof ty {
-        PPing ping = 100;
+        PHeartbeat heartbeat = 100;
 
         PSystemMsg system_msg = 200;
-        PCustomMsg custom_msg = 201;
-        PProcessMsg process_msg = 202;
+        PProcessMsg process_msg = 201;
 
         PExperimentStarted experiment_started = 300;
         PExperimentCompleted experiment_completed = 301;

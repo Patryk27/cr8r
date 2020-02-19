@@ -19,6 +19,7 @@ lib_interop = { path = "../../libs/interop" }
 log = "0.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.8"
+take_mut = "0.2"
 thiserror = "1.0"
 tokio = { version = "0.2", features = ["full"] }
 tonic = "0.1"
