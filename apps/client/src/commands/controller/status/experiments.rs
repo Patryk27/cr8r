@@ -10,11 +10,9 @@ pub async fn print(ctxt: &mut AppContext) -> Result<()> {
         .println();
 
     let experiments = spinner! {
-        ctxt.conn()
-            .await?
+        ctxt.conn().await?
             .experiments()
-            .find_many()
-            .await?
+            .find_many().await?
     };
 
     ExperimentListWidget::new(&experiments)

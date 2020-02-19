@@ -24,8 +24,7 @@ impl RunnerClient {
 
     pub async fn find_many(&mut self) -> Result<Vec<DRunner>> {
         let runners = self.inner
-            .find_runners(PFindRunnersRequest::default())
-            .await?
+            .find_runners(PFindRunnersRequest::default()).await?
             .into_inner()
             .runners;
 
@@ -34,8 +33,7 @@ impl RunnerClient {
 
     pub async fn register(&mut self, name: DRunnerName) -> Result<DRunnerId> {
         let reply = self.inner
-            .register_runner(PRegisterRunnerRequest { name: name.into() })
-            .await?
+            .register_runner(PRegisterRunnerRequest { name: name.into() }).await?
             .into_inner();
 
         Ok(reply.id.into())

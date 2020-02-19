@@ -16,8 +16,7 @@ impl ExperimentCreator {
         UploadingDependencies.send_to(&self.progress);
 
         for dep in &def.dependencies {
-            self.upload_dependency(dep)
-                .await
+            self.upload_dependency(dep).await
                 .with_context(|| format!("Could not upload dependency: {}", dep.name))?;
         }
 
@@ -39,9 +38,7 @@ impl ExperimentCreator {
                 progress,
             }.send_to(&self.progress);
 
-            let id = uploader
-                .upload_dir(path)
-                .await?;
+            let id = uploader.upload_dir(path).await?;
 
             self.attachments.insert(dep.name.to_string(), id);
         }

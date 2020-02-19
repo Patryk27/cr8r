@@ -25,8 +25,7 @@ impl Connection {
             .context("Could not understand controller's secret")?;
 
         let channel = Channel::builder(uri)
-            .connect()
-            .await?;
+            .connect().await?;
 
         let interceptor = Interceptor::new(move |mut req: Request<()>| {
             if let Some(auth) = &auth {

@@ -57,13 +57,8 @@ impl ExperimentCreator {
     }
 
     pub async fn create(mut self, def: DefinitionArg) -> Result<DExperimentId> {
-        self.validate_dependencies(&def)
-            .await?;
-
-        self.upload_dependencies(&def)
-            .await?;
-
-        self.create_experiment(def)
-            .await
+        self.validate_dependencies(&def).await?;
+        self.upload_dependencies(&def).await?;
+        self.create_experiment(def).await
     }
 }

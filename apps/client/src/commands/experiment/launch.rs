@@ -19,22 +19,18 @@ pub async fn launch(ctxt: &mut AppContext, watch: bool, definition: DefinitionAr
 
     let ui = spawn(async move {
         while let Some(evt) = rx.next().await {
-            print(watch, evt, &mut rx)
-                .await;
+            print(watch, evt, &mut rx).await;
         }
     });
 
-    let id = creator
-        .create(definition)
-        .await;
+    let id = creator.create(definition).await;
 
     ui.await?;
 
     let id = id?;
 
     if watch {
-        super::watch::watch(ctxt, id.into())
-            .await
+        super::watch::watch(ctxt, id.into()).await
     } else {
         Ok(())
     }
@@ -45,18 +41,15 @@ async fn print(watch: bool, evt: ExperimentCreatorProgress, rx: &mut URx<Experim
 
     match evt {
         ValidatingDependencies => {
-            print_validating_dependencies(rx)
-                .await;
+            print_validating_dependencies(rx).await;
         }
 
         UploadingDependencies => {
-            print_uploading_dependencies(rx)
-                .await;
+            print_uploading_dependencies(rx).await;
         }
 
         CreatingExperiment => {
-            print_creating_experiment(watch, rx)
-                .await;
+            print_creating_experiment(watch, rx).await;
         }
 
         _ => unreachable!(),
@@ -93,8 +86,7 @@ async fn print_uploading_dependencies(rx: &mut URx<ExperimentCreatorProgress>) {
     while let Some(evt) = rx.next().await {
         match evt {
             UploadingDependency { name, progress } => {
-                print_uploading_dependency(name, progress)
-                    .await;
+                print_uploading_dependency(name, progress).await;
             }
 
             DependenciesUploaded => {
@@ -170,11 +162,14 @@ async fn print_creating_experiment(watch: bool, rx: &mut URx<ExperimentCreatorPr
                 ]).println();
 
                 if !watch {
-                    println!("You can see status of your experiment using:");
+                    println!("You can see how's your experiment doing using:");
                     println!("$ {}", format!("cr8r experiment show {}", id).blue());
                     println!();
                     println!("Or, if you prefer a real-time view:");
                     println!("$ {}", format!("cr8r experiment watch {}", id).blue());
+                    println!();
+                    println!("Or, if you want to stop it:");
+                    println!("$ {}", format!("cr8r experiment stop {}", id).blue());
                 }
             }
 

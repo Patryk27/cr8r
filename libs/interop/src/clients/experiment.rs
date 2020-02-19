@@ -29,25 +29,21 @@ impl ExperimentClient {
         let reply = self.inner
             .create_experiment(PCreateExperimentRequest {
                 definition: Some(definition.into()),
-            })
-            .await?
+            }).await?
             .into_inner();
 
         Ok(reply.id.into())
     }
 
     pub async fn delete(&mut self, id: DExperimentId) -> Result<()> {
-        self.inner
-            .delete_experiment(PDeleteExperimentRequest { id: id.into() })
-            .await?;
+        self.inner.delete_experiment(PDeleteExperimentRequest { id: id.into() }).await?;
 
         Ok(())
     }
 
     pub async fn find_one(&mut self, id: DExperimentId) -> Result<DExperiment> {
         let mut experiments = self.inner
-            .find_experiments(PFindExperimentsRequest { id: id.into() })
-            .await?
+            .find_experiments(PFindExperimentsRequest { id: id.into() }).await?
             .into_inner()
             .experiments;
 
@@ -62,8 +58,7 @@ impl ExperimentClient {
 
     pub async fn find_many(&mut self) -> Result<Vec<DExperiment>> {
         let experiments = self.inner
-            .find_experiments(PFindExperimentsRequest::default())
-            .await?
+            .find_experiments(PFindExperimentsRequest::default()).await?
             .into_inner()
             .experiments;
 
@@ -71,9 +66,7 @@ impl ExperimentClient {
     }
 
     pub async fn stop(&mut self, id: DExperimentId) -> Result<()> {
-        self.inner
-            .stop_experiment(PStopExperimentRequest { id: id.into() })
-            .await?;
+        self.inner.stop_experiment(PStopExperimentRequest { id: id.into() }).await?;
 
         Ok(())
     }

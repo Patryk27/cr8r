@@ -19,8 +19,7 @@ impl Reports for ReportsService {
         &self,
         request: Request<PFindReportsRequest>,
     ) -> Result<Response<PFindReportsReply>, Status> {
-        find::find_reports(&self.experiment_store, request.into_inner())
-            .await
+        find::find_reports(&self.experiment_store, request.into_inner()).await
             .map(Response::new)
             .map_err(transform_error)
     }

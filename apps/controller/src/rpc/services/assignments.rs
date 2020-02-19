@@ -19,8 +19,7 @@ impl Assignments for AssignmentsService {
         &self,
         request: Request<PPrepareAssignmentRequest>,
     ) -> Result<Response<PPrepareAssignmentReply>, Status> {
-        prepare::prepare_assignment(&self.experiment_store, request.into_inner())
-            .await
+        prepare::prepare_assignment(&self.experiment_store, request.into_inner()).await
             .map(Response::new)
             .map_err(transform_error)
     }

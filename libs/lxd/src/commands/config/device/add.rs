@@ -23,8 +23,7 @@ pub async fn config_device_add(
         }
     };
 
-    conn.invoke(&args)
-        .await?;
+    conn.invoke(&args).await?;
 
     Ok(())
 }

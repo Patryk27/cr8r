@@ -10,9 +10,7 @@ pub async fn delete_experiment(
 ) -> Result<PDeleteExperimentReply> {
     let id = request.id.into();
 
-    experiment_store
-        .delete(id)
-        .await?;
+    experiment_store.delete(id).await?;
 
-    Ok(PDeleteExperimentReply {})
+    Ok(PDeleteExperimentReply::default())
 }

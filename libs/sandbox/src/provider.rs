@@ -13,13 +13,11 @@ impl SandboxProvider {
 
         match &config {
             Lxd(config) => {
-                LxdSandboxEngine::validate(config)
-                    .await?;
+                LxdSandboxEngine::validate(config).await?;
             }
 
             Shell(config) => {
-                ShellSandboxEngine::validate(config)
-                    .await?;
+                ShellSandboxEngine::validate(config).await?;
             }
         }
 
@@ -31,13 +29,11 @@ impl SandboxProvider {
 
         let engine = match self.config.clone() {
             Lxd(config) => {
-                box LxdSandboxEngine::create(config)
-                    .await? as _
+                box LxdSandboxEngine::create(config).await? as _
             }
 
             Shell(definition) => {
-                box ShellSandboxEngine::create(definition)
-                    .await? as _
+                box ShellSandboxEngine::create(definition).await? as _
             }
         };
 

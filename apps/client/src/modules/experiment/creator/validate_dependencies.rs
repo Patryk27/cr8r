@@ -20,8 +20,7 @@ impl ExperimentCreator {
                 name: dep.name.to_string(),
             }.send_to(&self.progress);
 
-            self.validate_dependency(dep)
-                .await?;
+            self.validate_dependency(dep).await?;
         }
 
         DependenciesValidated

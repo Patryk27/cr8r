@@ -17,6 +17,5 @@ pub async fn exec(
         args.push(arg.to_string());
     }
 
-    conn.invoke(&args)
-        .await
+    conn.invoke(&args).await
 }

@@ -17,11 +17,9 @@ pub async fn print(ctxt: &mut AppContext) -> Result<()> {
     );
 
     let status = spinner! {
-        ctxt.conn()
-            .await?
+        ctxt.conn().await?
             .controller()
-            .howdy()
-            .await?
+            .howdy().await?
     };
 
     // @todo extract it to a separate component

@@ -6,9 +6,11 @@ use crate::engines::LxdSandboxEngine;
 pub async fn set_env(engine: &mut LxdSandboxEngine, key: &str, value: &str) -> Result<()> {
     trace!("Executing: set_env(key=`{}`, value=`{}`)", key, value);
 
-    engine.client
-        .config_set(&engine.config.container, format!("environment.{}", key), value.to_string())
-        .await?;
+    engine.client.config_set(
+        &engine.config.container,
+        format!("environment.{}", key),
+        value.to_string(),
+    ).await?;
 
     Ok(())
 }
@@ -17,9 +19,10 @@ pub async fn set_env(engine: &mut LxdSandboxEngine, key: &str, value: &str) -> R
 pub async fn get_env(engine: &mut LxdSandboxEngine, key: &str) -> Result<String> {
     trace!("Executing: get_env(key=`{})`", key);
 
-    let value = engine.client
-        .exec(&engine.config.container, &["bash", "-c", &format!("echo ${}", key)])
-        .await?;
+    let value = engine.client.exec(
+        &engine.config.container,
+        &["bash", "-c", &format!("echo ${}", key)],
+    ).await?;
 
     trace!(".. ok: {}", value);
 

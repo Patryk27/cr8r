@@ -13,8 +13,7 @@ pub async fn fs_read(engine: &mut ShellSandboxEngine, path: &Path) -> Result<Str
 
     trace!(".. actual path = {}", path.display());
 
-    let content = fs::read_to_string(path)
-        .await?;
+    let content = fs::read_to_string(path).await?;
 
     trace!(".. ok, {} bytes read", content.len());
 

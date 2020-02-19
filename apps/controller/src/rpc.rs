@@ -102,11 +102,12 @@ pub async fn start(config: RpcConfig, system: System) -> Result<()> {
         commit: build::GIT_VERSION.unwrap(),
     }.log();
 
-    info!("🚀 Listening on: {}", address.to_string().green());
+    info!(
+        "🚀 Listening on: {}",
+        address.to_string().green(),
+    );
 
-    server
-        .serve(address)
-        .await?;
+    server.serve(address).await?;
 
     Ok(())
 }

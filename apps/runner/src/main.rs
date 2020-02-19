@@ -23,8 +23,7 @@ async fn main() {
         let config = Config::load()
             .context("Could not load configuration (from `runner.yaml`)")?;
 
-        system::start(config)
-            .await?
+        system::start(config.rpc, config.system).await?
     }: Result<()>;
 
     if let Err(err) = result {

@@ -14,16 +14,14 @@ impl Session {
     pub async fn new(conn: Connection, runner_name: DRunnerName) -> Result<Self> {
         let version = conn
             .controller()
-            .howdy()
-            .await?
+            .howdy().await?
             .version;
 
         // @todo ensure we're compatible with controller
 
         let runner_id = conn
             .runners()
-            .register(runner_name.clone())
-            .await?;
+            .register(runner_name.clone()).await?;
 
         Ok(Self {
             conn,

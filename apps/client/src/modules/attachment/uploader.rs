@@ -36,14 +36,9 @@ impl AttachmentUploader {
         (Self { client, progress }, progress_rx)
     }
 
-    pub async fn upload_dir(&mut self, path: impl Into<PathBuf>) -> Result<DAttachmentId> {
-        let path = path.into();
+    pub async fn upload_dir(&mut self, dir: impl Into<PathBuf>) -> Result<DAttachmentId> {
+        let archive = self.compress_dir(dir.into()).await?;
 
-        let archive = self
-            .compress_dir(path)
-            .await?;
-
-        self.upload(archive.path_buf())
-            .await
+        self.upload(archive.path_buf()).await
     }
 }

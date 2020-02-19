@@ -22,13 +22,11 @@ impl EventClient {
     }
 
     pub async fn add(&mut self, runner_id: DRunnerId, experiment_id: DExperimentId, event: DEvent) -> Result<()> {
-        self.inner
-            .add_event(PAddEventRequest {
-                runner_id: runner_id.into(),
-                experiment_id: experiment_id.into(),
-                event: Some(event.into()),
-            })
-            .await?;
+        self.inner.add_event(PAddEventRequest {
+            runner_id: runner_id.into(),
+            experiment_id: experiment_id.into(),
+            event: Some(event.into()),
+        }).await?;
 
         Ok(())
     }

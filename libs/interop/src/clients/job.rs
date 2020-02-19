@@ -24,8 +24,7 @@ impl JobClient {
 
     pub async fn find_many(&mut self, experiment_id: DExperimentId) -> Result<Vec<DJob>> {
         let jobs = self.inner
-            .find_jobs(PFindJobsRequest { experiment_id: experiment_id.into() })
-            .await?
+            .find_jobs(PFindJobsRequest { experiment_id: experiment_id.into() }).await?
             .into_inner()
             .jobs;
 

@@ -17,13 +17,9 @@ pub async fn add_event(
     let experiment_id = request.experiment_id.into();
     let runner_id = request.runner_id.into();
 
-    let experiment = experiment_store
-        .find_one(experiment_id)
-        .await?;
+    experiment_store
+        .find_one(experiment_id).await?
+        .add_event(runner_id, event).await?;
 
-    experiment
-        .add_event(runner_id, event)
-        .await?;
-
-    Ok(Default::default())
+    Ok(PAddEventReply::default())
 }

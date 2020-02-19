@@ -7,11 +7,9 @@ use crate::modules::app::AppContext;
 
 pub async fn delete(ctxt: &mut AppContext, id: PExperimentId) -> Result<()> {
     let _ = spinner! {
-        ctxt.conn()
-            .await?
+        ctxt.conn().await?
             .experiments()
-            .delete(id.into())
-            .await?
+            .delete(id.into()).await?
     };
 
     MessageWidget::info("Success:", "Experiment has been deleted")

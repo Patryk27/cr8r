@@ -11,11 +11,8 @@ pub async fn init(engine: &mut ShellSandboxEngine, listener: SandboxListener) ->
     engine.listener = listener;
 
     (try {
-        ensure_root_dir_is_writable(engine)
-            .await?;
-
-        clean_root_dir(engine)
-            .await?;
+        ensure_root_dir_is_writable(engine).await?;
+        clean_root_dir(engine).await?;
     }: Result<()>).context("Could not prepare root directory")?;
 
     Ok(())
@@ -26,11 +23,8 @@ async fn ensure_root_dir_is_writable(engine: &ShellSandboxEngine) -> Result<()> 
 
     let file = engine.config.root.join(".test");
 
-    fs::write(&file, "Hello World!")
-        .await?;
-
-    fs::remove_file(&file)
-        .await?;
+    fs::write(&file, "Hello World!").await?;
+    fs::remove_file(&file).await?;
 
     trace!(".. .. ok");
 
@@ -48,14 +42,10 @@ async fn clean_root_dir(engine: &ShellSandboxEngine) -> Result<()> {
 
         if entry_meta.is_dir() {
             trace!(".. .. removing directory: {}", entry_path.display());
-
-            fs::remove_dir_all(entry_path)
-                .await?;
+            fs::remove_dir_all(entry_path).await?;
         } else {
             trace!(".. .. removing file: {}", entry_path.display());
-
-            fs::remove_file(entry_path)
-                .await?;
+            fs::remove_file(entry_path).await?;
         }
     }
 

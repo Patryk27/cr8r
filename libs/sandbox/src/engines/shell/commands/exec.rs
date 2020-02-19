@@ -21,8 +21,7 @@ pub async fn exec(engine: &mut ShellSandboxEngine, cmd: &str) -> Result<()> {
                 handler(line);
             }
         })
-        .spawn()
-        .await?;
+        .spawn().await?;
 
     if status.success() {
         Ok(())

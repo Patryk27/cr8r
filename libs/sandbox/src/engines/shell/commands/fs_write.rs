@@ -13,8 +13,7 @@ pub async fn fs_write(engine: &mut ShellSandboxEngine, path: &Path, content: Str
 
     trace!(".. actual path: {}", path.display());
 
-    fs::write(path, content)
-        .await?;
+    fs::write(path, content).await?;
 
     trace!(".. ok");
 

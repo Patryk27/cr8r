@@ -3,12 +3,10 @@ pub mod utils;
 #[tokio::test]
 #[ignore]
 async fn listing_all_containers_returns_our_container() {
-    let lxd = utils::client()
-        .await;
+    let lxd = utils::client().await;
 
     utils::run(&lxd, async {
-        let containers = lxd.list()
-            .await?;
+        let containers = lxd.list().await?;
 
         assert!(
             containers

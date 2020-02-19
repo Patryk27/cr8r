@@ -16,8 +16,7 @@ pub struct TempFile {
 
 impl TempFile {
     pub async fn new() -> Result<Self> {
-        let inner = task::spawn_blocking(NamedTempFile::new)
-            .await?;
+        let inner = task::spawn_blocking(NamedTempFile::new).await?;
 
         Ok(Self {
             inner: Some(inner?),
@@ -44,8 +43,7 @@ impl TempFile {
     }
 
     pub async fn tokio_file(&self) -> Result<TokioFile> {
-        TokioFile::open(self.path())
-            .await
+        TokioFile::open(self.path()).await
             .map_err(Into::into)
     }
 }

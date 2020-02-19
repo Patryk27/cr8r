@@ -24,8 +24,7 @@ impl ReportClient {
 
     pub async fn find_many(&mut self, experiment_id: DExperimentId) -> Result<Vec<DReport>> {
         let reports = self.inner
-            .find_reports(PFindReportsRequest { experiment_id: experiment_id.into() })
-            .await?
+            .find_reports(PFindReportsRequest { experiment_id: experiment_id.into() }).await?
             .into_inner()
             .reports;
 

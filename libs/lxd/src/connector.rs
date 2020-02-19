@@ -52,13 +52,11 @@ impl LxdConnector {
     }
 
     pub async fn invoke(&self, args: &[String]) -> Result<String> {
-        self.invoke_ex(args, true)
-            .await
+        self.invoke_ex(args, true).await
     }
 
     pub async fn invoke_silent(&self, args: &[String]) -> Result<String> {
-        self.invoke_ex(args, false)
-            .await
+        self.invoke_ex(args, false).await
     }
 
     async fn invoke_ex(&self, args: &[String], listen: bool) -> Result<String> {
@@ -80,8 +78,7 @@ impl LxdConnector {
                     }
                 }
             })
-            .spawn()
-            .await?;
+            .spawn().await?;
 
         if status.success() {
             Ok(output)

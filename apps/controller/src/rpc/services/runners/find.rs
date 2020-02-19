@@ -8,9 +8,7 @@ pub async fn find_runners(runner_store: &RunnerStore) -> Result<PFindRunnersRepl
     let mut runners = Vec::new();
 
     for runner in runner_store.find_all().await {
-        let runner = runner
-            .get_model()
-            .await;
+        let runner = runner.get_model().await;
 
         runners.push(runner);
     }

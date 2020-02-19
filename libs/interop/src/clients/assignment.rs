@@ -24,8 +24,7 @@ impl AssignmentClient {
 
     pub async fn prepare(&mut self, runner_id: DRunnerId) -> Result<Option<DExperimentId>> {
         let reply = self.inner
-            .prepare_assignment(PPrepareAssignmentRequest { runner_id: runner_id.into() })
-            .await?
+            .prepare_assignment(PPrepareAssignmentRequest { runner_id: runner_id.into() }).await?
             .into_inner()
             .assignment;
 

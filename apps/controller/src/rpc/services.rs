@@ -22,6 +22,6 @@ mod reports;
 mod runners;
 
 fn transform_error(err: Error) -> Status {
-    // @todo we could return more contextual status codes
+    // @todo we could use some of them contextual status codes
     Status::unknown(err.to_string())
 }

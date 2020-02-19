@@ -22,8 +22,7 @@ impl ControllerClient {
 
     pub async fn howdy(&mut self) -> Result<PHowdyReply> {
         let reply = self.inner
-            .howdy(PHowdyRequest::default())
-            .await?
+            .howdy(PHowdyRequest::default()).await?
             .into_inner();
 
         Ok(reply)

@@ -9,20 +9,15 @@ pub async fn find(
     request: PFindAttachmentsRequest,
 ) -> Result<PFindAttachmentsReply> {
     let experiment_id = request.experiment_id.into();
-
-    let experiment = experiment_store
-        .find_one(experiment_id)
-        .await?;
+    let experiment = experiment_store.find_one(experiment_id).await?;
 
     let mut attachments = Vec::new();
 
     for attachment in experiment.get_attachments().await {
-        let attachment = attachment
-            .get_model()
-            .await;
-
         attachments.push(
-            attachment.into(),
+            attachment
+                .get_model().await
+                .into()
         );
     }
 

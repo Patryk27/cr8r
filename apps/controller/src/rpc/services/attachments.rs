@@ -25,8 +25,7 @@ impl Attachments for AttachmentsService {
         &self,
         request: Request<PDownloadAttachmentRequest>,
     ) -> Result<Response<Self::DownloadAttachmentStream>, Status> {
-        download::download_attachment(&self.attachment_store, request.into_inner())
-            .await
+        download::download_attachment(&self.attachment_store, request.into_inner()).await
             .map(Response::new)
             .map_err(transform_error)
     }
@@ -35,8 +34,7 @@ impl Attachments for AttachmentsService {
         &self,
         request: Request<PFindAttachmentsRequest>,
     ) -> Result<Response<PFindAttachmentsReply>, Status> {
-        find::find(&self.experiment_store, request.into_inner())
-            .await
+        find::find(&self.experiment_store, request.into_inner()).await
             .map(Response::new)
             .map_err(transform_error)
     }
@@ -45,8 +43,7 @@ impl Attachments for AttachmentsService {
         &self,
         request: Request<Streaming<PUploadAttachmentRequest>>,
     ) -> Result<Response<PUploadAttachmentReply>, Status> {
-        upload::upload_attachment(&self.attachment_store, request.into_inner())
-            .await
+        upload::upload_attachment(&self.attachment_store, request.into_inner()).await
             .map(Response::new)
             .map_err(transform_error)
     }

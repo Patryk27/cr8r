@@ -17,8 +17,7 @@ impl ExperimentCreator {
 
         let id = self.conn
             .experiments()
-            .create(definition)
-            .await?;
+            .create(definition).await?;
 
         ExperimentCreated { id }
             .send_to(&self.progress);

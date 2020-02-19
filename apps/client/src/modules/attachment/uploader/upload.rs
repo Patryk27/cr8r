@@ -17,15 +17,14 @@ use super::{AttachmentUploader, AttachmentUploaderProgress::*};
 
 pub type JoinResult<T> = result::Result<T, JoinError>;
 
-const CHUNK_SIZE: u64 = 64 * 1024;
+const CHUNK_SIZE: usize = 64 * 1024;
 
 impl AttachmentUploader {
     pub(super) async fn upload(&mut self, archive: PathBuf) -> Result<DAttachmentId> {
         let (stream, stream_task) = self.spawn_uploading_stream(archive);
 
         let id = self.client
-            .upload(stream)
-            .await?;
+            .upload(stream).await?;
 
         // @todo we gotta check whether we shouldn't use `select!` here (in case that the stream fails, silently, and
         //       then `upload_attachment()` fails first because of the lost channel)
@@ -46,12 +45,10 @@ impl AttachmentUploader {
         let (mut stream, stream_rx) = channel(1);
 
         let stream_task = spawn(async move {
-            let archive = File::open(archive)
-                .await?;
+            let archive = File::open(archive).await?;
 
             let total_bytes = archive
-                .metadata()
-                .await?
+                .metadata().await?
                 .len();
 
             stream.send(Chunk::Metadata(PMetadata {
@@ -63,34 +60,30 @@ impl AttachmentUploader {
                 .send_to(&progress);
 
             let mut archive = BufReader::new(archive);
-            let mut chunk = [0u8; CHUNK_SIZE as usize];
+            let mut chunk = [0u8; CHUNK_SIZE];
             let mut sent_bytes = 0;
 
             loop {
-                let chunk_size = archive
-                    .read(&mut chunk)
-                    .await?;
+                let read_bytes = archive.read(&mut chunk).await?;
 
-                if chunk_size == 0 {
+                if read_bytes == 0 {
                     break;
                 }
 
                 let chunk = {
                     let mut body = chunk.to_vec();
 
-                    body.truncate(chunk_size);
+                    body.truncate(read_bytes);
 
                     Chunk::Body(PBody { body })
                 };
 
-                stream
-                    .send(chunk)
-                    .await?;
+                stream.send(chunk).await?;
 
                 UploadingAttachment { sent_bytes }
                     .send_to(&progress);
 
-                sent_bytes += chunk_size as u64;
+                sent_bytes += read_bytes as u64;
             }
 
             Ok(())

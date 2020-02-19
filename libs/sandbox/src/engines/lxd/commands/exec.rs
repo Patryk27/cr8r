@@ -10,9 +10,10 @@ pub async fn exec(engine: &mut LxdSandboxEngine, cmd: &str) -> Result<()> {
         handler(cmd.to_string());
     }
 
-    engine.client
-        .exec(&engine.config.container, &["bash", "-c", cmd])
-        .await?;
+    engine.client.exec(
+        &engine.config.container,
+        &["bash", "-c", cmd],
+    ).await?;
 
     Ok(())
 }

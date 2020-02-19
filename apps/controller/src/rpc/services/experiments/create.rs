@@ -14,9 +14,7 @@ pub async fn create_experiment(
         .ok_or_else(|| anyhow!("No experiment definition has been provided"))?
         .try_into()?;
 
-    let id = experiment_store
-        .launch(definition)
-        .await?;
+    let id = experiment_store.launch(definition).await?;
 
     Ok(PCreateExperimentReply {
         id: id.into(),

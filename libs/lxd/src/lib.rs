@@ -27,8 +27,7 @@ impl LxdClient {
     }
 
     pub async fn autodetect() -> Result<Self> {
-        LxdConnector::autodetect()
-            .await
+        LxdConnector::autodetect().await
             .map(|conn| Self { conn })
     }
 
@@ -42,8 +41,7 @@ impl LxdClient {
         dev_name: LxdDeviceName,
         dev_def: LxdDeviceDef,
     ) -> Result<()> {
-        commands::config_device_add(&self.conn, container, dev_name, dev_def)
-            .await
+        commands::config_device_add(&self.conn, container, dev_name, dev_def).await
     }
 
     pub async fn config_set(
@@ -52,18 +50,15 @@ impl LxdClient {
         cfg_key: String,
         cfg_value: String,
     ) -> Result<()> {
-        commands::config_set(&self.conn, container, cfg_key, cfg_value)
-            .await
+        commands::config_set(&self.conn, container, cfg_key, cfg_value).await
     }
 
     pub async fn delete(&self, container: &LxdContainerName) -> Result<()> {
-        commands::delete(&self.conn, container)
-            .await
+        commands::delete(&self.conn, container).await
     }
 
     pub async fn exec(&self, container: &LxdContainerName, args: &[&str]) -> Result<String> {
-        commands::exec(&self.conn, container, args)
-            .await
+        commands::exec(&self.conn, container, args).await
     }
 
     pub async fn file_pull(
@@ -72,8 +67,7 @@ impl LxdClient {
         container_file: impl AsRef<Path>,
         host_file: impl AsRef<Path>,
     ) -> Result<()> {
-        commands::file_pull(&self.conn, container, container_file.as_ref(), host_file.as_ref())
-            .await
+        commands::file_pull(&self.conn, container, container_file.as_ref(), host_file.as_ref()).await
     }
 
     pub async fn file_push(
@@ -82,17 +76,14 @@ impl LxdClient {
         host_file: impl AsRef<Path>,
         container_file: impl AsRef<Path>,
     ) -> Result<()> {
-        commands::file_push(&self.conn, container, host_file.as_ref(), container_file.as_ref())
-            .await
+        commands::file_push(&self.conn, container, host_file.as_ref(), container_file.as_ref()).await
     }
 
     pub async fn launch(&self, image: &LxdImageName, container: &LxdContainerName) -> Result<()> {
-        commands::launch(&self.conn, image, container)
-            .await
+        commands::launch(&self.conn, image, container).await
     }
 
     pub async fn list(&self) -> Result<Vec<LxdContainer>> {
-        commands::list(&self.conn)
-            .await
+        commands::list(&self.conn).await
     }
 }

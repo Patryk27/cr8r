@@ -11,21 +11,17 @@ pub mod utils;
 #[ignore]
 async fn file_can_be_pulled_from_container() {
     let (container_file, host_file) = files();
-
-    let client = utils::client()
-        .await;
+    let client = utils::client().await;
 
     utils::run(&client, async {
-        let _ = fs::remove_file(&host_file)
-            .await;
+        let _ = fs::remove_file(&host_file).await;
 
         // Step 1: Create a fixture-file inside the container
         client
             .exec(
                 &utils::container(),
                 &["bash", "-c", &format!("echo 'Hello, World!' > {}", container_file)],
-            )
-            .await
+            ).await
             .context("Step 1 failed")?;
 
         // Step 2: Pull fixture from container into the host
@@ -34,13 +30,11 @@ async fn file_can_be_pulled_from_container() {
                 &utils::container(),
                 container_file,
                 &host_file,
-            )
-            .await
+            ).await
             .context("Step 2 failed")?;
 
         // Step 3: Ensure contents match
-        let result = fs::read_to_string(host_file)
-            .await
+        let result = fs::read_to_string(host_file).await
             .context("Step 3 failed")?;
 
         assert_eq!(result, "Hello, World!\n");
@@ -53,17 +47,13 @@ async fn file_can_be_pulled_from_container() {
 #[ignore]
 async fn file_can_be_pushed_into_container() {
     let (container_file, host_file) = files();
-
-    let client = utils::client()
-        .await;
+    let client = utils::client().await;
 
     utils::run(&client, async {
-        let _ = fs::remove_file(&host_file)
-            .await;
+        let _ = fs::remove_file(&host_file).await;
 
         // Step 1: Create a fixture-file inside the host
-        fs::write(&host_file, "Hello, World!")
-            .await
+        fs::write(&host_file, "Hello, World!").await
             .context("Step 1 failed")?;
 
         // Step 2: Push fixture from host into the container
@@ -72,8 +62,7 @@ async fn file_can_be_pushed_into_container() {
                 &utils::container(),
                 host_file,
                 container_file,
-            )
-            .await
+            ).await
             .context("Step 2 failed")?;
 
         // Step 3: Ensure contents match
@@ -81,8 +70,7 @@ async fn file_can_be_pushed_into_container() {
             .exec(
                 &utils::container(),
                 &["bash", "-c", &format!("cat {}", container_file)],
-            )
-            .await
+            ).await
             .context("Step 3 failed")?;
 
         assert_eq!(result, "Hello, World!\n");

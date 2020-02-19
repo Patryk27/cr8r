@@ -20,8 +20,7 @@ pub struct LxdSandboxEngine {
 
 impl LxdSandboxEngine {
     pub async fn validate(_: &LxdSandboxConfig) -> Result<()> {
-        LxdClient::autodetect()
-            .await?;
+        LxdClient::autodetect().await?;
 
         Ok(())
     }
@@ -38,27 +37,22 @@ impl LxdSandboxEngine {
 #[async_trait]
 impl SandboxEngine for LxdSandboxEngine {
     async fn init(&mut self, listener: SandboxListener) -> Result<()> {
-        commands::init(self, listener)
-            .await
+        commands::init(self, listener).await
     }
 
     async fn destroy(&mut self) -> Result<()> {
-        commands::destroy(self)
-            .await
+        commands::destroy(self).await
     }
 
     async fn exec(&mut self, cmd: &str) -> Result<()> {
-        commands::exec(self, cmd)
-            .await
+        commands::exec(self, cmd).await
     }
 
     async fn fs_read(&mut self, path: &Path) -> Result<String> {
-        commands::fs_read(self, path.as_ref())
-            .await
+        commands::fs_read(self, path.as_ref()).await
     }
 
     async fn fs_write(&mut self, path: &Path, content: String) -> Result<()> {
-        commands::fs_write(self, path, content)
-            .await
+        commands::fs_write(self, path, content).await
     }
 }

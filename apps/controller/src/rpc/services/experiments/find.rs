@@ -12,9 +12,7 @@ pub async fn find_experiments(
     let mut experiments = Vec::new();
 
     for experiment in experiment_store.find_all().await {
-        let experiment = experiment
-            .get_model()
-            .await;
+        let experiment = experiment.get_model().await;
 
         if request.id > 0 && experiment.id.as_num() != request.id {
             continue;

@@ -7,11 +7,9 @@ use crate::modules::app::AppContext;
 
 pub async fn stop(ctxt: &mut AppContext, id: PExperimentId) -> Result<()> {
     let _ = spinner! {
-        ctxt.conn()
-            .await?
+        ctxt.conn().await?
             .experiments()
-            .stop(id.into())
-            .await?
+            .stop(id.into()).await?
     };
 
     MessageWidget::info("Success:", "Experiment has been stopped")

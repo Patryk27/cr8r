@@ -10,11 +10,9 @@ pub async fn stop_experiment(
 ) -> Result<PStopExperimentReply> {
     let id = request.id.into();
 
-    let experiment = experiment_store
-        .find_one(id)
-        .await?;
+    experiment_store
+        .find_one(id).await?
+        .stop();
 
-    experiment.stop();
-
-    Ok(PStopExperimentReply {})
+    Ok(PStopExperimentReply::default())
 }

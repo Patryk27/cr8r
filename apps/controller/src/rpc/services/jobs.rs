@@ -19,8 +19,7 @@ impl Jobs for JobsService {
         &self,
         request: Request<PFindJobsRequest>,
     ) -> Result<Response<PFindJobsReply>, Status> {
-        find::find_jobs(&self.experiment_store, request.into_inner())
-            .await
+        find::find_jobs(&self.experiment_store, request.into_inner()).await
             .map(Response::new)
             .map_err(transform_error)
     }

@@ -26,8 +26,7 @@ async fn main() {
 
         let mut ctxt = AppContext::new(config);
 
-        cmd.run(&mut ctxt)
-            .await?
+        cmd.run(&mut ctxt).await?
     }: Result<()>;
 
     if let Err(err) = result {

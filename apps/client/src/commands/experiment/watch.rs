@@ -15,11 +15,9 @@ pub async fn watch(ctxt: &mut AppContext, id: PExperimentId) -> Result<()> {
         .unwrap();
 
     let mut reports = spinner! {
-        ctxt.conn()
-            .await?
+        ctxt.conn().await?
             .experiments()
-            .watch(id)
-            .await?
+            .watch(id).await?
     };
 
     println!("Attached to experiment, logs follow:");

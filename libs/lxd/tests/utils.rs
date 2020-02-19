@@ -15,22 +15,19 @@ pub async fn run(
         .is_test(true)
         .try_init();
 
-    lxd.launch(&image(), &container())
-        .await
+    lxd.launch(&image(), &container()).await
         .expect("Could not launch the container");
 
     let result = test.await;
 
-    lxd.delete(&container())
-        .await
+    lxd.delete(&container()).await
         .expect("Could not delete the container");
 
     result.unwrap();
 }
 
 pub async fn client() -> LxdClient {
-    LxdClient::autodetect()
-        .await
+    LxdClient::autodetect().await
         .unwrap()
 }
 

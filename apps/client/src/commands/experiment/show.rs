@@ -21,14 +21,11 @@ pub async fn show(
         .try_into()
         .context("Given experiment id is not valid")?;
 
-    let conn = ctxt
-        .conn()
-        .await?;
+    let conn = ctxt.conn().await?;
 
     let experiment = spinner! {
         conn.experiments()
-            .find_one(id)
-            .await?
+            .find_one(id).await?
     };
 
     if show_attachments || show_jobs || show_reports {
@@ -40,18 +37,15 @@ pub async fn show(
         .println();
 
     if show_attachments {
-        print_attachments(conn.clone(), id)
-            .await?;
+        print_attachments(conn.clone(), id).await?;
     }
 
     if show_jobs {
-        print_jobs(conn.clone(), id)
-            .await?;
+        print_jobs(conn.clone(), id).await?;
     }
 
     if show_reports {
-        print_reports(conn.clone(), id)
-            .await?;
+        print_reports(conn.clone(), id).await?;
     }
 
     Ok(())
@@ -63,8 +57,7 @@ async fn print_attachments(conn: Connection, id: DExperimentId) -> Result<()> {
 
     let attachments = spinner! {
         conn.attachments()
-            .find_many(id)
-            .await?
+            .find_many(id).await?
     };
 
     println!("{:#?}", attachments); // @todo
@@ -79,8 +72,7 @@ async fn print_jobs(conn: Connection, id: DExperimentId) -> Result<()> {
 
     let jobs = spinner! {
         conn.jobs()
-            .find_many(id)
-            .await?
+            .find_many(id).await?
     };
 
     println!("{:#?}", jobs); // @todo
@@ -95,8 +87,7 @@ async fn print_reports(conn: Connection, id: DExperimentId) -> Result<()> {
 
     let reports = spinner! {
         conn.reports()
-            .find_many(id)
-            .await?
+            .find_many(id).await?
     };
 
     ReportListWidget::new(&reports)

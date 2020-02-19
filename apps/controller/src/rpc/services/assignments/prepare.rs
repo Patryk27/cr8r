@@ -11,13 +11,13 @@ pub async fn prepare_assignment(
 ) -> Result<PPrepareAssignmentReply> {
     let runner_id = request.runner_id.into();
 
-    let experiment_id = experiment_store
-        .prepare_assignment(runner_id)
-        .await?;
+    let assignment = experiment_store
+        .prepare_assignment(runner_id).await?
+        .map(|experiment_id| {
+            Assignment::ExperimentId(experiment_id.into())
+        });
 
     Ok(PPrepareAssignmentReply {
-        assignment: experiment_id.map(|experiment_id| {
-            Assignment::ExperimentId(experiment_id.into())
-        }),
+        assignment,
     })
 }

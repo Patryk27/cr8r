@@ -10,13 +10,9 @@ pub async fn find_reports(
 ) -> Result<PFindReportsReply> {
     let experiment_id = request.experiment_id.into();
 
-    let experiment = experiment_store
-        .find_one(experiment_id)
-        .await?;
-
-    let reports = experiment
-        .get_reports()
-        .await;
+    let reports = experiment_store
+        .find_one(experiment_id).await?
+        .get_reports().await;
 
     let reports = reports
         .into_iter()

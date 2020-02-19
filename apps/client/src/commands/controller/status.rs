@@ -7,18 +7,15 @@ mod controller;
 mod runners;
 
 pub async fn status(ctxt: &mut AppContext) -> Result<()> {
-    controller::print(ctxt)
-        .await?;
+    controller::print(ctxt).await?;
 
     println!();
 
-    experiments::print(ctxt)
-        .await?;
+    experiments::print(ctxt).await?;
 
     println!();
 
-    runners::print(ctxt)
-        .await?;
+    runners::print(ctxt).await?;
 
     Ok(())
 }

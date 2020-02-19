@@ -35,24 +35,22 @@ impl AttachmentClient {
 
     pub async fn find_many(&mut self, experiment_id: DExperimentId) -> Result<Vec<DAttachment>> {
         let attachments = self.inner
-            .find_attachments(PFindAttachmentsRequest { experiment_id: experiment_id.into() })
-            .await?
+            .find_attachments(PFindAttachmentsRequest { experiment_id: experiment_id.into() }).await?
             .into_inner()
             .attachments;
 
         Ok(conv!(attachments as [_?]))
     }
 
-    pub async fn upload(&mut self, stream: impl Stream<Item=PUploadChunk> + Send + Sync + 'static) -> Result<DAttachmentId> {
-        let stream = stream.map(|chunk| {
+    pub async fn upload(&mut self, chunks: impl Stream<Item=PUploadChunk> + Send + Sync + 'static) -> Result<DAttachmentId> {
+        let chunks = chunks.map(|chunk| {
             PUploadAttachmentRequest {
                 chunk: Some(chunk),
             }
         });
 
         let reply = self.inner
-            .upload_attachment(stream)
-            .await?
+            .upload_attachment(chunks).await?
             .into_inner();
 
         Ok(reply.id.into())

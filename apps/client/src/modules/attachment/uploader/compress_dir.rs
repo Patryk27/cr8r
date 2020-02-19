@@ -14,8 +14,7 @@ impl AttachmentUploader {
     pub(super) async fn compress_dir(&mut self, path: PathBuf) -> Result<TempFile> {
         CompressingAttachment.send_to(&self.progress);
 
-        let archive = TempFile::new()
-            .await?;
+        let archive = TempFile::new().await?;
 
         spawn_blocking(move || {
             let tar_buffer = BufWriter::new(
