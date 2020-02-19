@@ -7,9 +7,9 @@ edition = "2018"
 [dependencies]
 anyhow = "1.0"
 async-trait = "0.1"
+lib_core_tempfile = { path = "../core_tempfile" }
 lib_lxd = { path = "../lxd" }
 lib_process = { path = "../process" }
 log = "0.4"
 serde = { version = "1.0", features = ["derive"] }
-tempfile = "3.1"
 tokio = { version = "0.2", features = ["full"] }

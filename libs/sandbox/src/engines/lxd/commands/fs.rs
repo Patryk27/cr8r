@@ -1,10 +1,10 @@
 use std::path::Path;
-use std::thread;
 
 use anyhow::*;
 use log::*;
-use tempfile::NamedTempFile;
-use tokio::{fs, task};
+use tokio::fs;
+
+use lib_core_tempfile::TempFile;
 
 use crate::engines::LxdSandboxEngine;
 
@@ -15,26 +15,18 @@ pub async fn fs_read(engine: &mut LxdSandboxEngine, path: &Path) -> Result<Strin
 
     trace!(".. actual path: {}", path.display());
 
-    let proxy_file = create_proxy_file()
-        .await?;
-
+    let proxy_file = TempFile::new().await?;
     let proxy_path = proxy_file.path();
 
     trace!(".. using proxy file: {}", proxy_path.display());
 
-    engine
-        .client
-        .file_pull(&engine.config.container, path, &proxy_file)
-        .await?;
+    engine.client.file_pull(
+        &engine.config.container,
+        path,
+        proxy_path,
+    ).await?;
 
-    let content = fs::read_to_string(&proxy_file)
-        .await?;
-
-    // `NamedTempFile` has a custom `Drop` implementation that's blocking, so it must be sent to some other thread not
-    // to jam up our executor
-    thread::spawn(move || {
-        drop(proxy_file);
-    });
+    let content = fs::read_to_string(proxy_path).await?;
 
     trace!(".. ok, {} bytes read", content.len());
 
@@ -48,38 +40,20 @@ pub async fn fs_write(engine: &mut LxdSandboxEngine, path: &Path, content: Strin
 
     trace!(".. actual path: {}", path.display());
 
-    let proxy_file = create_proxy_file()
-        .await?;
-
+    let proxy_file = TempFile::new().await?;
     let proxy_path = proxy_file.path();
 
     trace!(".. using proxy file: {}", proxy_path.display());
 
-    fs::write(proxy_path, content)
-        .await?;
+    fs::write(proxy_path, content).await?;
 
-    engine
-        .client
-        .file_push(&engine.config.container, &proxy_file, path)
-        .await?;
-
-    // `NamedTempFile` has a custom `Drop` implementation that's blocking, so it must be sent to some other thread not
-    // to jam up our executor
-    thread::spawn(move || {
-        drop(proxy_file);
-    });
+    engine.client.file_push(
+        &engine.config.container,
+        proxy_path,
+        path,
+    ).await?;
 
     trace!(".. ok");
 
     Ok(())
-}
-
-async fn create_proxy_file() -> Result<NamedTempFile> {
-    // Since the `tempfile` crate doesn't provide an async version of `NamedTempFile::new()`, we've gotta spawn it on
-    // the thread-pool
-
-    let file = task::spawn_blocking(NamedTempFile::new)
-        .await?;
-
-    Ok(file?)
 }
