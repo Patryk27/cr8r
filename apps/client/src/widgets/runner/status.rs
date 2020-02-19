@@ -19,24 +19,24 @@ impl fmt::Display for RunnerStatusWidget<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", match self.status {
             DRunnerStatus::Idle { since } => {
-                let status = "idle / awaiting experiment".yellow();
+                let status = "awaiting experiment".yellow();
                 let since = DateTimeWidget::new(*since);
 
-                format!("{} (since {})", status, since)
+                format!("{}\n.. since {}", status, since)
             }
 
             DRunnerStatus::Working { since, .. } => {
                 let status = "working".green();
                 let since = DateTimeWidget::new(*since);
 
-                format!("{} (since {})", status, since)
+                format!("{}\n.. since {}", status, since)
             }
 
             DRunnerStatus::Zombie { since } => {
                 let status = "zombie".red();
                 let since = DateTimeWidget::new(*since);
 
-                format!("{} (since {})", status, since)
+                format!("{}\n .. since {}", status, since)
             }
         })
     }

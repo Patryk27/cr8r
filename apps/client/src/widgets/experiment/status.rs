@@ -19,10 +19,10 @@ impl fmt::Display for ExperimentStatusWidget<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", match self.status {
             DExperimentStatus::Idle { since } => {
-                let state = "idle / awaiting runner".yellow();
+                let state = "awaiting runner".yellow();
                 let since = DateTimeWidget::new(*since);
 
-                format!("{} (since {})", state, since)
+                format!("{}\n.. since {}", state, since)
             }
 
             DExperimentStatus::Running { since, completed_jobs, total_jobs, .. } => {
@@ -31,7 +31,7 @@ impl fmt::Display for ExperimentStatusWidget<'_> {
                 let total_jobs = total_jobs.to_string().blue();
                 let since = DateTimeWidget::new(*since);
 
-                format!("{} (completed {} out of {} jobs(s), since {})", state, completed_jobs, total_jobs, since)
+                format!("{}\n.. completed {} out of {} jobs(s)\n.. since {}", state, completed_jobs, total_jobs, since)
             }
 
             DExperimentStatus::Completed { since, result } => {
@@ -45,14 +45,14 @@ impl fmt::Display for ExperimentStatusWidget<'_> {
 
                 let since = DateTimeWidget::new(*since);
 
-                format!("{} ({}, since {})", state, result, since)
+                format!("{} ({})\n.. since {}", state, result, since)
             }
 
             DExperimentStatus::Stopped { since } => {
                 let state = "stopped".white().dimmed();
                 let since = DateTimeWidget::new(*since);
 
-                format!("{} (since {})", state, since)
+                format!("{}\n.. since {}", state, since)
             }
         })
     }

@@ -24,6 +24,7 @@ impl fmt::Display for RunnerListWidget<'_> {
         }
 
         let mut table = table! {
+            format: FORMAT_NO_BORDER,
             titles: ["▲ Name", "Status", "Joined at", "Last heartbeat at"],
         };
 

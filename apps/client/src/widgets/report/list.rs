@@ -25,6 +25,7 @@ impl fmt::Display for ReportListWidget<'_> {
         }
 
         let mut table = table! {
+            format: FORMAT_NO_BORDER_LINE_SEPARATOR,
             titles: ["▲ At", "Type", "Message"],
         };
 

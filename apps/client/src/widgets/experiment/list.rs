@@ -24,6 +24,7 @@ impl fmt::Display for ExperimentListWidget<'_> {
         }
 
         let mut table = table! {
+            format: FORMAT_NO_BORDER,
             titles: ["▼ Id", "Status", "Created at"],
         };
 
