@@ -1,12 +1,8 @@
 use std::convert::TryInto;
 
 use anyhow::*;
-use tokio::stream::Stream;
-use tokio::sync::mpsc::unbounded_channel;
-use tokio::task::spawn;
+use tokio::stream::{Stream, StreamExt};
 use tonic::transport::Channel;
-
-use lib_core_channel::SendTo;
 
 use crate::connection::Connection;
 use crate::conv;
@@ -83,38 +79,14 @@ impl ExperimentClient {
     }
 
     pub async fn watch(&mut self, id: DExperimentId) -> Result<impl Stream<Item=Result<DReport>>> {
-        let mut reports = self.inner
-            .watch_experiment(PWatchExperimentRequest { id: id.into() })
-            .await?
+        let reports = self.inner
+            .watch_experiment(PWatchExperimentRequest { id: id.into() }).await?
             .into_inner();
 
-        let (tx, rx) = unbounded_channel();
-
-        spawn(async move {
-            loop {
-                let report = reports
-                    .message()
-                    .await;
-
-                let report = report
-                    .transpose()
-                    .map(|report| match report {
-                        Ok(report) => Ok(report.try_into()?),
-                        Err(err) => Err(err.into()),
-                    });
-
-                match report {
-                    Some(report) => {
-                        report.send_to(&tx);
-                    }
-
-                    None => {
-                        break;
-                    }
-                }
-            }
+        let reports = reports.map(|report| {
+            Ok(report?.try_into()?)
         });
 
-        Ok(rx)
+        Ok(reports)
     }
 }
