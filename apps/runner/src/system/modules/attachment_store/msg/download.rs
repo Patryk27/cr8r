@@ -24,7 +24,7 @@ pub async fn download(actor: &mut AttachmentStoreActor, id: DAttachmentId) -> Re
     let att_dir = actor.attachment_dir(id);
 
     {
-        info!("Downloading attachment: id={}, path={}", id, att_dir.display());
+        info!("Downloading attachment: id={}, archive={}", id, att_archive.display());
 
         let mut file = TokioFile::create(&att_archive).await?;
         let mut chunks = actor.client.download(id).await?;
@@ -41,7 +41,7 @@ pub async fn download(actor: &mut AttachmentStoreActor, id: DAttachmentId) -> Re
     }
 
     {
-        info!("Extracting attachment: id={}", id);
+        info!("Extracting attachment: id={}, into={}", id, att_dir.display());
 
         let att_dir = att_dir.clone();
 
