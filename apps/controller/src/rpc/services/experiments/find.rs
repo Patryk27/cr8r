@@ -4,7 +4,7 @@ use lib_interop::proto::services::{PFindExperimentsReply, PFindExperimentsReques
 
 use crate::system::ExperimentStore;
 
-// @todo filtering should happen inside the `Experiments` module, not here
+// @todo sorting and filtering should happen inside the `Experiments` module, not here
 pub async fn find_experiments(
     experiment_store: &ExperimentStore,
     request: PFindExperimentsRequest,
@@ -27,6 +27,9 @@ pub async fn find_experiments(
 
         a.cmp(&b).reverse()
     });
+
+    // @todo ideally this should be provided by the client
+    experiments.truncate(10);
 
     let experiments = experiments
         .into_iter()

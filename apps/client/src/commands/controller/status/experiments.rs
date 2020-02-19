@@ -6,7 +6,7 @@ use crate::modules::app::AppContext;
 use crate::widgets::ExperimentListWidget;
 
 pub async fn print(ctxt: &mut AppContext) -> Result<()> {
-    HeaderWidget::new("Experiments")
+    HeaderWidget::new("Newest experiments")
         .println();
 
     let experiments = spinner! {
