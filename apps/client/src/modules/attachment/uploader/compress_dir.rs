@@ -1,3 +1,4 @@
+use std::fs::read_dir;
 use std::io::BufWriter;
 use std::path::PathBuf;
 
@@ -10,6 +11,11 @@ use lib_core_tempfile::TempFile;
 
 use super::{AttachmentUploader, AttachmentUploaderProgress::*};
 
+const SKIPPABLE_DIRS: &[&str] = &[
+    ".git",
+    "target",
+];
+
 impl AttachmentUploader {
     pub(super) async fn compress_dir(&mut self, path: PathBuf) -> Result<TempFile> {
         CompressingAttachment.send_to(&self.progress);
@@ -17,18 +23,33 @@ impl AttachmentUploader {
         let archive = TempFile::new().await?;
 
         spawn_blocking(move || {
+            ensure!(path.is_dir(), "Given path is not a directory");
+            ensure!(path.join("Cargo.toml").exists(), "Given directory does not contain `Cargo.toml`");
+
             let tar_buffer = BufWriter::new(
-                archive.std_file()
+                archive.std_file(),
             );
 
             let mut tar = TarBuilder::new(tar_buffer);
 
-            // @todo we shouldn't upload `.git` and `target`
+            for entry in read_dir(&path)? {
+                let entry = entry?;
+                let entry_path = entry.path();
 
-            tar.append_dir_all(".", path)?;
-            tar.finish()?;
+                if let Some(entry_name) = entry_path.file_name() {
+                    if SKIPPABLE_DIRS.iter().any(|dir| dir == &entry_name) {
+                        continue;
+                    }
 
-            drop(tar);
+                    if entry_path.is_dir() {
+                        tar.append_dir_all(entry_name, &entry_path)?;
+                    } else {
+                        tar.append_path_with_name(&entry_path, entry_name)?;
+                    }
+                }
+            }
+
+            tar.into_inner()?;
 
             Ok(archive)
         }).await?

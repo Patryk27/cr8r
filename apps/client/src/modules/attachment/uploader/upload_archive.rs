@@ -20,7 +20,7 @@ pub type JoinResult<T> = result::Result<T, JoinError>;
 const CHUNK_SIZE: usize = 64 * 1024;
 
 impl AttachmentUploader {
-    pub(super) async fn upload(&mut self, archive: PathBuf) -> Result<DAttachmentId> {
+    pub(super) async fn upload_archive(&mut self, archive: PathBuf) -> Result<DAttachmentId> {
         let (stream, stream_task) = self.spawn_uploading_stream(archive);
 
         let id = self.client

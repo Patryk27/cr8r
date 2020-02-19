@@ -8,7 +8,7 @@ use lib_interop::clients::AttachmentClient;
 use lib_interop::models::DAttachmentId;
 
 mod compress_dir;
-mod upload;
+mod upload_archive;
 
 pub struct AttachmentUploader {
     client: AttachmentClient,
@@ -39,6 +39,6 @@ impl AttachmentUploader {
     pub async fn upload_dir(&mut self, dir: impl Into<PathBuf>) -> Result<DAttachmentId> {
         let archive = self.compress_dir(dir.into()).await?;
 
-        self.upload(archive.path_buf()).await
+        self.upload_archive(archive.path_buf()).await
     }
 }
