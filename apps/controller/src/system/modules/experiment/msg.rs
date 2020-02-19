@@ -88,9 +88,12 @@ impl ExperimentMsg {
             }
 
             GetJobs { tx } => {
-                actor.jobs
-                    .clone()
-                    .send_to(tx);
+                let jobs: Vec<_> = actor.jobs
+                    .values()
+                    .cloned()
+                    .collect();
+
+                jobs.send_to(tx);
             }
 
             GetModel { tx } => {

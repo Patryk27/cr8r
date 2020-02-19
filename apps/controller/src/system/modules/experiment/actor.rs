@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use chrono::{DateTime, Utc};
@@ -9,6 +10,7 @@ use tokio::time::{delay_for, Duration};
 use lib_core_actor::ActorWorkflow;
 use lib_core_channel::{URx, UTx};
 use lib_interop::models::{DExperimentId, DJob, DReport};
+use lib_interop::models::job::DJobId;
 
 use crate::system::{Attachment, SystemEvent, SystemEventBus};
 
@@ -18,7 +20,7 @@ pub struct ExperimentActor {
     pub bus: SystemEventBus,
     pub id: DExperimentId,
     pub attachments: Vec<Attachment>,
-    pub jobs: Vec<DJob>,
+    pub jobs: BTreeMap<DJobId, DJob>,
     pub created_at: DateTime<Utc>,
     pub watchers: Vec<UTx<Arc<DReport>>>,
     pub status: ExperimentStatus,

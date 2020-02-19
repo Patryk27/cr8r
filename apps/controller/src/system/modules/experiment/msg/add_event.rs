@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use anyhow::*;
@@ -5,6 +6,7 @@ use chrono::Utc;
 use log::*;
 
 use lib_interop::models::{DEvent, DEventType, DJob, DReport, DRunnerId};
+use lib_interop::models::job::{DJobId, DJobStatus};
 
 use super::super::{ExperimentActor, ExperimentStatus};
 
@@ -29,7 +31,7 @@ pub fn add_event(actor: &mut ExperimentActor, actual_runner_id: DRunnerId, event
 
             events.push(Arc::clone(&event));
 
-            if let Some(report) = event_as_report(&actor.jobs, &event).map(Arc::new) {
+            if let Some(report) = event_to_report(&actor.jobs, &event).map(Arc::new) {
                 for watcher in &actor.watchers {
                     let _ = watcher.send(Arc::clone(&report));
                 }
@@ -61,8 +63,14 @@ pub fn add_event(actor: &mut ExperimentActor, actual_runner_id: DRunnerId, event
                     kill_watchers(actor);
                 }
 
-                DEventType::JobCompleted { .. } => {
+                DEventType::JobCompleted { id, result } => {
                     *completed_jobs += 1;
+
+                    if let Some(job) = actor.jobs.get_mut(&id) {
+                        job.status = DJobStatus::Completed {
+                            result: result.to_owned(),
+                        };
+                    }
                 }
 
                 _ => (),
@@ -81,7 +89,7 @@ pub fn add_event(actor: &mut ExperimentActor, actual_runner_id: DRunnerId, event
     }
 }
 
-fn event_as_report(jobs: &[DJob], event: &DEvent) -> Option<DReport> {
+fn event_to_report(jobs: &BTreeMap<DJobId, DJob>, event: &DEvent) -> Option<DReport> {
     Some(match &event.ty {
         DEventType::SystemMsg { msg } => {
             DReport::system_msg(event.at, msg)
@@ -100,7 +108,7 @@ fn event_as_report(jobs: &[DJob], event: &DEvent) -> Option<DReport> {
         }
 
         DEventType::JobStarted { id } => {
-            if let Some(job) = jobs.get(id.as_num() as usize - 1) {
+            if let Some(job) = jobs.get(&id) {
                 DReport::system_msg(event.at, format!("Job `{}` started", job.name))
             } else {
                 warn!("Runner reported that it has started working on job #{}, which does not exist; this is probably a bug", id);
@@ -115,7 +123,7 @@ fn event_as_report(jobs: &[DJob], event: &DEvent) -> Option<DReport> {
                 "success".to_string()
             };
 
-            if let Some(job) = jobs.get(id.as_num() as usize - 1) {
+            if let Some(job) = jobs.get(&id) {
                 DReport::system_msg(event.at, format!("Job `{}` completed with {}", job.name, result))
             } else {
                 warn!("Runner reported that it has finished working on job #{}, which does not exist; this is probably a bug", id);

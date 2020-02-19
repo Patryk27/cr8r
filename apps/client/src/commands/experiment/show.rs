@@ -8,7 +8,7 @@ use lib_interop::models::DExperimentId;
 use lib_interop::proto::models::PExperimentId;
 
 use crate::modules::app::AppContext;
-use crate::widgets::{ExperimentDetailsWidget, ReportListWidget};
+use crate::widgets::{ExperimentDetailsWidget, JobListWidget, ReportListWidget};
 
 pub async fn show(
     ctxt: &mut AppContext,
@@ -75,8 +75,8 @@ async fn print_jobs(conn: Connection, id: DExperimentId) -> Result<()> {
             .find_many(id).await?
     };
 
-    println!("{:#?}", jobs); // @todo
-    println!();
+    JobListWidget::new(&jobs)
+        .println();
 
     Ok(())
 }

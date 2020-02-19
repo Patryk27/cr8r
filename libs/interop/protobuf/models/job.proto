@@ -8,6 +8,7 @@ message PJob {
     uint32 id = 1;
     string name = 2;
     repeated PJobOpcode opcodes = 3;
+    PJobStatus status = 4;
 }
 
 message PJobOpcode {
@@ -34,5 +35,25 @@ message PJobOpcode {
         PExecute execute = 2;
         PAlterToolchain alter_toolchain = 3;
         PAlterDependency alter_dependency = 4;
+    }
+}
+
+message PJobStatus {
+    message PPending {
+        //
+    }
+
+    message PRunning {
+        //
+    }
+
+    message PCompleted {
+        string failure_cause = 1;
+    }
+
+    oneof ty {
+        PPending pending = 1;
+        PRunning running = 2;
+        PCompleted completed = 3;
     }
 }
